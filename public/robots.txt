@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Block verification pages from all search engines
+Disallow: /whatsapp-verify
+Disallow: /verification-failed
+Disallow: /bot-gate
+
+# Block API routes
+Disallow: /api/
+
+# Allow everything else
+Allow: /
+
+Sitemap: https://umhc.org.uk/sitemap.xml

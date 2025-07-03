@@ -1,0 +1,52 @@
+[
+  {
+    "question": "What city is the University of Manchester in?",
+    "options": ["Liverpool", "Manchester", "Birmingham", "Leeds"],
+    "correct": 1
+  },
+  {
+    "question": "What does UMHC stand for?",
+    "options": ["University of Manchester Hockey Club", "University of Manchester Hiking Club", "University of Manchester History Club", "University of Manchester Health Club"],
+    "correct": 1
+  },
+  {
+    "question": "Which mountain range is popular in England for hiking trips?",
+    "options": ["The Alps", "The Lake District", "The Pyrenees", "The Cairngorms"],
+    "correct": 1
+  },
+  {
+    "question": "What type of society is UMHC?",
+    "options": ["Academic society", "Sports society", "Cultural society", "Outdoor/Adventure society"],
+    "correct": 3
+  },
+  {
+    "question": "Which of these is a famous hiking area in the UK?",
+    "options": ["Peak District", "Central Park", "Hyde Park", "Regent's Park"],
+    "correct": 0
+  },
+  {
+    "question": "What is the typical duration of a UMHC day hike?",
+    "options": ["1-2 hours", "4-8 hours", "12+ hours", "24+ hours"],
+    "correct": 1
+  },
+  {
+    "question": "Which mountain is the highest in England?",
+    "options": ["Ben Nevis", "Snowdon", "Scafell Pike", "Helvellyn"],
+    "correct": 2
+  },
+  {
+    "question": "What university is UMHC associated with?",
+    "options": ["University of Manchester", "Manchester Metropolitan University", "University of Salford", "University of Bolton"],
+    "correct": 0
+  },
+  {
+    "question": "What essential item should you always bring on a hike?",
+    "options": ["Laptop", "Water", "Television", "Microwave"],
+    "correct": 1
+  },
+  {
+    "question": "Which season is typically best for hiking in the UK?",
+    "options": ["Winter only", "Spring to Autumn", "Never safe to hike", "Only at night"],
+    "correct": 1
+  }
+]

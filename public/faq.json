@@ -1,0 +1,323 @@
+{
+  "faqs": [
+    {
+      "id": 1,
+      "question": "Do I need hiking experience to join?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "Not at all! We welcome people of all experience levels, from complete beginners to seasoned adventurers. All of our hikes as designed with 4 levels of difficulty, from a gentle stroll along a mostly flat route (Hike 4) to hundreds of meters of elevation that can include scrambling up rocks (Hike 1)."
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "question": "What equipment do I need?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "You NEED to have hiking boots that provide ankle support (go over your ankles) as well as suitable trousers such as outdoor trousers or joggers but NOT JEANS. You then also need a waterproof coat, at least a litre of water (not energy drinks) and finally some lunch. For more details, "
+          },
+          {
+            "type": "link",
+            "text": "check out one of our guides",
+            "href": "/guides"
+          },
+          {
+            "type": "text",
+            "text": "."
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "question": "Do I need a membership?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "Purchasing a membership isn't a requirement to be a part of our club. However, some popular hikes may end up being restricted to members only. Our winter and easter trips both require participants to be members to purchase tickets. For even more details about our memberships, "
+          },
+          {
+            "type": "link",
+            "text": "check out our membership page",
+            "href": "/membership"
+          },
+          {
+            "type": "text",
+            "text": "."
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "question": "How much does membership cost?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "Anyone can be apart of our community and join most of our hikes. If you wish to purchase a membership, we offer two types:"
+          },
+          {
+            "type": "list",
+            "items": [
+              "University of Manchester students can purchase the regular membership for £25.",
+              [
+                {
+                  "type": "text",
+                  "text": "Non-University of Manchester students need to make an "
+                },
+                {
+                  "type": "link",
+                  "text": "associate account with University of Manchester Students union",
+                  "href": "https://manchesterstudentsunion.com/associate-member/apply"
+                },
+                {
+                  "type": "text",
+                  "text": " and can then purchase a membership for £28."
+                }
+              ]
+            ]
+          },
+          {
+            "type": "text",
+            "text": "To find out more about what our membership has to offer, visit our "
+          },
+          {
+            "type": "link",
+            "text": "membership page",
+            "href": "/membership"
+          },
+          {
+            "type": "text",
+            "text": "."
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "question": "When and where do you meet?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "We meet every Sunday during term time for our planned hike, departing from three different locations: Fallowfield, The Student Union, and North Campus. We also run weekly socials. Check out what we've got planned on the "
+          },
+          {
+            "type": "link",
+            "text": "schedule page",
+            "href": "/schedule"
+          },
+          {
+            "type": "text",
+            "text": "."
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "question": "What if I can't keep up on a hike?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "No one gets left behind! We hike as a group and adjust our pace to accommodate everyone. However, if you're really struggling, we can arrange for you to safely return to the coach either by moving you to an easier group or having one of our hike leaders walk back with you. We'll always try our best to support you but encourage you to ensure you're choosing a hike that is appropriate for your hiking abilities."
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "question": "Do you provide transport to hiking locations?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "Yes! We hire a large coach or multiple mini vans and include the cost of transport in our ticket price."
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "question": "How safe is it to go hiking?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "It's very safe as long as you are following your hike leader's instructions. If you're unsure of anything, let your hike leaders know as soon as possible. Ensure you've got all of the right equipment, highlighted in our "
+          },
+          {
+            "type": "link",
+            "text": "guides",
+            "href": "/guides"
+          },
+          {
+            "type": "text",
+            "text": "."
+          }
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "question": "Where do you go hiking?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "The majority of our hikes are in North Wales and the Lake District. You can check out where we're planning to go next on the "
+          },
+          {
+            "type": "link",
+            "text": "schedule page",
+            "href": "/schedule"
+          },
+          {
+            "type": "text",
+            "text": "."
+          }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "question": "Can I do my own route?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "Unfortunately not. We run 4 hikes to cover all ability levels and aim to keep them as interesting as possible. We do not allow people to individually do their own route. However, everyone is welcome to attend a committee meeting or pitch in the group chat a route idea you like, whether it takes place is down to the current committee members."
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "question": "Can I join if I'm not a University of Manchester student?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "Absolutely! Everyone is welcome to join, you will need to create an "
+          },
+          {
+            "type": "link",
+            "text": "associate member account",
+            "href": "https://manchesterstudentsunion.com/associate-member/apply"
+          },
+          {
+            "type": "text",
+            "text": " with our student union first to be able to purchase a ticket for our hikes or socials."
+          }
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "question": "Should I go if I don't know anyone in the society?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "Of course! Everyone is very friendly and spending the day with a group of people 'trauma' bonding over the hike is a great way to get to know new people."
+          }
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "question": "It all feel too expensive for me, is there any support?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "Yes! The student union offers a grant that can cover up to £500 of expenses called the "
+          },
+          {
+            "type": "link",
+            "text": "Access to Recreation Grant",
+            "href": "https://manchesterstudentsunion.com/recreation-grant"
+          },
+          {
+            "type": "text",
+            "text": " which you can apply for."
+          }
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "question": "How can I get involved with how the society is run?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "You can attend one of our committee meetings which are hosted every Monday. Details are posted on our "
+          },
+          {
+            "type": "link",
+            "text": "Instagram",
+            "href": "https://www.instagram.com/_umhc_/"
+          },
+          {
+            "type": "text",
+            "text": " about when and where, closer to the time and are often hosted at 8pm."
+          }
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "question": "How do I stay updated on everything happening with the society?",
+      "answer": {
+        "type": "structured",
+        "content": [
+          {
+            "type": "text",
+            "text": "The best way to get up to date information is to join our "
+          },
+          {
+            "type": "link",
+            "text": "Whatsapp Group Chat",
+            "href": "/whatsapp-verify"
+          },
+          {
+            "type": "text",
+            "text": " or keep an eye on our "
+          },
+          {
+            "type": "link",
+            "text": "Instagram",
+            "href": "https://www.instagram.com/_umhc_/"
+          },
+          {
+            "type": "text",
+            "text": "."
+          }
+        ]
+      }
+    }
+  ]
+}
