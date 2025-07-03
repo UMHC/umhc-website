@@ -36,7 +36,6 @@ declare global {
 }
 
 export default function VerificationForm({ onSuccess }: VerificationFormProps) {
-  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(-1);
   const [phone, setPhone] = useState('');
@@ -49,17 +48,6 @@ export default function VerificationForm({ onSuccess }: VerificationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [turnstileLoaded, setTurnstileLoaded] = useState(false);
 
-  // Load a random question
-  const loadRandomQuestion = useCallback((questionsData?: Question[]) => {
-    const questionsToUse = questionsData || questions;
-    if (questionsToUse.length === 0) return;
-    
-    const randomIndex = Math.floor(Math.random() * questionsToUse.length);
-    setCurrentQuestion(questionsToUse[randomIndex]);
-    setCurrentQuestionIndex(randomIndex);
-    setSelectedAnswer('');
-    setError('');
-  }, [questions]);
 
   // Load questions from JSON file
   const loadQuestions = useCallback(async () => {
@@ -67,8 +55,18 @@ export default function VerificationForm({ onSuccess }: VerificationFormProps) {
       const response = await fetch('/questions.json');
       if (!response.ok) throw new Error('Failed to load questions');
       const questionsData: Question[] = await response.json();
-      setQuestions(questionsData);
-      loadRandomQuestion(questionsData);
+      
+      // Load a random question directly without dependency loop
+      if (questionsData.length > 0) {
+        const randomIndex = Math.floor(Math.random() * questionsData.length);
+        setCurrentQuestion(questionsData[randomIndex]);
+        setCurrentQuestionIndex(randomIndex);
+        setSelectedAnswer('');
+        setError('');
+        // Reset timer when loading a new question
+        setTimerSeconds(15);
+        setIsTimerActive(true);
+      }
     } catch (error) {
       setError('Failed to load verification questions. Please refresh the page.');
       // Only log in development
@@ -76,7 +74,7 @@ export default function VerificationForm({ onSuccess }: VerificationFormProps) {
         console.error('Error loading questions:', error);
       }
     }
-  }, [loadRandomQuestion]);
+  }, []);
 
   // Phone number validation
   const validatePhoneNumber = (phoneNumber: string) => {
