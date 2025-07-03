@@ -85,7 +85,7 @@ export default function Footer() {
                 Membership
               </TextButton>
               <TextButton href="/about#faqs" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
-                FAQ's
+                FAQ&apos;s
               </TextButton>
               <TextButton href="/about#committee" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 Committee

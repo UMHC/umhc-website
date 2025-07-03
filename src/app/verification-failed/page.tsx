@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'uMHC | Verification Failed',
@@ -36,13 +35,13 @@ export default function VerificationFailedPage() {
                 Verification Failed
               </h1>
               <p className="font-sans font-medium text-lg sm:text-xl text-deep-black mb-6 sm:mb-8 px-2">
-                Sorry, we couldn't verify that you weren't a bot.
+                Sorry, we couldn&apos;t verify that you weren&apos;t a bot.
               </p>
               
               {/* Additional Info */}
               <div className="bg-cream-white rounded-lg p-4 sm:p-6 border border-gray-200 max-w-xs sm:max-w-md mx-auto">
                 <p className="font-sans text-sm sm:text-base text-slate-grey mb-3 sm:mb-4 leading-relaxed">
-                  For security reasons, we couldn't complete your verification for the UMHC WhatsApp group.
+                  For security reasons, we couldn&apos;t complete your verification for the UMHC WhatsApp group.
                 </p>
                 <p className="font-sans text-xs sm:text-sm text-slate-grey leading-relaxed">
                   If you believe this is an error, please contact us through Instagram, TikTok or in-person.

@@ -49,6 +49,18 @@ export default function VerificationForm({ onSuccess }: VerificationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [turnstileLoaded, setTurnstileLoaded] = useState(false);
 
+  // Load a random question
+  const loadRandomQuestion = useCallback((questionsData?: Question[]) => {
+    const questionsToUse = questionsData || questions;
+    if (questionsToUse.length === 0) return;
+    
+    const randomIndex = Math.floor(Math.random() * questionsToUse.length);
+    setCurrentQuestion(questionsToUse[randomIndex]);
+    setCurrentQuestionIndex(randomIndex);
+    setSelectedAnswer('');
+    setError('');
+  }, [questions]);
+
   // Load questions from JSON file
   const loadQuestions = useCallback(async () => {
     try {
@@ -64,19 +76,7 @@ export default function VerificationForm({ onSuccess }: VerificationFormProps) {
         console.error('Error loading questions:', error);
       }
     }
-  }, []);
-
-  // Load a random question
-  const loadRandomQuestion = useCallback((questionsData?: Question[]) => {
-    const questionsToUse = questionsData || questions;
-    if (questionsToUse.length === 0) return;
-    
-    const randomIndex = Math.floor(Math.random() * questionsToUse.length);
-    setCurrentQuestion(questionsToUse[randomIndex]);
-    setCurrentQuestionIndex(randomIndex);
-    setSelectedAnswer('');
-    setError('');
-  }, [questions]);
+  }, [loadRandomQuestion]);
 
   // Phone number validation
   const validatePhoneNumber = (phoneNumber: string) => {
@@ -225,7 +225,7 @@ export default function VerificationForm({ onSuccess }: VerificationFormProps) {
         if (document.head.contains(script)) {
           document.head.removeChild(script);
         }
-      } catch (e) {
+      } catch {
         // Ignore cleanup errors
       }
     };
@@ -353,7 +353,7 @@ export default function VerificationForm({ onSuccess }: VerificationFormProps) {
         throw new Error(data.error || 'Verification failed');
       }
       
-    } catch (error) {
+    } catch {
       // On server/network errors, redirect to verification failed page
       window.location.href = '/verification-failed';
     } finally {
@@ -431,7 +431,7 @@ export default function VerificationForm({ onSuccess }: VerificationFormProps) {
             Hold on a sec...
           </h1>
           <p className="font-sans font-medium text-lg sm:text-xl text-deep-black px-2">
-            We need to complete a couple of checks to verify you're not a bot. We'll be quick and won't store your responses outside of this session.
+            We need to complete a couple of checks to verify you&apos;re not a bot. We&apos;ll be quick and won&apos;t store your responses outside of this session.
           </p>
         </div>
       </div>

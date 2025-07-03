@@ -4,12 +4,24 @@ import { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import ContentRenderer from './ContentRenderer';
 
-interface ContentBlock {
-  type: 'text' | 'list' | 'link';
-  text?: string;
-  items?: string[];
-  href?: string;
+// Import types from ContentRenderer to avoid duplication
+interface TextContent {
+  type: 'text';
+  text: string;
 }
+
+interface ListContent {
+  type: 'list';
+  items: (string | ContentBlock[])[];
+}
+
+interface LinkContent {
+  type: 'link';
+  text: string;
+  href: string;
+}
+
+type ContentBlock = TextContent | ListContent | LinkContent;
 
 interface StructuredAnswer {
   type: 'structured';

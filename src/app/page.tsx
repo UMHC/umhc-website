@@ -1,6 +1,5 @@
 'use client';
 
-import TextButton from './components/TextButton';
 import Button from './components/Button';
 
 export default function Home() {

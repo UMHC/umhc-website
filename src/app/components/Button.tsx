@@ -17,8 +17,6 @@ export default function Button({
   children,
   onClick,
   type = 'button',
-  variant = 'primary',
-  size = 'medium',
   disabled = false,
   fullWidth = false,
   className = '',

@@ -39,7 +39,7 @@ function parseMarkdown(text: string): string {
     // Check for sub-items FIRST (a.1. a.2. a.3. etc.)
     const subItemMatch = trimmedLine.match(/^([a-z])\.(\d+)\.\s*(.*)$/);
     if (subItemMatch) {
-      const [, letter, number, text] = subItemMatch;
+      const [, , number, text] = subItemMatch;
       const romanNumerals = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x', 'xi', 'xii', 'xiii', 'xiv', 'xv', 'xvi', 'xvii', 'xviii', 'xix', 'xx'];
       const roman = romanNumerals[parseInt(number) - 1] || number;
       // Don't make any sub-items bold - user requested no bolding for sub-items
@@ -110,7 +110,7 @@ export default function ConstitutionPage() {
           </h1>
           <div className="max-w-5xl mx-auto px-2">
             <p className="text-xs sm:text-sm md:text-base text-deep-black font-medium font-sans leading-relaxed">
-              As a society under The University of Manchester Student Union, we're committed to creating a welcoming and inclusive community for all of our members. Our constitution outlines the principles and guidelines that help us maintain a safe, respectful, and welcoming environment where everyone can enjoy hiking and socialising together. These rules ensure fair participation in our activities, from weekend hikes to social events, while protecting the interests of all members. Whether you're a committee member or a general society member, understanding our constitution helps create the positive community experience we're all here for. (Last updated July 2025)
+              As a society under The University of Manchester Student Union, we&apos;re committed to creating a welcoming and inclusive community for all of our members. Our constitution outlines the principles and guidelines that help us maintain a safe, respectful, and welcoming environment where everyone can enjoy hiking and socialising together. These rules ensure fair participation in our activities, from weekend hikes to social events, while protecting the interests of all members. Whether you&apos;re a committee member or a general society member, understanding our constitution helps create the positive community experience we&apos;re all here for. (Last updated July 2025)
             </p>
           </div>
         </header>
