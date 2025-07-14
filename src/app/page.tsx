@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import SchedulePreview from '@/components/SchedulePreview';
+import SocialWall from '@/components/SocialWall';
 
 export default function Home() {
   return (
@@ -10,7 +11,7 @@ export default function Home() {
         src="/images/hero-image/upper-part.webp"
         alt="Hero background image"
         fill
-        className="object-cover object-center md:object-center object-left"
+        className="object-cover object-left md:object-center"
         priority
         quality={95}
         unoptimized
@@ -33,7 +34,7 @@ export default function Home() {
         src="/images/hero-image/lower-part.webp"
         alt="Hero foreground image"
         fill
-        className="object-cover object-center md:object-center object-left z-20 -translate-y-0.5"
+        className="object-cover object-left md:object-center z-20 -translate-y-0.5"
         priority
         quality={95}
         unoptimized
@@ -56,6 +57,9 @@ export default function Home() {
     
     {/* Schedule Preview Section */}
     <SchedulePreview />
+    
+    {/* Social Wall Section */}
+    <SocialWall />
     </>
   );
 }

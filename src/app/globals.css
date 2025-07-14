@@ -109,3 +109,44 @@ body {
   color: var(--deep-black);
   font-family: var(--font-open-sans), system-ui, sans-serif;
 }
+
+/* Social Wall Styles */
+/* Hide scrollbars for all browsers */
+.social-wall-column {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.social-wall-column::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Smooth scroll behavior */
+.social-wall-column {
+  scroll-behavior: smooth;
+}
+
+/* Pause scrolling on hover */
+.social-wall-column:hover {
+  animation-play-state: paused;
+}
+
+/* Optional: Add custom scrollbar on hover for better UX */
+.social-wall-column:hover {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.social-wall-column:hover::-webkit-scrollbar {
+  display: block;
+  width: 4px;
+}
+
+.social-wall-column:hover::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.social-wall-column:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
