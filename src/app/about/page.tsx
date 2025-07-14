@@ -1,6 +1,36 @@
+'use client';
+
+import { useEffect } from 'react';
 import FAQ from '@/app/components/FAQ';
 
 export default function About() {
+  useEffect(() => {
+    // Handle anchor navigation after component mounts
+    const scrollToAnchor = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        const element = document.querySelector(hash);
+        if (element) {
+          // Scroll with offset for fixed navbar
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - 80; // 80px offset for navbar
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }
+    };
+
+    // Try immediately
+    scrollToAnchor();
+    
+    // Also try after a longer delay to ensure FAQ component is rendered
+    const timeout = setTimeout(scrollToAnchor, 500);
+    
+    return () => clearTimeout(timeout);
+  }, []);
   return (
     <div className="bg-whellow min-h-screen">
       {/* Who Are We section */}

@@ -20,57 +20,22 @@ export default function Footer() {
               Schedule
             </TextButton>
             <nav className="flex flex-col gap-[5px]">
-              <TextButton href="/schedule#hikes" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="/schedule?filter=hike" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 Hikes
               </TextButton>
-              <TextButton href="/schedule#socials" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="/schedule?filter=social" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 Socials
               </TextButton>
-              <TextButton href="/schedule#residential" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="/schedule?filter=residential" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 Residential
               </TextButton>
-              <TextButton href="/schedule#other" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="/schedule?filter=other" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 Other
               </TextButton>
             </nav>
           </div>
           
-          <div className="flex flex-col gap-2 items-start">
-            <TextButton 
-              href="/constitution" 
-              priority
-              className="text-cream-white text-lg sm:text-base md:text-[16px] font-semibold"
-            >
-              Constitution
-            </TextButton>
-          </div>
           
-          <div className="flex flex-col gap-2 items-start">
-            <TextButton 
-              href="/guides" 
-              priority
-              className="text-cream-white text-lg sm:text-base md:text-[16px] font-semibold"
-            >
-              Guides
-            </TextButton>
-            <nav className="flex flex-col gap-[5px]">
-              <TextButton href="/guides#day-trips" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
-                Day Trips
-              </TextButton>
-              <TextButton href="/guides#weekend-trips" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
-                Weekend Trips
-              </TextButton>
-              <TextButton href="/guides#winter-trip" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
-                Winter Trip
-              </TextButton>
-              <TextButton href="/guides#easter-trip" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
-                Easter Trip
-              </TextButton>
-              <TextButton href="/guides#committee" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
-                Committee
-              </TextButton>
-            </nav>
-          </div>
           
           <div className="flex flex-col gap-2 items-start">
             <TextButton 

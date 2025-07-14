@@ -86,7 +86,7 @@ export default function FAQ() {
     <section className="pt-1 pb-16 bg-cream-white" aria-labelledby="faq-heading">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <header className="text-center space-y-2 mb-4 sm:mb-6">
-          <h2 id="faq-heading" className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-deep-black leading-tight font-sans px-2">
+          <h2 id="faqs" className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-deep-black leading-tight font-sans px-2 scroll-mt-20">
             Frequently Asked Questions
           </h2>
           <div className="max-w-3xl mx-auto px-2">
