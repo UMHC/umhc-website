@@ -1,22 +1,15 @@
 'use client'
 
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getScheduleEvents } from '@/lib/scheduleService'
-import { ScheduleEvent, EventType } from '@/types/schedule'
-import { CalendarDaysIcon, MapPinIcon, ClockIcon, FunnelIcon } from '@heroicons/react/24/outline'
+import { ScheduleEvent } from '@/types/schedule'
+import { FunnelIcon } from '@heroicons/react/24/outline'
 import { XMarkIcon, CheckIcon } from '@heroicons/react/24/solid'
 import EarthOrangeButton from '@/components/EarthOrangeButton'
 import Image from 'next/image'
 
-const eventTypeConfig: Record<EventType, { color: string; label: string }> = {
-  hike: { color: 'bg-umhc-green', label: 'Hike' },
-  social: { color: 'bg-earth-orange', label: 'Social' },
-  residential: { color: 'bg-stealth-green', label: 'Residential' },
-  other: { color: 'bg-slate-grey', label: 'Other' }
-}
-
-export default function SchedulePage() {
+function ScheduleContent() {
   const searchParams = useSearchParams()
   const [events, setEvents] = useState<ScheduleEvent[]>([])
   const [loading, setLoading] = useState(true)
@@ -49,13 +42,11 @@ export default function SchedulePage() {
   ]
 
   // Generate background icons based on content height and screen size
-  const generateBackgroundIcons = () => {
+  const generateBackgroundIcons = useCallback(() => {
     // Responsive sizing and spacing based on screen width
     const screenWidth = windowSize.width
     const isSmall = screenWidth < 640
     const isMedium = screenWidth >= 640 && screenWidth < 1024
-    const isLarge = screenWidth >= 1024
-    
     // Calculate RESPONSIVE content height based on actual screen behavior
     const headerHeight = isSmall ? 550 : isMedium ? 480 : 450 // Header wraps more on mobile
     const eventHeight = isSmall ? 120 : isMedium ? 95 : 85 // Events taller on mobile due to wrapping
@@ -104,7 +95,7 @@ export default function SchedulePage() {
     }
     
     return { leftIcons, rightIcons }
-  }
+  }, [windowSize])
 
   // Handle window resize for responsive icons
   useEffect(() => {
@@ -221,7 +212,7 @@ export default function SchedulePage() {
   // Generate dynamic background icons based on current visible content and window size
   const { leftIcons, rightIcons } = React.useMemo(() => {
     return generateBackgroundIcons()
-  }, [visibleEvents.length, hasMoreEvents, windowSize.width, windowSize.height])
+  }, [generateBackgroundIcons])
 
   // Reset visible count when filters change
   const resetVisibleCount = () => setVisibleCount(10)
@@ -419,7 +410,7 @@ export default function SchedulePage() {
           </div>
           <div className="max-w-5xl mx-auto px-2 sm:px-20 md:px-16 lg:px-12 xl:px-2">
             <p className="text-xs sm:text-sm md:text-base text-deep-black font-medium font-sans leading-relaxed">
-              As a society, we run a whole variety of activities throughout the year to suit hikers of all experience levels. Every weekend, we organize hikes with four different difficulty levels available, ensuring our regular schedule offers something for everyone. We also arrange residential weekend trips to hostels every so often, plus plenty of social events to bring our community together. Whether it's bowling nights, board game evenings, karaoke sessions, pot luck dinners, or the occasional pub quiz, there's always a chance to get out and meet new people. Check out our upcoming activities below!
+              As a society, we run a whole variety of activities throughout the year to suit hikers of all experience levels. Every weekend, we organize hikes with four different difficulty levels available, ensuring our regular schedule offers something for everyone. We also arrange residential weekend trips to hostels every so often, plus plenty of social events to bring our community together. Whether it&apos;s bowling nights, board game evenings, karaoke sessions, pot luck dinners, or the occasional pub quiz, there&apos;s always a chance to get out and meet new people. Check out our upcoming activities below!
             </p>
           </div>
         </header>
@@ -735,7 +726,7 @@ export default function SchedulePage() {
                         height={96}
                         className="object-cover w-full h-full rounded-lg"
                         onError={(e) => {
-                          // Fallback to calendar icon if image fails to load
+                          /* Fallback to calendar icon if image fails to load */
                           e.currentTarget.src = '/images/activity-images/calendar.webp'
                         }}
                       />
@@ -786,7 +777,7 @@ export default function SchedulePage() {
                         {selectedEvent.what3words && (
                           <div className="text-sm sm:text-base">
                             <p>
-                              <span className="text-[#e11f26] font-mono">///</span>
+                              <span className="text-[#e11f26] font-mono">{'///'}</span>
                               <span className="font-mono">{selectedEvent.what3words}</span>
                             </p>
                           </div>
@@ -873,5 +864,26 @@ export default function SchedulePage() {
         )}
       </div>
     </div>
+  )
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-cream-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-umhc-blue mx-auto"></div>
+          <p className="mt-4 text-umhc-blue">Loading schedule...</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function SchedulePage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ScheduleContent />
+    </Suspense>
   )
 }

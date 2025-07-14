@@ -76,7 +76,7 @@ async function getInstagramPosts(): Promise<SocialPost[]> {
       return [];
     }
 
-    return posts.slice(0, 10).map((post: any) => ({
+    return posts.slice(0, 10).map((post: { node: { code?: string; pk?: string; image_versions2?: { candidates?: Array<{ url: string }>}; display_url?: string; caption?: { text: string }; like_count?: number; taken_at?: number } }) => ({
       id: `ig_${post.node.code || post.node.pk || Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       type: 'instagram' as const,
       content: {
@@ -123,7 +123,24 @@ async function getTikTokVideos(): Promise<SocialPost[]> {
       return [];
     }
 
-    return videos.slice(0, 10).map((video: any) => ({
+    return videos.slice(0, 10).map((video: { 
+      aweme_id?: string; 
+      video_id?: string; 
+      id?: string; 
+      cover?: string; 
+      video?: { cover?: string; play_addr?: string }; 
+      thumbnail?: string; 
+      desc?: string; 
+      title?: string; 
+      description?: string; 
+      play?: string; 
+      play_addr?: string; 
+      play_count?: number; 
+      digg_count?: number; 
+      share_url?: string; 
+      stats?: { play_count?: number; digg_count?: number }; 
+      create_time?: number 
+    }) => ({
       id: `tt_${video.aweme_id || video.video_id || video.id || Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       type: 'tiktok' as const,
       content: {
@@ -180,7 +197,16 @@ async function getStravaActivities(): Promise<SocialPost[]> {
 
     const activities = await response.json();
 
-    return activities.map((activity: any) => ({
+    return activities.map((activity: { 
+      type: string; 
+      distance: number; 
+      total_elevation_gain: number; 
+      moving_time: number; 
+      start_date: string; 
+      name: string; 
+      id: string;
+      athlete: { firstname: string; lastname: string }
+    }) => ({
       id: `strava_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       type: 'strava' as const,
       content: {

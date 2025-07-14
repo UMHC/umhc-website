@@ -58,9 +58,7 @@ function EventCard({ event, onClick }: EventCardProps) {
   )
 }
 
-interface SchedulePreviewProps {}
-
-export default function SchedulePreview({}: SchedulePreviewProps) {
+export default function SchedulePreview() {
   const [events, setEvents] = useState<ScheduleEvent[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()

@@ -146,6 +146,65 @@ const SocialWall = () => {
     }
   };
 
+  const loadCachedData = useCallback(() => {
+    try {
+      const cachedItem = localStorage.getItem('socialWallCache');
+      if (cachedItem) {
+        const { data, expiry } = JSON.parse(cachedItem);
+        
+        // Check if cache is still valid
+        if (Date.now() < expiry && data && Array.isArray(data) && data.length > 0) {
+          console.log('Loading cached social data');
+          setPosts(data);
+          setLoading(false);
+          return;
+        } else {
+          console.log('Cached data expired or invalid');
+          localStorage.removeItem('socialWallCache');
+        }
+      }
+      
+      // If no valid cache, use fallback data
+      console.log('No valid cache found, using fallback data');
+      loadFallbackData();
+    } catch (error) {
+      console.error('Error loading cached data:', error);
+      loadFallbackData();
+    }
+  }, []);
+
+  const loadFallbackData = useCallback(() => {
+    // Fallback data in case everything fails
+    const fallbackPosts: SocialPost[] = [
+      {
+        id: 'fallback-1',
+        type: 'instagram',
+        content: {
+          imageUrl: '/images/umhc-badge.webp',
+          caption: 'Follow us on Instagram for the latest updates!',
+          link: 'https://instagram.com/_umhc_/',
+          timestamp: new Date().toISOString()
+        }
+      },
+      {
+        id: 'fallback-2',
+        type: 'strava',
+        content: {
+          activityType: 'Hike',
+          athleteName: 'UMHC Member',
+          distance: 12000,
+          duration: 14400,
+          elevation: 800,
+          link: 'https://strava.com',
+          timestamp: new Date().toISOString()
+        }
+      }
+    ];
+    
+    setPosts(fallbackPosts);
+    setLoading(false);
+  }, []);
+
   const startAutoScroll = () => {
     const scrollSpeeds = [22, 24, 20, 26, 23]; // More consistent speeds for smoother scrolling
     
