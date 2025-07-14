@@ -4,7 +4,7 @@ import SocialWall from '@/components/SocialWall';
 
 export default function Home() {
   return (
-    <>
+    <div className="bg-whellow min-h-screen">
     <div className="relative h-screen overflow-hidden">
       {/* Background image layer */}
       <Image
@@ -13,8 +13,9 @@ export default function Home() {
         fill
         className="object-cover object-left md:object-center"
         priority
-        quality={95}
+        quality={100}
         unoptimized
+        sizes="100vw"
       />
       
       {/* Text layer */}
@@ -23,7 +24,7 @@ export default function Home() {
           <p className="font-bold text-center mb-1 text-xl sm:text-2xl md:text-[26px] lg:text-[28px] xl:text-[30px] 2xl:text-[32px]" style={{ color: 'rgba(255,255,255,0.69)', lineHeight: '1' }}>
             University of Manchester Hiking Club
           </p>
-          <h1 className="font-bold whitespace-nowrap text-9xl sm:text-9xl md:text-[120px] lg:text-[150px] xl:text-[180px] 2xl:text-[200px]" style={{ color: 'rgba(255,255,255,0.91)', lineHeight: '0.85' }}>
+          <h1 className="font-bold whitespace-nowrap text-9xl sm:text-9xl md:text-[160px] lg:text-[150px] xl:text-[180px] 2xl:text-[200px]" style={{ color: 'rgba(255,255,255,0.91)', lineHeight: '0.85' }}>
             UMHC
           </h1>
         </div>
@@ -36,8 +37,9 @@ export default function Home() {
         fill
         className="object-cover object-left md:object-center z-20 -translate-y-0.5"
         priority
-        quality={95}
+        quality={100}
         unoptimized
+        sizes="100vw"
       />
     </div>
     
@@ -60,6 +62,6 @@ export default function Home() {
     
     {/* Social Wall Section */}
     <SocialWall />
-    </>
+    </div>
   );
 }
