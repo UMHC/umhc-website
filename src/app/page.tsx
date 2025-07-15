@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import SchedulePreview from '@/components/SchedulePreview';
 import SocialWall from '@/components/SocialWall';
+import MembershipSection from '@/components/MembershipSection';
 
 export default function Home() {
   return (
@@ -62,6 +63,9 @@ export default function Home() {
     
     {/* Social Wall Section */}
     <SocialWall />
+    
+    {/* Membership Section */}
+    <MembershipSection />
     </div>
   );
 }

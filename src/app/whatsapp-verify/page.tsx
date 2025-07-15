@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import VerificationForm from '../components/VerificationForm';
+import VerificationForm from '@/components/VerificationForm';
 
 export const metadata: Metadata = {
   title: 'UMHC | Whatsapp Verification',

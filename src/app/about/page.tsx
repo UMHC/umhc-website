@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import FAQ from '@/app/components/FAQ';
+import FAQ from '@/components/FAQ';
 
 export default function About() {
   useEffect(() => {

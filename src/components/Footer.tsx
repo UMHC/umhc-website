@@ -46,19 +46,13 @@ export default function Footer() {
               About Us
             </TextButton>
             <nav className="flex flex-col gap-[5px]">
-              <TextButton href="/about#membership" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="/membership" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 Membership
               </TextButton>
               <TextButton href="/about#faqs" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 FAQ&apos;s
               </TextButton>
-              <TextButton href="/about#committee" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
-                Committee
-              </TextButton>
-              <TextButton href="/about#history" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
-                History
-              </TextButton>
-              <TextButton href="/about#contact" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="mailto:contact@umhc.org.uk" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 Contact Us
               </TextButton>
             </nav>
@@ -72,9 +66,11 @@ export default function Footer() {
             <div className="flex flex-col md:flex-row lg:flex-col items-center gap-5 md:gap-4 lg:gap-5 w-full justify-center">
               {/* Become a Member Button */}
               <div className="shrink-0">
-                <Button className="text-sm md:text-sm lg:text-base">
-                  Become a Member
-                </Button>
+                <Link href="/membership">
+                  <Button className="text-sm md:text-sm lg:text-base" aria-label="Become a member of UMHC">
+                    Become a Member
+                  </Button>
+                </Link>
               </div>
               
               {/* Social Icons */}
