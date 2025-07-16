@@ -66,7 +66,11 @@ async function getInstagramPosts(): Promise<SocialPost[]> {
     }
 
     const data = await response.json();
-    console.log('Instagram API response:', JSON.stringify(data, null, 2));
+    
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Instagram API response:', JSON.stringify(data, null, 2));
+    }
     
     // The new API returns posts in a different structure
     const posts = data.posts || [];
@@ -113,7 +117,11 @@ async function getTikTokVideos(): Promise<SocialPost[]> {
     }
 
     const data = await response.json();
-    console.log('TikTok API response:', JSON.stringify(data, null, 2));
+    
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('TikTok API response:', JSON.stringify(data, null, 2));
+    }
     
     // Try different possible response structures
     const videos = data.data?.videos || data.videos || data.data || [];
@@ -245,9 +253,11 @@ export async function GET() {
     // Sort by timestamp (most recent first)
     allPosts.sort((a, b) => 
       new Date(b.content.timestamp).getTime() - new Date(a.content.timestamp).getTime()
-    );
-
-    console.log(`Social feed: ${allPosts.length} posts loaded`);
+    );    
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Social feed: ${allPosts.length} posts loaded`);
+    }
     return NextResponse.json(allPosts);
   } catch (error) {
     console.error('Social feed error:', error);

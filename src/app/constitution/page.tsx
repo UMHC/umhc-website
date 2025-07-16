@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import DOMPurify from 'isomorphic-dompurify';
 
 export const metadata: Metadata = {
   title: 'UMHC | Constitution',
@@ -68,7 +69,8 @@ function parseMarkdown(text: string): string {
     html += `${trimmedLine}<br>`;
   }
   
-  return html;
+  // Sanitize the HTML before returning
+  return DOMPurify.sanitize(html);
 }
 
 function ConstitutionSection({

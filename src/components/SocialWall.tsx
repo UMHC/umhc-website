@@ -120,7 +120,9 @@ const SocialWall = () => {
       setLoading(false);
     } catch (error) {
       console.error('Error fetching social data:', error);
-      console.log('Attempting to load cached data...');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Attempting to load cached data...');
+      }
       loadCachedData();
     }
   }, [loadCachedData]);

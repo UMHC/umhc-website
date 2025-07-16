@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { getScheduleEvents } from '@/lib/scheduleService'
 import { ScheduleEvent } from '@/types/schedule'
@@ -100,44 +101,44 @@ export default function SchedulePreview() {
       {/* Activity icons with responsive positioning */}
       <div className="absolute inset-0 pointer-events-none z-0">
         {/* Top row - mobile has 2 icons flanking title, desktop has full border */}
-        <img src="/images/activity-images/mountain-trees.webp" alt="" className="absolute w-12 h-12 sm:w-14 sm:h-14 lg:w-20 lg:h-20 opacity-7 lg:hidden" style={{ left: '12.5%', top: '-5px' }} />
-        <img src="/images/activity-images/map.webp" alt="" className="absolute w-12 h-12 sm:w-14 sm:h-14 lg:w-20 lg:h-20 opacity-7 lg:hidden" style={{ right: '12.5%', top: '-5px' }} />
+        <Image src="/images/activity-images/mountain-trees.webp" alt="" width={80} height={80} className="absolute w-12 h-12 sm:w-14 sm:h-14 lg:w-20 lg:h-20 opacity-7 lg:hidden" style={{ left: '12.5%', top: '-5px' }} />
+        <Image src="/images/activity-images/map.webp" alt="" width={80} height={80} className="absolute w-12 h-12 sm:w-14 sm:h-14 lg:w-20 lg:h-20 opacity-7 lg:hidden" style={{ right: '12.5%', top: '-5px' }} />
         
         {/* Desktop top border - full row */}
-        <img src="/images/activity-images/mountain-trees.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '5%', top: '10px' }} />
-        <img src="/images/activity-images/boots.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '20%', top: '10px' }} />
-        <img src="/images/activity-images/oak-tree.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '35%', top: '10px' }} />
-        <img src="/images/activity-images/pine-tree.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '35%', top: '10px' }} />
-        <img src="/images/activity-images/playing-cards.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '20%', top: '10px' }} />
-        <img src="/images/activity-images/map.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '5%', top: '10px' }} />
+        <Image src="/images/activity-images/mountain-trees.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '5%', top: '10px' }} />
+        <Image src="/images/activity-images/boots.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '20%', top: '10px' }} />
+        <Image src="/images/activity-images/oak-tree.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '35%', top: '10px' }} />
+        <Image src="/images/activity-images/pine-tree.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '35%', top: '10px' }} />
+        <Image src="/images/activity-images/playing-cards.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '20%', top: '10px' }} />
+        <Image src="/images/activity-images/map.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '5%', top: '10px' }} />
         
         {/* Left border - desktop only */}
-        <img src="/images/activity-images/bowling.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '25%' }} />
-        <img src="/images/activity-images/pool.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '45%' }} />
-        <img src="/images/activity-images/trees-path.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '65%' }} />
-        <img src="/images/activity-images/cinema.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '85%' }} />
+        <Image src="/images/activity-images/bowling.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '25%' }} />
+        <Image src="/images/activity-images/pool.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '45%' }} />
+        <Image src="/images/activity-images/trees-path.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '65%' }} />
+        <Image src="/images/activity-images/cinema.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '85%' }} />
         
         {/* Right border - desktop only */}
-        <img src="/images/activity-images/karaoke.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '25%' }} />
-        <img src="/images/activity-images/darts.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '45%' }} />
-        <img src="/images/activity-images/trees-waterfall.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '65%' }} />
-        <img src="/images/activity-images/dance.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '85%' }} />
+        <Image src="/images/activity-images/karaoke.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '25%' }} />
+        <Image src="/images/activity-images/darts.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '45%' }} />
+        <Image src="/images/activity-images/trees-waterfall.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '65%' }} />
+        <Image src="/images/activity-images/dance.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '85%' }} />
         
         {/* Bottom row - mobile has 4 icons, desktop has full border */}
-        <img src="/images/activity-images/boots.webp" alt="" className="absolute w-10 h-10 sm:w-12 sm:h-12 lg:hidden opacity-7" style={{ left: '15%', bottom: '25px' }} />
-        <img src="/images/activity-images/board-game.webp" alt="" className="absolute w-10 h-10 sm:w-12 sm:h-12 lg:hidden opacity-7" style={{ left: '35%', bottom: '25px' }} />
-        <img src="/images/activity-images/pine-tree.webp" alt="" className="absolute w-10 h-10 sm:w-12 sm:h-12 lg:hidden opacity-7" style={{ right: '35%', bottom: '25px' }} />
-        <img src="/images/activity-images/quiz.webp" alt="" className="absolute w-10 h-10 sm:w-12 sm:h-12 lg:hidden opacity-7" style={{ right: '15%', bottom: '25px' }} />
+        <Image src="/images/activity-images/boots.webp" alt="" width={48} height={48} className="absolute w-10 h-10 sm:w-12 sm:h-12 lg:hidden opacity-7" style={{ left: '15%', bottom: '25px' }} />
+        <Image src="/images/activity-images/board-game.webp" alt="" width={48} height={48} className="absolute w-10 h-10 sm:w-12 sm:h-12 lg:hidden opacity-7" style={{ left: '35%', bottom: '25px' }} />
+        <Image src="/images/activity-images/pine-tree.webp" alt="" width={48} height={48} className="absolute w-10 h-10 sm:w-12 sm:h-12 lg:hidden opacity-7" style={{ right: '35%', bottom: '25px' }} />
+        <Image src="/images/activity-images/quiz.webp" alt="" width={48} height={48} className="absolute w-10 h-10 sm:w-12 sm:h-12 lg:hidden opacity-7" style={{ right: '15%', bottom: '25px' }} />
         
         {/* Desktop bottom border - full row */}
-        <img src="/images/activity-images/banquet.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '8%', bottom: '15px' }} />
-        <img src="/images/activity-images/board-game.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '20%', bottom: '15px' }} />
-        <img src="/images/activity-images/gavel.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '32%', bottom: '15px' }} />
-        <img src="/images/activity-images/quiz.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '44%', bottom: '15px' }} />
-        <img src="/images/activity-images/laser-tag.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '44%', bottom: '15px' }} />
-        <img src="/images/activity-images/football-goal.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '32%', bottom: '15px' }} />
-        <img src="/images/activity-images/beer.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '20%', bottom: '15px' }} />
-        <img src="/images/activity-images/backpack.webp" alt="" className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '8%', bottom: '15px' }} />
+        <Image src="/images/activity-images/banquet.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '8%', bottom: '15px' }} />
+        <Image src="/images/activity-images/board-game.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '20%', bottom: '15px' }} />
+        <Image src="/images/activity-images/gavel.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '32%', bottom: '15px' }} />
+        <Image src="/images/activity-images/quiz.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '44%', bottom: '15px' }} />
+        <Image src="/images/activity-images/laser-tag.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '44%', bottom: '15px' }} />
+        <Image src="/images/activity-images/football-goal.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '32%', bottom: '15px' }} />
+        <Image src="/images/activity-images/beer.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '20%', bottom: '15px' }} />
+        <Image src="/images/activity-images/backpack.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '8%', bottom: '15px' }} />
       </div>
 
       {/* Content */}

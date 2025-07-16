@@ -177,7 +177,11 @@ export async function POST(request: NextRequest) {
     // Log successful verification for security monitoring
     // Note: Only log phone number hash in production for privacy
     const phoneHash = phone.replace(/\d(?=\d{4})/g, '*'); // Mask all but last 4 digits
-    console.log(`Successful verification: ${phoneHash} at ${new Date().toISOString()}`);
+    
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Successful verification: ${phoneHash} at ${new Date().toISOString()}`);
+    }
 
     return NextResponse.json({
       success: true,

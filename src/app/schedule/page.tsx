@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, useRef, useCallback, Suspense } from 'react'
+import React, { useEffect, useState, useRef, useCallback, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getScheduleEvents } from '@/lib/scheduleService'
 import { ScheduleEvent } from '@/types/schedule'
@@ -33,69 +33,13 @@ function ScheduleContent() {
   const previousFocusRef = useRef<HTMLElement | null>(null)
 
   // Available activity icons for background decoration
-  const activityIcons = [
+  const activityIcons = useMemo(() => [
     'mountain-trees', 'pine-tree', 'boots', 'backpack', 'oak-tree', 'bowling',
     'map', 'beer', 'karaoke', 'board-game', 'quiz', 'trees-path', 'cinema',
     'dance', 'bus', 'banquet', 'sign', 'playing-cards', 'football-goal',
     'laser-tag', 'pool', 'darts', 'mountain-trees-river', 'bunk-bed',
     'trees-waterfall', 'rock-mountain', 'mountain-trees-lake', 'gavel'
-  ]
-
-  // Generate background icons based on content height and screen size
-  const generateBackgroundIcons = useCallback(() => {
-    // Responsive sizing and spacing based on screen width
-    const screenWidth = windowSize.width
-    const isSmall = screenWidth < 640
-    const isMedium = screenWidth >= 640 && screenWidth < 1024
-    // Calculate RESPONSIVE content height based on actual screen behavior
-    const headerHeight = isSmall ? 550 : isMedium ? 480 : 450 // Header wraps more on mobile
-    const eventHeight = isSmall ? 120 : isMedium ? 95 : 85 // Events taller on mobile due to wrapping
-    const eventListHeight = visibleEvents.length * eventHeight
-    const loadMoreButtonHeight = hasMoreEvents ? (isSmall ? 100 : 80) : 0 // More space on mobile
-    const mobileLayoutBuffer = isSmall ? 50 : 0 // Extra space for mobile layout differences
-    const bottomBuffer = 150 // Buffer before bottom row
-    const totalContentAreaHeight = headerHeight + eventListHeight + loadMoreButtonHeight + mobileLayoutBuffer + bottomBuffer
-    
-    // Dynamic icon sizing and spacing
-    const iconSize = isSmall ? 35 : isMedium ? 45 : 55
-    const verticalSpacing = isSmall ? 80 : isMedium ? 100 : 140
-    const sidePadding = isSmall ? 15 : isMedium ? 20 : 30 // Responsive padding from screen edges
-    
-    // Fill the ENTIRE content area with side icons - no artificial limits
-    const startPosition = 100 // Start after header
-    const endPosition = totalContentAreaHeight - 50 // Stop before bottom row area
-    const availableHeight = endPosition - startPosition
-    const iconsNeeded = Math.floor(availableHeight / verticalSpacing) // Fill entire height
-    
-    const leftIcons = []
-    const rightIcons = []
-    
-    for (let i = 0; i < iconsNeeded; i++) {
-      const topPosition = 100 + (i * verticalSpacing) // Start after header, use dynamic spacing
-      const leftIcon = activityIcons[i % activityIcons.length]
-      const rightIcon = activityIcons[(i + Math.floor(activityIcons.length / 2)) % activityIcons.length]
-      
-      leftIcons.push({
-        src: `/images/activity-images/${leftIcon}.webp`,
-        top: topPosition,
-        left: sidePadding,
-        size: iconSize,
-        opacity: i % 2 === 0 ? 'opacity-8' : 'opacity-7',
-        id: `left-${i}`
-      })
-      
-      rightIcons.push({
-        src: `/images/activity-images/${rightIcon}.webp`,
-        top: topPosition + (isSmall ? 15 : 20), // Even tighter spacing
-        right: sidePadding,
-        size: iconSize,
-        opacity: i % 2 === 0 ? 'opacity-7' : 'opacity-8',
-        id: `right-${i}`
-      })
-    }
-    
-    return { leftIcons, rightIcons }
-  }, [windowSize])
+  ], [])
 
   // Handle window resize for responsive icons
   useEffect(() => {
@@ -209,6 +153,62 @@ function ScheduleContent() {
   const visibleEvents = filteredEvents.slice(0, visibleCount)
   const hasMoreEvents = filteredEvents.length > visibleCount
 
+  // Generate background icons based on current state
+  const generateBackgroundIcons = useCallback(() => {
+    // Responsive sizing and spacing based on screen width
+    const screenWidth = windowSize.width
+    const isSmall = screenWidth < 640
+    const isMedium = screenWidth >= 640 && screenWidth < 1024
+    // Calculate RESPONSIVE content height based on actual screen behavior
+    const headerHeight = isSmall ? 550 : isMedium ? 480 : 450 // Header wraps more on mobile
+    const eventHeight = isSmall ? 120 : isMedium ? 95 : 85 // Events taller on mobile due to wrapping
+    const eventListHeight = visibleEvents.length * eventHeight
+    const loadMoreButtonHeight = hasMoreEvents ? (isSmall ? 100 : 80) : 0 // More space on mobile
+    const mobileLayoutBuffer = isSmall ? 50 : 0 // Extra space for mobile layout differences
+    const bottomBuffer = 150 // Buffer before bottom row
+    const totalContentAreaHeight = headerHeight + eventListHeight + loadMoreButtonHeight + mobileLayoutBuffer + bottomBuffer
+    
+    // Dynamic icon sizing and spacing
+    const iconSize = isSmall ? 35 : isMedium ? 45 : 55
+    const verticalSpacing = isSmall ? 80 : isMedium ? 100 : 140
+    const sidePadding = isSmall ? 15 : isMedium ? 20 : 30 // Responsive padding from screen edges
+    
+    // Fill the ENTIRE content area with side icons - no artificial limits
+    const startPosition = 100 // Start after header
+    const endPosition = totalContentAreaHeight - 50 // Stop before bottom row area
+    const availableHeight = endPosition - startPosition
+    const iconsNeeded = Math.floor(availableHeight / verticalSpacing) // Fill entire height
+    
+    const leftIcons = []
+    const rightIcons = []
+    
+    for (let i = 0; i < iconsNeeded; i++) {
+      const topPosition = 100 + (i * verticalSpacing) // Start after header, use dynamic spacing
+      const leftIcon = activityIcons[i % activityIcons.length]
+      const rightIcon = activityIcons[(i + Math.floor(activityIcons.length / 2)) % activityIcons.length]
+      
+      leftIcons.push({
+        src: `/images/activity-images/${leftIcon}.webp`,
+        top: topPosition,
+        left: sidePadding,
+        size: iconSize,
+        opacity: i % 2 === 0 ? 'opacity-8' : 'opacity-7',
+        id: `left-${i}`
+      })
+      
+      rightIcons.push({
+        src: `/images/activity-images/${rightIcon}.webp`,
+        top: topPosition + (isSmall ? 15 : 20), // Even tighter spacing
+        right: sidePadding,
+        size: iconSize,
+        opacity: i % 2 === 0 ? 'opacity-7' : 'opacity-8',
+        id: `right-${i}`
+      })
+    }
+    
+    return { leftIcons, rightIcons }
+  }, [windowSize, activityIcons, hasMoreEvents, visibleEvents.length])
+
   // Generate dynamic background icons based on current visible content and window size
   const { leftIcons, rightIcons } = React.useMemo(() => {
     return generateBackgroundIcons()
@@ -308,10 +308,12 @@ function ScheduleContent() {
       <div className="absolute inset-0 pointer-events-none z-0">
         {/* Left edge icons - dynamically generated */}
         {leftIcons.map((icon) => (
-          <img
+          <Image
             key={icon.id}
             src={icon.src}
             alt=""
+            width={icon.size}
+            height={icon.size}
             className={`absolute ${icon.opacity} hidden sm:block`}
             style={{ 
               left: `${icon.left}px`,
@@ -325,10 +327,12 @@ function ScheduleContent() {
         
         {/* Right edge icons - dynamically generated */}
         {rightIcons.map((icon) => (
-          <img
+          <Image
             key={icon.id}
             src={icon.src}
             alt=""
+            width={icon.size}
+            height={icon.size}
             className={`absolute ${icon.opacity} hidden sm:block`}
             style={{ 
               right: `${icon.right}px`,
@@ -348,28 +352,36 @@ function ScheduleContent() {
           <div className="flex items-center justify-center gap-6 sm:gap-12 md:gap-16 lg:gap-20 w-full max-w-6xl mx-auto">
             {/* Left side icons */}
             <div className="flex items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8">
-              <img
+              <Image
                 src="/images/activity-images/boots.webp"
                 alt=""
+                width={56}
+                height={56}
                 className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 opacity-7"
                 style={{ imageRendering: 'crisp-edges' }}
               />
-              <img
+              <Image
                 src="/images/activity-images/bowling.webp"
                 alt=""
+                width={56}
+                height={56}
                 className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 opacity-8"
                 style={{ imageRendering: 'crisp-edges' }}
               />
               {/* Extra icons for larger screens */}
-              <img
+              <Image
                 src="/images/activity-images/mountain-trees.webp"
                 alt=""
+                width={56}
+                height={56}
                 className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 opacity-7 hidden lg:block"
                 style={{ imageRendering: 'crisp-edges' }}
               />
-              <img
+              <Image
                 src="/images/activity-images/backpack.webp"
                 alt=""
+                width={56}
+                height={56}
                 className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 opacity-8 hidden xl:block"
                 style={{ imageRendering: 'crisp-edges' }}
               />
@@ -382,27 +394,35 @@ function ScheduleContent() {
             {/* Right side icons */}
             <div className="flex items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8">
               {/* Extra icons for larger screens */}
-              <img
+              <Image
                 src="/images/activity-images/cinema.webp"
                 alt=""
+                width={56}
+                height={56}
                 className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 opacity-8 hidden xl:block"
                 style={{ imageRendering: 'crisp-edges' }}
               />
-              <img
+              <Image
                 src="/images/activity-images/football-goal.webp"
                 alt=""
+                width={56}
+                height={56}
                 className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 opacity-7 hidden lg:block"
                 style={{ imageRendering: 'crisp-edges' }}
               />
-              <img
+              <Image
                 src="/images/activity-images/quiz.webp"
                 alt=""
+                width={56}
+                height={56}
                 className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 opacity-8"
                 style={{ imageRendering: 'crisp-edges' }}
               />
-              <img
+              <Image
                 src="/images/activity-images/karaoke.webp"
                 alt=""
+                width={56}
+                height={56}
                 className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 opacity-7"
                 style={{ imageRendering: 'crisp-edges' }}
               />
