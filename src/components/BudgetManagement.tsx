@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { BudgetVsActual, CategoryBudget, ExpenseCategory } from '@/types/finance';
+import { BudgetVsActual, ExpenseCategory } from '@/types/finance';
 import { getCategoryDisplayName } from '@/lib/financeService';
 import DoughnutChart from './DoughnutChart';
 import { 

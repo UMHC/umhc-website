@@ -6,15 +6,10 @@ import Image from 'next/image';
 import { 
   ChartBarIcon, 
   CalendarDaysIcon, 
-  UserGroupIcon, 
   CogIcon,
-  DocumentTextIcon,
-  ExclamationTriangleIcon,
-  PlusIcon,
   ArrowTrendingUpIcon,
   UsersIcon,
   BanknotesIcon,
-  ClipboardDocumentListIcon,
   ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";

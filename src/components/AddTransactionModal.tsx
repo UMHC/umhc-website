@@ -44,11 +44,6 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit }: AddTr
   };
 
   // Input sanitization functions
-  const sanitizeText = (input: string): string => {
-    // Remove potentially harmful characters and limit length
-    return input.replace(/[<>]/g, '').substring(0, 255);
-  };
-
   const sanitizeTitle = (input: string): string => {
     // Title should be alphanumeric with basic punctuation
     return input.replace(/[^a-zA-Z0-9\s\-_.,!?]/g, '').substring(0, 100);

@@ -105,7 +105,8 @@ export class EventService {
     }
 
     // Remove fields that shouldn't be duplicated
-    const { id: _, created_at, updated_at, ...eventData } = originalEvent;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _id, created_at: _created_at, updated_at: _updated_at, ...eventData } = originalEvent;
     
     // Update the title to indicate it's a copy
     const duplicatedEventData: CreateEventData = {

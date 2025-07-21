@@ -54,9 +54,9 @@ export default async function DebugPage() {
         
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-4">Role Check Results</h2>
-          <p>Has 'is-committee' role: {roles?.some(role => role.key === 'is-committee') ? 'Yes' : 'No'}</p>
-          <p>Has 'is-committee' role (name check): {roles?.some(role => role.name === 'is-committee') ? 'Yes' : 'No'}</p>
-          <p>Has 'is-committee' role (id check): {roles?.some(role => role.id === 'is-committee') ? 'Yes' : 'No'}</p>
+          <p>Has &apos;is-committee&apos; role: {roles?.some(role => role.key === 'is-committee') ? 'Yes' : 'No'}</p>
+          <p>Has &apos;is-committee&apos; role (name check): {roles?.some(role => role.name === 'is-committee') ? 'Yes' : 'No'}</p>
+          <p>Has &apos;is-committee&apos; role (id check): {roles?.some(role => role.id === 'is-committee') ? 'Yes' : 'No'}</p>
           <p>Roles array length: {roles?.length || 'null/undefined'}</p>
           
           <div className="mt-4 p-4 bg-green-50 rounded">

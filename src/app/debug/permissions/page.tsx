@@ -3,9 +3,16 @@
 import { useEffect, useState } from 'react';
 
 interface PermissionData {
-  user: any;
-  roles: any;
-  permissions: any;
+  user: {
+    id?: string;
+    email?: string;
+    given_name?: string;
+    family_name?: string;
+  } | null;
+  roles: Array<{ key: string; name?: string; id?: string }> | null;
+  permissions: {
+    permissions?: string[];
+  } | null;
   hasCommitteeRole: boolean;
   hasTreasurerPermission: boolean;
 }

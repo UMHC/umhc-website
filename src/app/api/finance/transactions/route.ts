@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
     // First test if we can access the transactions table in finance schema
     console.log('Testing table access in finance schema...');
     try {
-      const { data: testData, error: testError } = await supabaseAdmin
+      const { error: testError } = await supabaseAdmin
         .schema('finance')
         .from('transactions')
         .select('id')

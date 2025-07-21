@@ -86,7 +86,7 @@ export default function ExpensesCategoryChart({ transactions }: ExpensesCategory
       tooltip: {
         callbacks: {
           label: function(context: TooltipItem<'doughnut'>) {
-            const total = context.dataset.data.reduce((sum: number, value: any) => sum + value, 0);
+            const total = context.dataset.data.reduce((sum: number, value: number) => sum + value, 0);
             const percentage = ((context.parsed / total) * 100).toFixed(1);
             return `${context.label}: ${formatCurrency(context.parsed)} (${percentage}%)`;
           },

@@ -41,7 +41,7 @@ export default function CommitteeLogin() {
 
         <div className="text-center">
           <p className="text-xs text-gray-500">
-            For committee members only. If you're having trouble accessing your account, 
+            For committee members only. If you&apos;re having trouble accessing your account, 
             please contact the Website Secretary.
           </p>
         </div>

@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const { getUser, isAuthenticated, getRoles, getPermissions } = getKindeServerSession();
     
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       permissions: permissions,
       // Check specific permissions
       hasCommitteeRole: roles?.some(role => role.key === 'is-committee') || false,
-      hasTreasurerPermission: permissions?.permissions?.some((permission: any) => permission.key === 'is-treasurer') || false,
+      hasTreasurerPermission: permissions?.permissions?.includes('is-treasurer') || false,
     });
   } catch (error) {
     console.error('Error checking permissions:', error);

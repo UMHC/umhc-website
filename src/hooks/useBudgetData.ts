@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CategoryBudget, BudgetVsActual } from '@/types/finance';
 
 interface BudgetSummary {
@@ -16,7 +16,7 @@ export const useBudgetData = (fiscalYear?: number) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchBudgetData = async () => {
+  const fetchBudgetData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -49,7 +49,7 @@ export const useBudgetData = (fiscalYear?: number) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [fiscalYear]);
 
   const updateBudget = async (
     category: string,
@@ -112,7 +112,7 @@ export const useBudgetData = (fiscalYear?: number) => {
 
   useEffect(() => {
     fetchBudgetData();
-  }, [fiscalYear]);
+  }, [fetchBudgetData]);
 
   return {
     budgets,

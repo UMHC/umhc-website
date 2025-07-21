@@ -1,5 +1,14 @@
 'use client';
 
+import { FinancialSummary } from '@/types/finance';
+
+// User preferences interface
+interface UserPreferences {
+  theme?: string;
+  currency?: string;
+  dateFormat?: string;
+}
+
 // Cache item structure
 interface CacheItem<T> {
   data: T;
@@ -166,37 +175,37 @@ export const CACHE_KEYS = {
 // Enhanced financial data caching with specific TTL
 export class FinancialDataCache {
   // Cache financial summary (10 minutes)
-  static cacheFinancialSummary(summary: any): void {
+  static cacheFinancialSummary(summary: FinancialSummary): void {
     ClientCache.set(CACHE_KEYS.FINANCIAL_SUMMARY, summary, 10 * 60 * 1000);
   }
 
-  static getFinancialSummary(): any | null {
+  static getFinancialSummary(): FinancialSummary | null {
     return ClientCache.get(CACHE_KEYS.FINANCIAL_SUMMARY);
   }
 
   // Cache chart data (5 minutes)
-  static cacheMonthlyChartData(data: any): void {
+  static cacheMonthlyChartData(data: Record<string, unknown>): void {
     ClientCache.set(CACHE_KEYS.CHART_DATA_MONTHLY, data, 5 * 60 * 1000);
   }
 
-  static getMonthlyChartData(): any | null {
+  static getMonthlyChartData(): Record<string, unknown> | null {
     return ClientCache.get(CACHE_KEYS.CHART_DATA_MONTHLY);
   }
 
-  static cacheCategoryChartData(data: any): void {
+  static cacheCategoryChartData(data: Record<string, unknown>): void {
     ClientCache.set(CACHE_KEYS.CHART_DATA_CATEGORIES, data, 5 * 60 * 1000);
   }
 
-  static getCategoryChartData(): any | null {
+  static getCategoryChartData(): Record<string, unknown> | null {
     return ClientCache.get(CACHE_KEYS.CHART_DATA_CATEGORIES);
   }
 
   // Cache user preferences (1 hour)
-  static cacheUserPreferences(preferences: any): void {
+  static cacheUserPreferences(preferences: UserPreferences): void {
     ClientCache.set(CACHE_KEYS.USER_PREFERENCES, preferences, 60 * 60 * 1000);
   }
 
-  static getUserPreferences(): any | null {
+  static getUserPreferences(): UserPreferences | null {
     return ClientCache.get(CACHE_KEYS.USER_PREFERENCES);
   }
 

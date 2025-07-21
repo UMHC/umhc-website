@@ -12,7 +12,7 @@ export default function AccessDenied() {
           </div>
           <h1 className="mt-4 text-2xl font-bold text-gray-900">Access Denied</h1>
           <p className="mt-2 text-gray-600">
-            You don't have permission to access the Committee Console.
+            You don&apos;t have permission to access the Committee Console.
           </p>
           <p className="mt-2 text-sm text-gray-500">
             This area is restricted to committee members and treasurers only.

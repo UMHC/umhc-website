@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { CachedFinanceService } from '@/lib/financeServiceCached';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Check authentication
-    const { getUser, isAuthenticated, getRoles } = getKindeServerSession();
+    const { isAuthenticated, getRoles } = getKindeServerSession();
     
     if (!isAuthenticated()) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });

@@ -2,7 +2,7 @@
 
 import useSWR, { mutate } from 'swr';
 import { FinanceService } from '@/lib/financeService';
-import { Transaction, FinancialSummary } from '@/types/finance';
+import { Transaction } from '@/types/finance';
 import { FinancialDataCache } from '@/lib/clientCache';
 import { useCallback, useEffect } from 'react';
 

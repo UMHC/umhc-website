@@ -2,6 +2,7 @@
 // DO NOT import this in client-side components
 
 import { createClient } from '@supabase/supabase-js'
+import { Transaction } from '@/types/finance'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -21,7 +22,7 @@ export const supabaseAdmin = supabaseServiceRoleKey
 
 // Server-only functions for admin operations
 export class ServerFinanceService {
-  static async addTransaction(transaction: any): Promise<any> {
+  static async addTransaction(transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>): Promise<Transaction> {
     if (!supabaseAdmin) {
       throw new Error('Admin client not available - using RLS instead')
     }
@@ -40,7 +41,7 @@ export class ServerFinanceService {
     return data
   }
 
-  static async updateTransaction(id: string, transaction: any): Promise<any> {
+  static async updateTransaction(id: string, transaction: Partial<Omit<Transaction, 'id' | 'created_at' | 'updated_at'>>): Promise<Transaction> {
     if (!supabaseAdmin) {
       throw new Error('Admin client not available - using RLS instead')
     }

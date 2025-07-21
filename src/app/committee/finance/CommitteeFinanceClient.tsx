@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -51,7 +51,6 @@ export default function CommitteeFinanceClient({ user, canEditFinances, isTreasu
   const [totalCount, setTotalCount] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const pageSize = 15;
 
@@ -62,7 +61,7 @@ export default function CommitteeFinanceClient({ user, canEditFinances, isTreasu
     userEmail: user?.email 
   });
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -84,7 +83,7 @@ export default function CommitteeFinanceClient({ user, canEditFinances, isTreasu
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, pageSize]);
 
   const fetchPage = async (page: number) => {
     try {
@@ -104,9 +103,8 @@ export default function CommitteeFinanceClient({ user, canEditFinances, isTreasu
     }
   };
 
-  const handleEditTransaction = async (id: number, updatedTransaction: Partial<Transaction>) => {
+  const handleEditTransaction = async (id: string, updatedTransaction: Partial<Transaction>) => {
     try {
-      setIsSubmitting(true);
       
       const response = await fetch(`/api/finance/transactions/${id}`, {
         method: 'PUT',
@@ -125,14 +123,11 @@ export default function CommitteeFinanceClient({ user, canEditFinances, isTreasu
     } catch (err) {
       console.error('Error editing transaction:', err);
       setError(err instanceof Error ? err.message : 'An error occurred while editing the transaction');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
-  const handleDeleteTransaction = async (id: number) => {
+  const handleDeleteTransaction = async (id: string) => {
     try {
-      setIsSubmitting(true);
       
       const response = await fetch(`/api/finance/transactions/${id}`, {
         method: 'DELETE',
@@ -147,14 +142,11 @@ export default function CommitteeFinanceClient({ user, canEditFinances, isTreasu
     } catch (err) {
       console.error('Error deleting transaction:', err);
       setError(err instanceof Error ? err.message : 'An error occurred while deleting the transaction');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   const handleAddTransaction = async (transactionData: TransactionData) => {
     try {
-      setIsSubmitting(true);
       
       // Map display category names to database category names
       const categoryMapping: { [key: string]: string } = {
@@ -224,8 +216,6 @@ export default function CommitteeFinanceClient({ user, canEditFinances, isTreasu
     } catch (err) {
       console.error('Error adding transaction:', err);
       setError(err instanceof Error ? err.message : 'An error occurred while adding the transaction');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -238,7 +228,7 @@ export default function CommitteeFinanceClient({ user, canEditFinances, isTreasu
     fetchData();
 
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchData]);
 
   if (isLoading) {
     return (

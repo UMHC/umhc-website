@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import type { Metadata } from 'next';
+import { useState, useEffect, useCallback } from 'react';
 import { Transaction, FinancialSummary } from '@/types/finance';
 import { FinanceService } from '@/lib/financeService';
 import FinancialSummaryCard from '@/components/FinancialSummaryCard';
@@ -22,7 +21,7 @@ export default function FinancePage() {
   const [hasMore, setHasMore] = useState(false);
   const pageSize = 15;
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -44,7 +43,7 @@ export default function FinancePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, pageSize]);
 
   const fetchPage = async (page: number) => {
     try {
@@ -66,7 +65,7 @@ export default function FinancePage() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   if (isLoading) {
     return (
@@ -136,7 +135,7 @@ export default function FinancePage() {
                 <div className="flex">
                   <div className="ml-3">
                     <p className="text-sm sm:text-base text-blue-800 font-sans leading-relaxed">
-                      <strong className="font-semibold">Note:</strong> We prepay a large majority of our expenses early on such as bus transport and accommodation, therefore we'll appear in debt since this hasn't accounted for what we make off of ticket sales until later in the year.
+                      <strong className="font-semibold">Note:</strong> We prepay a large majority of our expenses early on such as bus transport and accommodation, therefore we&apos;ll appear in debt since this hasn&apos;t accounted for what we make off of ticket sales until later in the year.
                     </p>
                   </div>
                 </div>

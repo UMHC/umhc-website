@@ -1,7 +1,7 @@
 import { unstable_cache, revalidateTag } from 'next/cache';
 import { FinanceService } from './financeService';
 import { ServerFinanceService } from './server-finance';
-import { Transaction, FinancialSummary, TransactionType, ExpenseCategory } from '@/types/finance';
+import { Transaction, TransactionType, ExpenseCategory } from '@/types/finance';
 
 // Cache configuration
 const CACHE_TAGS = {

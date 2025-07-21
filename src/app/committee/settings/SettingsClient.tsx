@@ -5,9 +5,7 @@ import Link from 'next/link';
 import { 
   ArrowLeftIcon,
   ShieldCheckIcon,
-  UserGroupIcon,
   BellIcon,
-  GlobeAltIcon,
   CogIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon
@@ -43,7 +41,8 @@ interface SystemSetting {
   options?: string[];
 }
 
-export default function SettingsClient({ user }: SettingsClientProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function SettingsClient({ user: _user }: SettingsClientProps) {
   const [activeTab, setActiveTab] = useState<'access' | 'system' | 'notifications'>('access');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
@@ -145,12 +144,13 @@ export default function SettingsClient({ user }: SettingsClientProps) {
     console.log(`Toggle setting ${settingId}`);
   };
 
-  const handleUpdatePermissions = (memberId: string, permissions: string[]) => {
-    // Implementation for updating member permissions
-    console.log(`Update permissions for ${memberId}:`, permissions);
-  };
+  // TODO: Implement permission updates
+  // const handleUpdatePermissions = (memberId: string, permissions: string[]) => {
+  //   // Implementation for updating member permissions
+  //   console.log(`Update permissions for ${memberId}:`, permissions);
+  // };
 
-  const tabs = [
+  const tabs: Array<{ id: 'access' | 'system' | 'notifications', name: string, icon: React.ComponentType<{ className?: string }> }> = [
     { id: 'access', name: 'Access Control', icon: ShieldCheckIcon },
     { id: 'system', name: 'System Settings', icon: CogIcon },
     { id: 'notifications', name: 'Notifications', icon: BellIcon }
@@ -199,7 +199,7 @@ export default function SettingsClient({ user }: SettingsClientProps) {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm ${
                   activeTab === tab.id
                     ? 'border-umhc-green text-umhc-green'

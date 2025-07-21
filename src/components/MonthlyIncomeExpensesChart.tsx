@@ -99,8 +99,8 @@ export default function MonthlyIncomeExpensesChart({ transactions }: MonthlyInco
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function(value: any) {
-            return formatCurrency(value);
+          callback: function(value: number | string) {
+            return formatCurrency(Number(value));
           },
           font: {
             family: 'var(--font-open-sans)',

@@ -1,9 +1,10 @@
 import { supabase } from './supabase';
-import { Transaction, FinancialSummary, TransactionType, ExpenseCategory } from '@/types/finance';
+import { Transaction, FinancialSummary } from '@/types/finance';
 
 export class SecureFinanceService {
   // Add a new transaction with RLS
-  static async addTransaction(transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>, userId?: string): Promise<Transaction> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async addTransaction(transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>, _userId?: string): Promise<Transaction> {
     console.log('Adding transaction with RLS:', transaction);
     
     // Use the regular supabase client which respects RLS
@@ -28,7 +29,8 @@ export class SecureFinanceService {
   }
 
   // Update a transaction with RLS
-  static async updateTransaction(id: string, transaction: Partial<Omit<Transaction, 'id' | 'created_at' | 'updated_at'>>, userId?: string): Promise<Transaction> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async updateTransaction(id: string, transaction: Partial<Omit<Transaction, 'id' | 'created_at' | 'updated_at'>>, _userId?: string): Promise<Transaction> {
     const { data, error } = await supabase
       .schema('finance')
       .from('transactions')
@@ -49,7 +51,8 @@ export class SecureFinanceService {
   }
 
   // Delete a transaction with RLS
-  static async deleteTransaction(id: string, userId?: string): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async deleteTransaction(id: string, _userId?: string): Promise<void> {
     const { error } = await supabase
       .schema('finance')
       .from('transactions')

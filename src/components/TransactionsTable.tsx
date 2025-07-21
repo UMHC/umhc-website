@@ -9,8 +9,8 @@ interface TransactionsTableProps {
   transactions: Transaction[];
   isLoading?: boolean;
   canEdit?: boolean;
-  onEditTransaction?: (id: number, updatedTransaction: Partial<Transaction>) => Promise<void>;
-  onDeleteTransaction?: (id: number) => Promise<void>;
+  onEditTransaction?: (id: string, updatedTransaction: Partial<Transaction>) => Promise<void>;
+  onDeleteTransaction?: (id: string) => Promise<void>;
 }
 
 export default function TransactionsTable({ 
@@ -20,7 +20,7 @@ export default function TransactionsTable({
   onEditTransaction,
   onDeleteTransaction 
 }: TransactionsTableProps) {
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
 
   const handleEditStart = (transaction: Transaction) => {
@@ -38,7 +38,7 @@ export default function TransactionsTable({
     setEditForm({});
   };
 
-  const handleEditSave = async (id: number) => {
+  const handleEditSave = async (id: string) => {
     if (onEditTransaction) {
       try {
         await onEditTransaction(id, editForm);
@@ -50,7 +50,7 @@ export default function TransactionsTable({
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (onDeleteTransaction && confirm('Are you sure you want to delete this transaction?')) {
       try {
         await onDeleteTransaction(id);
@@ -221,7 +221,7 @@ export default function TransactionsTable({
                     {editingId === transaction.id ? (
                       <select
                         value={editForm.category || ''}
-                        onChange={(e) => setEditForm({...editForm, category: e.target.value})}
+                        onChange={(e) => setEditForm({...editForm, category: e.target.value as Transaction['category']})}
                         className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                       >
                         <option value="">Select category</option>
