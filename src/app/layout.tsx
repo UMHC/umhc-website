@@ -3,8 +3,10 @@ import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AuthProvider from "@/components/AuthProvider";
 import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import ConditionalLayout from "../components/ConditionalLayout";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -81,9 +83,11 @@ export default function RootLayout({
       <body
         className={`${openSans.variable} antialiased font-sans bg-whellow`}
       >
-        <Navbar/>
-        {children}
-        <Footer/>
+        <AuthProvider>
+          <ConditionalLayout>
+            {children}
+          </ConditionalLayout>
+        </AuthProvider>
         <Analytics/>
         <SpeedInsights/>
       </body>

@@ -49,6 +49,9 @@ export default function Footer() {
               <TextButton href="/membership" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 Membership
               </TextButton>
+              <TextButton href="/finance" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+                Finances
+              </TextButton>
               <TextButton href="/about#faqs" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 FAQ&apos;s
               </TextButton>
@@ -169,7 +172,7 @@ export default function Footer() {
         </div>
         
         <div className="mt-8 text-center text-xs sm:text-sm md:text-[14px] font-normal text-white/70 leading-normal">
-          <p>University of Manchester Hiking Club © 2025</p>
+          <p>University of Manchester Hiking Club © 2025 | <Link href="/committee" className="text-white/70 hover:text-white">Committee Console</Link></p>
         </div>
       </div>
     </footer>
