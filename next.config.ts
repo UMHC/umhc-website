@@ -103,7 +103,6 @@ const nextConfig: NextConfig = {
     ];
   },
   experimental: {
-    optimizeCss: true,
     optimizePackageImports: ['@heroicons/react', 'lucide-react'],
   },
 };
