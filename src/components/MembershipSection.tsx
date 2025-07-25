@@ -34,7 +34,9 @@ function CheckIcon() {
 
 function MembershipCard({ title, price, period, buttonText, buttonLink, features, variant = 'student' }: MembershipCardProps) {
   const cardWidth = variant === 'free' ? 'w-full sm:w-[271px]' : 'w-full sm:w-[320px] lg:w-[387px]';
-  const shadow = variant === 'free' ? 'shadow-[0px_4px_10px_5px_rgba(0,0,0,0.15)]' : 'shadow-[0px_4px_15px_5px_rgba(0,0,0,0.25)]';
+  const shadow = variant === 'free' 
+    ? 'shadow-[0_2px_8px_rgba(0,0,0,0.1)] sm:shadow-[0px_4px_10px_5px_rgba(0,0,0,0.15)]' 
+    : 'shadow-[0_4px_12px_rgba(0,0,0,0.15)] sm:shadow-[0px_4px_15px_5px_rgba(0,0,0,0.25)]';
   
   return (
     <article 

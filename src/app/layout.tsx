@@ -10,6 +10,7 @@ const openSans = Open_Sans({
   variable: "--font-open-sans",
   subsets: ["latin"],
   display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -71,6 +72,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://vercel.com" />
+        <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

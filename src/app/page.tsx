@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import SchedulePreview from '@/components/SchedulePreview';
-import SocialWall from '@/components/SocialWall';
-import MembershipSection from '@/components/MembershipSection';
+import LazySchedulePreview from '@/components/LazySchedulePreview';
+import LazySocialWall from '@/components/LazySocialWall';
+import LazyMembershipSection from '@/components/LazyMembershipSection';
 
 export default function Home() {
   return (
@@ -14,8 +14,7 @@ export default function Home() {
         fill
         className="object-cover object-left md:object-center"
         priority
-        quality={100}
-        unoptimized
+        quality={75}
         sizes="100vw"
       />
       
@@ -38,8 +37,7 @@ export default function Home() {
         fill
         className="object-cover object-left md:object-center z-20 -translate-y-0.5"
         priority
-        quality={100}
-        unoptimized
+        quality={75}
         sizes="100vw"
       />
     </div>
@@ -59,13 +57,13 @@ export default function Home() {
     </section>
     
     {/* Schedule Preview Section */}
-    <SchedulePreview />
+    <LazySchedulePreview />
     
     {/* Social Wall Section */}
-    <SocialWall />
+    <LazySocialWall />
     
     {/* Membership Section */}
-    <MembershipSection />
+    <LazyMembershipSection />
     </div>
   );
 }

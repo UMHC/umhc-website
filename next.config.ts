@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 31536000, // 1 year for static images
     remotePatterns: [
       {
         protocol: 'https',
@@ -43,12 +47,12 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              // Scripts: self, Vercel Analytics, Kinde Auth, Cloudflare Turnstile
+              // Scripts: self, Vercel Analytics, Kinde Auth, Cloudflare Turnstile (unsafe-eval and unsafe-inline needed for Next.js/React)
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' va.vercel-scripts.com kinde.com *.kinde.com challenges.cloudflare.com *.cloudflare.com",
               // Styles: self, inline styles, Google Fonts
               "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
               // Images: self, data URIs, social media CDNs, Vercel, Supabase
-              "img-src 'self' data: blob: scontent-*.cdninstagram.com *.tiktokcdn.com *.tiktokcdn-*.com vercel.com *.supabase.co",
+              "img-src 'self' data: blob: scontent-ams4-1.cdninstagram.com v16m.tiktokcdn-eu.com p16-sign-useast2a.tiktokcdn.com p16-pu-sign-no.tiktokcdn-eu.com sf16-ies-music-va.tiktokcdn.com p77-sign-va.tiktokcdn.com p16-common-sign-useastred.tiktokcdn-eu.com vercel.com *.supabase.co",
               // Fonts: self, Google Fonts
               "font-src 'self' fonts.gstatic.com",
               // Connect: self, Vercel Analytics, Kinde Auth, Supabase, social APIs, Cloudflare Turnstile
@@ -86,8 +90,7 @@ const nextConfig: NextConfig = {
             value: [
               'camera=()',
               'microphone=()',
-              'geolocation=(self)',
-              'interest-cohort=()'
+              'geolocation=(self)'
             ].join(', ')
           },
           // Enforce HTTPS (only in production)
@@ -98,7 +101,11 @@ const nextConfig: NextConfig = {
         ]
       }
     ];
-  }
+  },
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['@heroicons/react', 'lucide-react'],
+  },
 };
 
 export default nextConfig;

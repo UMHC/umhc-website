@@ -37,7 +37,7 @@ function CheckIcon() {
 
 function MembershipCard({ title, price, period, buttonText, features }: MembershipCardProps) {
   return (
-    <div className="bg-cream-white rounded-[10px] shadow-[0px_4px_15px_5px_rgba(0,0,0,0.25)] p-5 pt-2.5 pb-[30px] pr-[30px] w-[387px] max-w-full">
+    <div className="bg-cream-white rounded-[10px] shadow-[0_4px_12px_rgba(0,0,0,0.15)] sm:shadow-[0px_4px_15px_5px_rgba(0,0,0,0.25)] p-4 sm:p-5 pt-2.5 pb-6 sm:pb-[30px] pr-4 sm:pr-[30px] w-full sm:w-[387px] max-w-full">
       <div className="flex flex-col items-center gap-2.5 pb-[15px]">
         <div className="flex flex-col items-center text-black text-center">
           <h3 className="font-semibold text-sm mb-1">
@@ -108,7 +108,7 @@ export default function MembershipPage() {
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-10 items-center justify-center">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-center justify-center">
             <MembershipCard
               title="Student Membership"
               price="£25"
