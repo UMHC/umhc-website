@@ -42,6 +42,47 @@ interface SocialPost {
   };
 }
 
+interface InstagramPostData {
+  id?: string;
+  code?: string;
+  pk?: string;
+  display_url?: string;
+  image_versions2?: {
+    candidates?: Array<{ url: string }>;
+  };
+  thumbnail_url?: string;
+  media_url?: string;
+  caption?: {
+    text?: string;
+  } | string;
+  description?: string;
+  like_count?: number;
+  likes?: number;
+  taken_at?: number;
+  shortcode?: string;
+}
+
+interface InstagramPost {
+  node?: InstagramPostData;
+  id?: string;
+  code?: string;
+  pk?: string;
+  display_url?: string;
+  image_versions2?: {
+    candidates?: Array<{ url: string }>;
+  };
+  thumbnail_url?: string;
+  media_url?: string;
+  caption?: {
+    text?: string;
+  } | string;
+  description?: string;
+  like_count?: number;
+  likes?: number;
+  taken_at?: number;
+  shortcode?: string;
+}
+
 async function getInstagramPosts(): Promise<SocialPost[]> {
   try {
     const response = await fetch(
@@ -78,7 +119,7 @@ async function getInstagramPosts(): Promise<SocialPost[]> {
       return [];
     }
 
-    return posts.slice(0, 10).map((post: any) => {
+    return posts.slice(0, 10).map((post: InstagramPost) => {
       // Handle different possible post structures from the new API
       const postData = post.node || post;
       const id = postData.id || postData.code || postData.pk || `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
@@ -86,7 +127,7 @@ async function getInstagramPosts(): Promise<SocialPost[]> {
                       postData.image_versions2?.candidates?.[0]?.url || 
                       postData.thumbnail_url || 
                       postData.media_url;
-      const caption = postData.caption?.text || postData.caption || postData.description || '';
+      const caption = typeof postData.caption === 'string' ? postData.caption : postData.caption?.text || postData.description || '';
       const likes = postData.like_count || postData.likes || 0;
       const timestamp = postData.taken_at ? 
                        new Date(postData.taken_at * 1000).toISOString() : 
