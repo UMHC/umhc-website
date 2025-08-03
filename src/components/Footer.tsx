@@ -49,9 +49,6 @@ export default function Footer() {
               <TextButton href="/membership" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 Membership
               </TextButton>
-              <TextButton href="/finance" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
-                Finances
-              </TextButton>
               <TextButton href="/about#faqs" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
                 FAQ&apos;s
               </TextButton>
