@@ -13,6 +13,18 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'scontent-waw2-2.cdninstagram.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'scontent-fra5-1.cdninstagram.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'scontent-fra5-2.cdninstagram.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'v16m.tiktokcdn-eu.com',
       },
       {
@@ -35,6 +47,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'p16-common-sign-useastred.tiktokcdn-eu.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'p19-common-sign-useastred.tiktokcdn-eu.com',
+      },
     ],
   },
   async headers() {
@@ -52,7 +68,7 @@ const nextConfig: NextConfig = {
               // Styles: self, inline styles, Google Fonts
               "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
               // Images: self, data URIs, social media CDNs, Vercel, Supabase
-              "img-src 'self' data: blob: scontent-ams4-1.cdninstagram.com v16m.tiktokcdn-eu.com p16-sign-useast2a.tiktokcdn.com p16-pu-sign-no.tiktokcdn-eu.com sf16-ies-music-va.tiktokcdn.com p77-sign-va.tiktokcdn.com p16-common-sign-useastred.tiktokcdn-eu.com vercel.com *.supabase.co",
+              "img-src 'self' data: blob: scontent-ams4-1.cdninstagram.com scontent-waw2-2.cdninstagram.com scontent-fra5-1.cdninstagram.com scontent-fra5-2.cdninstagram.com v16m.tiktokcdn-eu.com p16-sign-useast2a.tiktokcdn.com p16-pu-sign-no.tiktokcdn-eu.com sf16-ies-music-va.tiktokcdn.com p77-sign-va.tiktokcdn.com p16-common-sign-useastred.tiktokcdn-eu.com p19-common-sign-useastred.tiktokcdn-eu.com vercel.com *.supabase.co",
               // Fonts: self, Google Fonts
               "font-src 'self' fonts.gstatic.com",
               // Connect: self, Vercel Analytics, Kinde Auth, Supabase, social APIs, Cloudflare Turnstile

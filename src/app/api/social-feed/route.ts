@@ -7,6 +7,7 @@ export const revalidate = 172800;
 const CONFIG = {
   instagram: {
     username: '_umhc_',
+    userId: '6059806661', // Instagram user ID for _umhc_
     rapidApiKey: process.env.RAPID_API_KEY!,
   },
   tiktok: {
@@ -44,17 +45,13 @@ interface SocialPost {
 async function getInstagramPosts(): Promise<SocialPost[]> {
   try {
     const response = await fetch(
-      'https://instagram-scraper-stable-api.p.rapidapi.com/get_ig_user_posts.php',
+      `https://instagram-api-fast-reliable-data-scraper.p.rapidapi.com/feed?user_id=${CONFIG.instagram.userId}`,
       {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'x-rapidapi-key': CONFIG.instagram.rapidApiKey,
-          'x-rapidapi-host': 'instagram-scraper-stable-api.p.rapidapi.com',
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'x-rapidapi-host': 'instagram-api-fast-reliable-data-scraper.p.rapidapi.com'
         },
-        body: new URLSearchParams({
-          username_or_url: `https://www.instagram.com/${CONFIG.instagram.username}/`
-        }),
         next: { revalidate: 172800 } // Cache for 2 days
       }
     );
@@ -72,25 +69,41 @@ async function getInstagramPosts(): Promise<SocialPost[]> {
       console.log('Instagram API response:', JSON.stringify(data, null, 2));
     }
     
-    // The new API returns posts in a different structure
-    const posts = data.posts || [];
+    // The new instagram120 API returns data in a different structure
+    // Handle various possible response structures
+    const posts = data.data?.posts || data.posts || data.items || data || [];
 
     if (!Array.isArray(posts)) {
       console.error('Instagram API: posts is not an array:', posts);
       return [];
     }
 
-    return posts.slice(0, 10).map((post: { node: { code?: string; pk?: string; image_versions2?: { candidates?: Array<{ url: string }>}; display_url?: string; caption?: { text: string }; like_count?: number; taken_at?: number } }) => ({
-      id: `ig_${post.node.code || post.node.pk || Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      type: 'instagram' as const,
-      content: {
-        imageUrl: post.node.image_versions2?.candidates?.[0]?.url || post.node.display_url,
-        caption: post.node.caption?.text || '',
-        likes: post.node.like_count || 0,
-        timestamp: new Date((post.node.taken_at || Date.now() / 1000) * 1000).toISOString(),
-        link: `https://www.instagram.com/p/${post.node.code}/`
-      }
-    }));
+    return posts.slice(0, 10).map((post: any) => {
+      // Handle different possible post structures from the new API
+      const postData = post.node || post;
+      const id = postData.id || postData.code || postData.pk || `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+      const imageUrl = postData.display_url || 
+                      postData.image_versions2?.candidates?.[0]?.url || 
+                      postData.thumbnail_url || 
+                      postData.media_url;
+      const caption = postData.caption?.text || postData.caption || postData.description || '';
+      const likes = postData.like_count || postData.likes || 0;
+      const timestamp = postData.taken_at ? 
+                       new Date(postData.taken_at * 1000).toISOString() : 
+                       new Date().toISOString();
+      
+      return {
+        id: `ig_${id}`,
+        type: 'instagram' as const,
+        content: {
+          imageUrl,
+          caption,
+          likes,
+          timestamp,
+          link: `https://www.instagram.com/p/${postData.code || postData.shortcode || id}/`
+        }
+      };
+    });
   } catch (error) {
     console.error('Instagram fetch error:', error);
     return [];
@@ -149,7 +162,7 @@ async function getTikTokVideos(): Promise<SocialPost[]> {
       stats?: { play_count?: number; digg_count?: number }; 
       create_time?: number 
     }) => ({
-      id: `tt_${video.aweme_id || video.video_id || video.id || Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `tt_${video.aweme_id || video.video_id || video.id || Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
       type: 'tiktok' as const,
       content: {
         thumbnailUrl: video.cover || video.video?.cover || video.thumbnail,
@@ -215,7 +228,7 @@ async function getStravaActivities(): Promise<SocialPost[]> {
       id: string;
       athlete: { firstname: string; lastname: string }
     }) => ({
-      id: `strava_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `strava_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
       type: 'strava' as const,
       content: {
         activityType: activity.type,
