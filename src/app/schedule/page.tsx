@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, useRef, useCallback, useMemo, Suspense } from 'react'
+import React, { useEffect, useState, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getScheduleEvents } from '@/lib/scheduleService'
 import { ScheduleEvent } from '@/types/schedule'
@@ -8,6 +8,17 @@ import { FunnelIcon } from '@heroicons/react/24/outline'
 import { XMarkIcon, CheckIcon } from '@heroicons/react/24/solid'
 import EarthOrangeButton from '@/components/EarthOrangeButton'
 import Image from 'next/image'
+import { useClientSideIcons } from '@/hooks/useClientSideIcons'
+import OptimizedIcon from '@/components/OptimizedIcon'
+
+// Available activity icons for background decoration - moved outside component to prevent re-creation
+const ACTIVITY_ICONS = [
+  'mountain-trees', 'pine-tree', 'boots', 'backpack', 'oak-tree', 'bowling',
+  'map', 'beer', 'karaoke', 'board-game', 'quiz', 'trees-path', 'cinema',
+  'dance', 'bus', 'banquet', 'sign', 'playing-cards', 'football-goal',
+  'laser-tag', 'pool', 'darts', 'mountain-trees-river', 'bunk-bed',
+  'trees-waterfall', 'rock-mountain', 'mountain-trees-lake', 'gavel'
+]
 
 function ScheduleContent() {
   const searchParams = useSearchParams()
@@ -18,7 +29,6 @@ function ScheduleContent() {
   const [selectedFilter, setSelectedFilter] = useState<string>('all')
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [visibleCount, setVisibleCount] = useState(10)
-  const [windowSize, setWindowSize] = useState({ width: 1024, height: 768 })
   const [accessibilityFilters, setAccessibilityFilters] = useState({
     dda_compliant_ramp_access: false,
     lift_access_within_building: false,
@@ -31,34 +41,6 @@ function ScheduleContent() {
   // Refs for focus management
   const modalRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
-
-  // Available activity icons for background decoration
-  const activityIcons = useMemo(() => [
-    'mountain-trees', 'pine-tree', 'boots', 'backpack', 'oak-tree', 'bowling',
-    'map', 'beer', 'karaoke', 'board-game', 'quiz', 'trees-path', 'cinema',
-    'dance', 'bus', 'banquet', 'sign', 'playing-cards', 'football-goal',
-    'laser-tag', 'pool', 'darts', 'mountain-trees-river', 'bunk-bed',
-    'trees-waterfall', 'rock-mountain', 'mountain-trees-lake', 'gavel'
-  ], [])
-
-  // Handle window resize for responsive icons
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight
-      })
-    }
-
-    if (typeof window !== 'undefined') {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight
-      })
-      window.addEventListener('resize', handleResize)
-      return () => window.removeEventListener('resize', handleResize)
-    }
-  }, [])
 
   useEffect(() => {
     async function fetchEvents() {
@@ -153,66 +135,13 @@ function ScheduleContent() {
   const visibleEvents = filteredEvents.slice(0, visibleCount)
   const hasMoreEvents = filteredEvents.length > visibleCount
 
-  // Generate background icons based on current state
-  const generateBackgroundIcons = useCallback(() => {
-    // Responsive sizing and spacing based on screen width
-    const screenWidth = windowSize.width
-    const isSmall = screenWidth < 640
-    const isMedium = screenWidth >= 640 && screenWidth < 1024
-    // Calculate RESPONSIVE content height based on actual screen behavior
-    const headerHeight = isSmall ? 550 : isMedium ? 480 : 450 // Header wraps more on mobile
-    const eventHeight = isSmall ? 120 : isMedium ? 95 : 85 // Events taller on mobile due to wrapping
-    const eventListHeight = visibleEvents.length * eventHeight
-    const loadMoreButtonHeight = hasMoreEvents ? (isSmall ? 100 : 80) : 0 // More space on mobile
-    const mobileLayoutBuffer = isSmall ? 50 : 0 // Extra space for mobile layout differences
-    const bottomBuffer = 150 // Buffer before bottom row
-    const totalContentAreaHeight = headerHeight + eventListHeight + loadMoreButtonHeight + mobileLayoutBuffer + bottomBuffer
-    
-    // Dynamic icon sizing and spacing
-    const iconSize = isSmall ? 35 : isMedium ? 45 : 55
-    const verticalSpacing = isSmall ? 80 : isMedium ? 100 : 140
-    const sidePadding = isSmall ? 15 : isMedium ? 20 : 30 // Responsive padding from screen edges
-    
-    // Fill the ENTIRE content area with side icons - no artificial limits
-    const startPosition = 100 // Start after header
-    const endPosition = totalContentAreaHeight - 50 // Stop before bottom row area
-    const availableHeight = endPosition - startPosition
-    const iconsNeeded = Math.floor(availableHeight / verticalSpacing) // Fill entire height
-    
-    const leftIcons = []
-    const rightIcons = []
-    
-    for (let i = 0; i < iconsNeeded; i++) {
-      const topPosition = 100 + (i * verticalSpacing) // Start after header, use dynamic spacing
-      const leftIcon = activityIcons[i % activityIcons.length]
-      const rightIcon = activityIcons[(i + Math.floor(activityIcons.length / 2)) % activityIcons.length]
-      
-      leftIcons.push({
-        src: `/images/activity-images/${leftIcon}.webp`,
-        top: topPosition,
-        left: sidePadding,
-        size: iconSize,
-        opacity: i % 2 === 0 ? 'opacity-8' : 'opacity-7',
-        id: `left-${i}`
-      })
-      
-      rightIcons.push({
-        src: `/images/activity-images/${rightIcon}.webp`,
-        top: topPosition + (isSmall ? 15 : 20), // Even tighter spacing
-        right: sidePadding,
-        size: iconSize,
-        opacity: i % 2 === 0 ? 'opacity-7' : 'opacity-8',
-        id: `right-${i}`
-      })
-    }
-    
-    return { leftIcons, rightIcons }
-  }, [windowSize, activityIcons, hasMoreEvents, visibleEvents.length])
+  // Use client-side icon hook for dynamic background icons
+  const { leftIcons, rightIcons, bottomIcons, isClient } = useClientSideIcons({
+    activityIcons: ACTIVITY_ICONS,
+    visibleEventsCount: visibleEvents.length,
+    hasMoreEvents
+  })
 
-  // Generate dynamic background icons based on current visible content and window size
-  const { leftIcons, rightIcons } = React.useMemo(() => {
-    return generateBackgroundIcons()
-  }, [generateBackgroundIcons])
 
   // Reset visible count when filters change
   const resetVisibleCount = () => setVisibleCount(10)
@@ -303,48 +232,52 @@ function ScheduleContent() {
   }
 
   return (
-    <div className="bg-whellow min-h-screen px-4 sm:px-8 md:px-12 lg:px-16 pt-16 sm:pt-20 pb-12 sm:pb-16 relative overflow-hidden">
-      {/* Dynamic background decorative images */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        {/* Left edge icons - dynamically generated */}
-        {leftIcons.map((icon) => (
-          <Image
-            key={icon.id}
-            src={icon.src}
-            alt=""
-            width={icon.size}
-            height={icon.size}
-            className={`absolute ${icon.opacity} hidden sm:block`}
-            style={{ 
-              left: `${icon.left}px`,
-              top: `${icon.top}px`, 
-              width: `${icon.size}px`, 
-              height: `${icon.size}px`,
-              imageRendering: 'crisp-edges'
-            }}
-          />
-        ))}
-        
-        {/* Right edge icons - dynamically generated */}
-        {rightIcons.map((icon) => (
-          <Image
-            key={icon.id}
-            src={icon.src}
-            alt=""
-            width={icon.size}
-            height={icon.size}
-            className={`absolute ${icon.opacity} hidden sm:block`}
-            style={{ 
-              right: `${icon.right}px`,
-              top: `${icon.top}px`, 
-              width: `${icon.size}px`, 
-              height: `${icon.size}px`,
-              imageRendering: 'crisp-edges'
-            }}
-          />
-        ))}
-        
-      </div>
+    <div className="bg-whellow min-h-screen px-4 sm:px-8 md:px-12 lg:px-16 pt-16 sm:pt-20 pb-12 sm:pb-16 relative overflow-hidden" data-schedule-content>
+      {/* Dynamic background decorative images - Client-side only */}
+      {isClient && (
+        <div className="absolute inset-0 pointer-events-none z-0">
+          {/* Left edge icons - optimized rendering */}
+          {leftIcons.map((icon) => (
+            <div key={icon.id} className="hidden sm:block">
+              <OptimizedIcon
+                src={icon.src}
+                size={icon.size}
+                top={icon.top}
+                left={icon.left}
+                opacity={icon.opacity}
+                id={icon.id}
+              />
+            </div>
+          ))}
+          
+          {/* Right edge icons - optimized rendering */}
+          {rightIcons.map((icon) => (
+            <div key={icon.id} className="hidden sm:block">
+              <OptimizedIcon
+                src={icon.src}
+                size={icon.size}
+                top={icon.top}
+                right={icon.right}
+                opacity={icon.opacity}
+                id={icon.id}
+              />
+            </div>
+          ))}
+          
+          {/* Bottom row icons - optimized rendering - visible on mobile */}
+          {bottomIcons.map((icon) => (
+            <OptimizedIcon
+              key={icon.id}
+              src={icon.src}
+              size={icon.size}
+              top={icon.top}
+              left={icon.left}
+              opacity={icon.opacity}
+              id={icon.id}
+            />
+          ))}
+        </div>
+      )}
       
       <div className="max-w-5xl mx-auto relative z-10">
         {/* Header Section */}
@@ -438,7 +371,7 @@ function ScheduleContent() {
         {/* Event Type Filter */}
         <div className="flex flex-col gap-1 items-start justify-start p-0 relative max-w-5xl mx-auto mb-4 mt-12 px-4">
           <div className="flex flex-row font-semibold gap-2 sm:gap-4 md:gap-6 lg:gap-8 xl:gap-12 items-center justify-center md:justify-between not-italic p-0 relative w-full text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-left">
-            <div className="flex flex-row gap-4 sm:gap-6 md:gap-8 lg:gap-10 xl:gap-14 items-center justify-start flex-nowrap overflow-x-auto pl-4">
+            <div className="flex flex-row gap-4 sm:gap-6 md:gap-8 lg:gap-10 xl:gap-14 items-center justify-start flex-nowrap overflow-x-auto pl-4 scrollbar-hide">
               <button
                 onClick={() => setSelectedFilter('all')}
                 className={`relative shrink-0 transition-all duration-300 pb-1 ${selectedFilter === 'all' ? 'text-deep-black border-b-2 border-deep-black' : 'text-slate-grey'}`}
@@ -596,7 +529,12 @@ function ScheduleContent() {
                     
                     {event.description && (
                       <div className="font-normal leading-relaxed min-w-full not-italic relative shrink-0 text-deep-black text-sm sm:text-base text-left">
-                        <p className="block leading-relaxed line-clamp-3 overflow-hidden text-ellipsis">
+                        <p className="block leading-relaxed overflow-hidden" style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          textOverflow: 'ellipsis'
+                        }}>
                           {event.description}
                         </p>
                       </div>
@@ -619,6 +557,11 @@ function ScheduleContent() {
             </div>
           )}
         </main>
+
+        {/* Dedicated space for bottom icons - adjusted positioning */}
+        <div className="h-28 sm:h-32 md:h-36 lg:h-32 relative" data-icon-zone aria-hidden="true">
+          {/* This space is reserved for bottom icons */}
+        </div>
 
         {/* Filter Modal */}
         {showFilterModal && (

@@ -33,14 +33,14 @@ function CheckIcon() {
 }
 
 function MembershipCard({ title, price, period, buttonText, buttonLink, features, variant = 'student' }: MembershipCardProps) {
-  const cardWidth = variant === 'free' ? 'w-full sm:w-[271px]' : 'w-full sm:w-[320px] lg:w-[387px]';
+  const cardWidth = 'w-full max-w-sm mx-auto';
   const shadow = variant === 'free' 
     ? 'shadow-[0_2px_8px_rgba(0,0,0,0.1)] sm:shadow-[0px_4px_10px_5px_rgba(0,0,0,0.15)]' 
     : 'shadow-[0_4px_12px_rgba(0,0,0,0.15)] sm:shadow-[0px_4px_15px_5px_rgba(0,0,0,0.25)]';
   
   return (
     <article 
-      className={`bg-cream-white rounded-[10px] ${shadow} p-4 md:p-5 pt-2.5 pb-6 md:pb-[30px] pr-4 md:pr-[30px] ${cardWidth} max-w-full flex-shrink-0`}
+      className={`bg-cream-white rounded-[10px] ${shadow} p-4 md:p-5 pt-2.5 pb-6 md:pb-[30px] pr-4 md:pr-[30px] ${cardWidth}`}
       role="region"
       aria-labelledby={`membership-${variant}-title`}
     >
@@ -140,7 +140,7 @@ export default function MembershipSection() {
         </header>
 
         <div 
-          className="flex flex-col sm:flex-row lg:flex-row gap-4 sm:gap-6 lg:gap-[39px] items-stretch sm:items-center lg:items-start justify-center overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 scroll-smooth"
+          className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 items-start justify-items-center"
           role="group" 
           aria-label="Membership options"
         >
