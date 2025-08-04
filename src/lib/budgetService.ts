@@ -8,8 +8,6 @@ export class BudgetService {
   static async getCategoryBudgets(fiscalYear?: number): Promise<CategoryBudget[]> {
     const year = fiscalYear || new Date().getFullYear();
     
-    console.log('Fetching category budgets for year:', year);
-    
     const { data, error } = await supabaseAdmin
       .schema('finance')
       .from('category_budgets')
@@ -17,10 +15,7 @@ export class BudgetService {
       .eq('fiscal_year', year)
       .order('category');
 
-    console.log('Category budgets result:', { dataLength: data?.length, error: error?.message });
-
     if (error) {
-      console.error('Error fetching category budgets:', error);
       throw new Error('Failed to fetch category budgets');
     }
 
@@ -33,8 +28,6 @@ export class BudgetService {
   static async getBudgetVsActual(fiscalYear?: number): Promise<BudgetVsActual[]> {
     const year = fiscalYear || new Date().getFullYear();
     
-    console.log('Fetching budget vs actual for year:', year);
-    
     const { data, error } = await supabaseAdmin
       .schema('finance')
       .from('budget_vs_actual')
@@ -42,10 +35,7 @@ export class BudgetService {
       .eq('fiscal_year', year)
       .order('category');
 
-    console.log('Budget vs actual result:', { dataLength: data?.length, error: error?.message });
-
     if (error) {
-      console.error('Error fetching budget vs actual:', error);
       throw new Error('Failed to fetch budget vs actual data');
     }
 
@@ -78,7 +68,6 @@ export class BudgetService {
       .single();
 
     if (error) {
-      console.error('Error updating category budget:', error);
       throw new Error('Failed to update category budget');
     }
 
@@ -109,7 +98,6 @@ export class BudgetService {
       .single();
 
     if (error) {
-      console.error('Error creating category budget:', error);
       throw new Error('Failed to create category budget');
     }
 
@@ -135,7 +123,6 @@ export class BudgetService {
       .eq('budget_period', budgetPeriod);
 
     if (error) {
-      console.error('Error deleting category budget:', error);
       throw new Error('Failed to delete category budget');
     }
   }
@@ -150,7 +137,6 @@ export class BudgetService {
     categoriesOverBudget: number;
     averagePercentageUsed: number;
   }> {
-    console.log('Calculating budget summary');
     const budgetData = await this.getBudgetVsActual(fiscalYear);
     
     const totalBudget = budgetData.reduce((sum, item) => sum + item.budget_amount, 0);
@@ -169,7 +155,6 @@ export class BudgetService {
       averagePercentageUsed
     };
     
-    console.log('Budget summary calculated:', { totalBudget, totalSpent, categoriesCount: budgetData.length });
     return summary;
   }
 

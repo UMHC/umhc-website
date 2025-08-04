@@ -72,7 +72,7 @@ export default function SchedulePreview() {
         const upcomingEvents = data.slice(0, 4)
         setEvents(upcomingEvents)
       } catch (err) {
-        console.error('Error fetching events:', err)
+        // Silently handle error
       } finally {
         setLoading(false)
       }

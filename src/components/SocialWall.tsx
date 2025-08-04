@@ -59,12 +59,10 @@ const SocialWall = () => {
         
         // Check if cache is still valid
         if (Date.now() < expiry && data && Array.isArray(data) && data.length > 0) {
-          console.log('Loading cached social data');
           setPosts(data);
           setLoading(false);
           return;
         } else {
-          console.log('Cache expired or invalid, removing...');
           localStorage.removeItem('socialWallCache');
         }
       }
@@ -72,7 +70,6 @@ const SocialWall = () => {
       // If no valid cache, load fallback data
       loadFallbackData();
     } catch (error) {
-      console.error('Error loading cached data:', error);
       loadFallbackData();
     }
   }, [loadFallbackData]);
@@ -106,7 +103,6 @@ const SocialWall = () => {
       
       // Check if data is valid and not empty
       if (!data || !Array.isArray(data) || data.length === 0) {
-        console.warn('API returned empty or invalid data, using cached content');
         loadCachedData();
         return;
       }
@@ -119,10 +115,6 @@ const SocialWall = () => {
       cacheData(shuffled);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching social data:', error);
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Attempting to load cached data...');
-      }
       loadCachedData();
     }
   }, [loadCachedData]);
@@ -144,7 +136,7 @@ const SocialWall = () => {
       };
       localStorage.setItem('socialWallCache', JSON.stringify(cacheItem));
     } catch (error) {
-      console.error('Error caching social data:', error);
+      // Silently handle caching error
     }
   };
 
@@ -164,8 +156,6 @@ const SocialWall = () => {
       
       if (!parentContainer) return;
       
-      console.log(`Starting scroll for column ${index}, speed: ${scrollSpeed}`);
-      
       const scroll = () => {
         const containerHeight = parentContainer.clientHeight;
         const contentHeight = contentDiv.scrollHeight;
@@ -176,18 +166,10 @@ const SocialWall = () => {
           // Reset when content has scrolled completely out of view
           if (translateY >= contentHeight) {
             translateY = 0;
-            console.log(`Column ${index} resetting scroll position`);
           }
           
           // Apply transform to move content up
           contentDiv.style.transform = `translateY(-${translateY}px)`;
-          
-          // Log first few scroll attempts
-          if (translateY < 10) {
-            console.log(`Column ${index} scrolling to position: ${translateY}`);
-          }
-        } else {
-          console.log(`Column ${index} has no scrollable content (height: ${containerHeight}, contentHeight: ${contentHeight})`);
         }
       };
       

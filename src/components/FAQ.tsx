@@ -50,7 +50,7 @@ export default function FAQ() {
         const data: FAQData = await response.json();
         setFaqs(data.faqs);
       } catch (error) {
-        console.error('Failed to load FAQ data:', error);
+        // Silently handle error
       } finally {
         setLoading(false);
       }

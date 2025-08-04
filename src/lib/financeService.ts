@@ -9,8 +9,6 @@ export class FinanceService {
     hasMore: boolean;
   }> {
     try {
-      console.log(`Fetching transactions from finance schema... (page ${page}, limit ${limit})`);
-      
       const from = (page - 1) * limit;
       const to = from + limit - 1;
 
@@ -22,10 +20,8 @@ export class FinanceService {
         .range(from, to);
 
       if (error) {
-        console.error('Error fetching transactions:', error);
         // If finance schema doesn't exist or isn't accessible, return empty result
         if (error.code === 'PGRST106' || error.code === '42P01' || error.code === '42501' || error.message?.includes('schema must be one of') || error.message?.includes('does not exist') || error.message?.includes('permission denied')) {
-          console.warn('Finance schema not accessible through API, returning empty result');
           return { data: [], count: 0, hasMore: false };
         }
         throw error;
@@ -34,14 +30,12 @@ export class FinanceService {
       const totalCount = count || 0;
       const hasMore = (from + limit) < totalCount;
 
-      console.log(`Successfully fetched ${data?.length || 0} transactions (${totalCount} total)`);
       return {
         data: data || [],
         count: totalCount,
         hasMore
       };
     } catch (err) {
-      console.error('Error in getTransactions:', err);
       // Return empty result as fallback
       return { data: [], count: 0, hasMore: false };
     }
@@ -50,8 +44,6 @@ export class FinanceService {
   // Get all transactions (for charts - we still need all data for proper aggregation)
   static async getAllTransactions(): Promise<Transaction[]> {
     try {
-      console.log('Fetching all transactions for charts...');
-      
       const { data, error } = await supabase
         .schema('finance')
         .from('transactions')
@@ -59,19 +51,15 @@ export class FinanceService {
         .order('date', { ascending: false });
 
       if (error) {
-        console.error('Error fetching all transactions:', error);
         // If finance schema doesn't exist or isn't accessible, return empty array
         if (error.code === 'PGRST106' || error.code === '42P01' || error.code === '42501' || error.message?.includes('schema must be one of') || error.message?.includes('does not exist') || error.message?.includes('permission denied')) {
-          console.warn('Finance schema not accessible through API, returning empty array');
           return [];
         }
         throw error;
       }
 
-      console.log(`Successfully fetched ${data?.length || 0} transactions for charts`);
       return data || [];
     } catch (err) {
-      console.error('Error in getAllTransactions:', err);
       // Return empty array as fallback
       return [];
     }
@@ -80,8 +68,6 @@ export class FinanceService {
   // Get financial summary
   static async getFinancialSummary(): Promise<FinancialSummary | null> {
     try {
-      console.log('Fetching financial summary from finance schema...');
-      
       const { data, error } = await supabase
         .schema('finance')
         .from('financial_summary')
@@ -89,10 +75,8 @@ export class FinanceService {
         .single();
 
       if (error) {
-        console.error('Error fetching financial summary:', error);
         // If finance schema doesn't exist or isn't accessible, return default summary
         if (error.code === 'PGRST106' || error.code === '42P01' || error.code === '42501' || error.message?.includes('schema must be one of') || error.message?.includes('does not exist') || error.message?.includes('permission denied')) {
-          console.warn('Finance schema not accessible through API, returning default summary');
           return {
             total_income: 0,
             total_expenses: 0,
@@ -104,10 +88,8 @@ export class FinanceService {
         throw error;
       }
 
-      console.log('Successfully fetched financial summary');
       return data;
     } catch (err) {
-      console.error('Error in getFinancialSummary:', err);
       // Return default summary as fallback
       return {
         total_income: 0,
@@ -121,8 +103,6 @@ export class FinanceService {
 
   // Add a new transaction
   static async addTransaction(transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>): Promise<Transaction> {
-    console.log('Adding transaction with RLS:', transaction);
-    
     const { data, error } = await supabase
       .schema('finance')
       .from('transactions')
@@ -131,11 +111,9 @@ export class FinanceService {
       .single();
 
     if (error) {
-      console.error('Error adding transaction:', error);
       throw error;
     }
 
-    console.log('Transaction added successfully:', data);
     return data;
   }
 
@@ -150,7 +128,6 @@ export class FinanceService {
       .single();
 
     if (error) {
-      console.error('Error updating transaction:', error);
       throw error;
     }
 
@@ -166,7 +143,6 @@ export class FinanceService {
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting transaction:', error);
       throw error;
     }
   }
@@ -181,7 +157,6 @@ export class FinanceService {
       .order('date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching transactions by type:', error);
       throw error;
     }
 
@@ -198,7 +173,6 @@ export class FinanceService {
       .order('date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching transactions by category:', error);
       throw error;
     }
 

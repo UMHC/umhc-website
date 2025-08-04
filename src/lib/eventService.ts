@@ -34,7 +34,6 @@ export class EventService {
       .single();
 
     if (error) {
-      console.error('Error creating event:', error);
       throw error;
     }
 
@@ -58,7 +57,6 @@ export class EventService {
       .single();
 
     if (error) {
-      console.error('Error updating event:', error);
       throw error;
     }
 
@@ -75,7 +73,6 @@ export class EventService {
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting event:', error);
       throw error;
     }
 
@@ -91,7 +88,6 @@ export class EventService {
       .single();
 
     if (error) {
-      console.error('Error fetching event:', error);
       throw error;
     }
 

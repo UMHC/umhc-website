@@ -21,7 +21,6 @@ export class BudgetService {
       .order('category');
 
     if (error) {
-      console.error('Error fetching category budgets:', error);
       throw new Error('Failed to fetch category budgets');
     }
 
@@ -42,7 +41,6 @@ export class BudgetService {
       .order('category');
 
     if (error) {
-      console.error('Error fetching budget vs actual:', error);
       throw new Error('Failed to fetch budget vs actual data');
     }
 
@@ -75,7 +73,6 @@ export class BudgetService {
       .single();
 
     if (error) {
-      console.error('Error updating category budget:', error);
       throw new Error('Failed to update category budget');
     }
 
@@ -106,7 +103,6 @@ export class BudgetService {
       .single();
 
     if (error) {
-      console.error('Error creating category budget:', error);
       throw new Error('Failed to create category budget');
     }
 
@@ -132,7 +128,6 @@ export class BudgetService {
       .eq('budget_period', budgetPeriod);
 
     if (error) {
-      console.error('Error deleting category budget:', error);
       throw new Error('Failed to delete category budget');
     }
   }

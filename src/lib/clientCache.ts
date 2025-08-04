@@ -48,7 +48,7 @@ export class ClientCache {
 
       localStorage.setItem(this.getCacheKey(key), JSON.stringify(cacheItem));
     } catch (error) {
-      console.warn('Failed to cache data in localStorage:', error);
+      // Silently handle localStorage errors
     }
   }
 
@@ -71,7 +71,6 @@ export class ClientCache {
 
       return cacheItem.data;
     } catch (error) {
-      console.warn('Failed to retrieve cached data from localStorage:', error);
       this.remove(key); // Remove corrupted cache
       return null;
     }
@@ -84,7 +83,7 @@ export class ClientCache {
     try {
       localStorage.removeItem(this.getCacheKey(key));
     } catch (error) {
-      console.warn('Failed to remove cached data from localStorage:', error);
+      // Silently handle localStorage errors
     }
   }
 
@@ -104,7 +103,7 @@ export class ClientCache {
 
       keysToRemove.forEach(key => localStorage.removeItem(key));
     } catch (error) {
-      console.warn('Failed to clear cache from localStorage:', error);
+      // Silently handle localStorage errors
     }
   }
 
@@ -126,7 +125,6 @@ export class ClientCache {
 
       return { size: keys.length, keys };
     } catch (error) {
-      console.warn('Failed to get cache info:', error);
       return { size: 0, keys: [] };
     }
   }
@@ -159,7 +157,7 @@ export class ClientCache {
 
       keysToRemove.forEach(key => localStorage.removeItem(key));
     } catch (error) {
-      console.warn('Failed to cleanup cache:', error);
+      // Silently handle localStorage errors
     }
   }
 }

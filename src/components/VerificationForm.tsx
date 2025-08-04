@@ -69,10 +69,6 @@ export default function VerificationForm({ onSuccess }: VerificationFormProps) {
       }
     } catch (error) {
       setError('Failed to load verification questions. Please refresh the page.');
-      // Only log in development
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error loading questions:', error);
-      }
     }
   }, []);
 

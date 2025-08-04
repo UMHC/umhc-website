@@ -26,7 +26,6 @@ function getCachedData(): ScheduleEvent[] | null {
     
     return JSON.parse(cached)
   } catch (error) {
-    console.error('Error reading cached schedule data:', error)
     clearCache()
     return null
   }
@@ -39,7 +38,7 @@ function setCachedData(data: ScheduleEvent[]): void {
     localStorage.setItem(CACHE_KEY, JSON.stringify(data))
     localStorage.setItem(CACHE_EXPIRY_KEY, (Date.now() + CACHE_DURATION).toString())
   } catch (error) {
-    console.error('Error caching schedule data:', error)
+    // Silently handle caching error
   }
 }
 
@@ -64,7 +63,6 @@ export async function getScheduleEvents(): Promise<ScheduleEvent[]> {
     .order('event_date', { ascending: true })
 
   if (error) {
-    console.error('Error fetching schedule events:', error)
     throw error
   }
 
@@ -84,7 +82,6 @@ export async function getScheduleEventById(id: number): Promise<ScheduleEvent | 
     .single()
 
   if (error) {
-    console.error('Error fetching schedule event:', error)
     throw error
   }
 
