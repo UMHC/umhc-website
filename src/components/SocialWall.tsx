@@ -69,7 +69,7 @@ const SocialWall = () => {
       
       // If no valid cache, load fallback data
       loadFallbackData();
-    } catch (error) {
+    } catch {
       loadFallbackData();
     }
   }, [loadFallbackData]);
@@ -114,7 +114,7 @@ const SocialWall = () => {
       // Cache the successful data
       cacheData(shuffled);
       setLoading(false);
-    } catch (error) {
+    } catch {
       loadCachedData();
     }
   }, [loadCachedData]);
@@ -135,7 +135,7 @@ const SocialWall = () => {
         expiry: Date.now() + (2 * 24 * 60 * 60 * 1000) // 2 days
       };
       localStorage.setItem('socialWallCache', JSON.stringify(cacheItem));
-    } catch (error) {
+    } catch {
       // Silently handle caching error
     }
   };

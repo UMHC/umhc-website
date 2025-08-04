@@ -25,7 +25,7 @@ function getCachedData(): ScheduleEvent[] | null {
     }
     
     return JSON.parse(cached)
-  } catch (error) {
+  } catch {
     clearCache()
     return null
   }
@@ -37,7 +37,7 @@ function setCachedData(data: ScheduleEvent[]): void {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(data))
     localStorage.setItem(CACHE_EXPIRY_KEY, (Date.now() + CACHE_DURATION).toString())
-  } catch (error) {
+  } catch {
     // Silently handle caching error
   }
 }

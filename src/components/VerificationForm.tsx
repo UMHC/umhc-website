@@ -67,7 +67,7 @@ export default function VerificationForm({ onSuccess }: VerificationFormProps) {
         setTimerSeconds(15);
         setIsTimerActive(true);
       }
-    } catch (error) {
+    } catch {
       setError('Failed to load verification questions. Please refresh the page.');
     }
   }, []);

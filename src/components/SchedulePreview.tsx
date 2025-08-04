@@ -71,7 +71,7 @@ export default function SchedulePreview() {
         // Get next 4 upcoming events for more compact display
         const upcomingEvents = data.slice(0, 4)
         setEvents(upcomingEvents)
-      } catch (err) {
+      } catch {
         // Silently handle error
       } finally {
         setLoading(false)

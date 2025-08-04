@@ -49,7 +49,7 @@ export default function FAQ() {
         const response = await fetch('/faq.json');
         const data: FAQData = await response.json();
         setFaqs(data.faqs);
-      } catch (error) {
+      } catch {
         // Silently handle error
       } finally {
         setLoading(false);

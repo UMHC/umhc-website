@@ -47,7 +47,7 @@ export class ClientCache {
       };
 
       localStorage.setItem(this.getCacheKey(key), JSON.stringify(cacheItem));
-    } catch (error) {
+    } catch {
       // Silently handle localStorage errors
     }
   }
@@ -70,7 +70,7 @@ export class ClientCache {
       }
 
       return cacheItem.data;
-    } catch (error) {
+    } catch {
       this.remove(key); // Remove corrupted cache
       return null;
     }
@@ -82,7 +82,7 @@ export class ClientCache {
 
     try {
       localStorage.removeItem(this.getCacheKey(key));
-    } catch (error) {
+    } catch {
       // Silently handle localStorage errors
     }
   }
@@ -102,7 +102,7 @@ export class ClientCache {
       }
 
       keysToRemove.forEach(key => localStorage.removeItem(key));
-    } catch (error) {
+    } catch {
       // Silently handle localStorage errors
     }
   }
@@ -124,7 +124,7 @@ export class ClientCache {
       }
 
       return { size: keys.length, keys };
-    } catch (error) {
+    } catch {
       return { size: 0, keys: [] };
     }
   }
@@ -156,7 +156,7 @@ export class ClientCache {
       }
 
       keysToRemove.forEach(key => localStorage.removeItem(key));
-    } catch (error) {
+    } catch {
       // Silently handle localStorage errors
     }
   }

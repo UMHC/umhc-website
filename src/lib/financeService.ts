@@ -35,7 +35,7 @@ export class FinanceService {
         count: totalCount,
         hasMore
       };
-    } catch (err) {
+    } catch {
       // Return empty result as fallback
       return { data: [], count: 0, hasMore: false };
     }
@@ -59,7 +59,7 @@ export class FinanceService {
       }
 
       return data || [];
-    } catch (err) {
+    } catch {
       // Return empty array as fallback
       return [];
     }
@@ -89,7 +89,7 @@ export class FinanceService {
       }
 
       return data;
-    } catch (err) {
+    } catch {
       // Return default summary as fallback
       return {
         total_income: 0,
