@@ -5,8 +5,8 @@ import Button from './Button';
 import Image from 'next/image';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 
-interface VerificationFormProps {
-  onSuccess?: (whatsappLink: string) => void;
+interface ManualRequestFormProps {
+  onSuccess?: () => void;
 }
 
 interface TurnstileOptions {
@@ -30,9 +30,13 @@ declare global {
   }
 }
 
-export default function VerificationForm({}: VerificationFormProps) {
-  const [email, setEmail] = useState('');
+export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps) {
+  const [firstName, setFirstName] = useState('');
+  const [surname, setSurname] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [userType, setUserType] = useState('');
+  const [trips, setTrips] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const [turnstileWidgetId, setTurnstileWidgetId] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -41,29 +45,7 @@ export default function VerificationForm({}: VerificationFormProps) {
   const [turnstileLoaded, setTurnstileLoaded] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  // Email validation for .ac.uk domains
-  const validateEmail = (emailAddress: string) => {
-    if (!emailAddress.trim()) {
-      return { valid: false, message: 'University email address is required' };
-    }
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailAddress)) {
-      return { valid: false, message: 'Please enter a valid email address' };
-    }
-    
-    if (!emailAddress.toLowerCase().endsWith('.ac.uk')) {
-      return { 
-        valid: false, 
-        message: `Due to lots of trouble with bots last year, automatic access to our WhatsApp community is restricted to users with access to a '.ac.uk' email address. You can manually request access to our WhatsApp community via the manual request form and a member of the Committee will approve it as soon as possible.`,
-        showLink: true
-      };
-    }
-    
-    return { valid: true };
-  };
-
-  // Phone number validation
+  // International phone number validation
   const validatePhoneNumber = (phoneNumber: string) => {
     try {
       if (!phoneNumber.trim()) {
@@ -79,6 +61,20 @@ export default function VerificationForm({}: VerificationFormProps) {
     } catch {
       return { valid: false, message: 'Please enter a valid phone number with country code' };
     }
+  };
+
+  // Email validation
+  const validateEmail = (emailAddress: string) => {
+    if (!emailAddress.trim()) {
+      return { valid: false, message: 'Email address is required' };
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailAddress)) {
+      return { valid: false, message: 'Please enter a valid email address' };
+    }
+    
+    return { valid: true };
   };
 
   // Load Turnstile script and initialize
@@ -197,10 +193,14 @@ export default function VerificationForm({}: VerificationFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate email address
-    const emailValidation = validateEmail(email);
-    if (!emailValidation.valid) {
-      setError(emailValidation.message || 'Invalid email address');
+    // Validate required fields
+    if (!firstName.trim()) {
+      setError('First name is required');
+      return;
+    }
+    
+    if (!surname.trim()) {
+      setError('Surname is required');
       return;
     }
     
@@ -208,6 +208,19 @@ export default function VerificationForm({}: VerificationFormProps) {
     const phoneValidation = validatePhoneNumber(phone);
     if (!phoneValidation.valid) {
       setError(phoneValidation.message || 'Invalid phone number');
+      return;
+    }
+    
+    // Validate email address
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      setError(emailValidation.message || 'Invalid email address');
+      return;
+    }
+    
+    // Validate user type selection
+    if (!userType) {
+      setError('Please select what you would consider yourself');
       return;
     }
     
@@ -232,14 +245,18 @@ export default function VerificationForm({}: VerificationFormProps) {
       const websiteField = document.querySelector('input[name="website"]') as HTMLInputElement;
       const websiteValue = websiteField?.value || '';
       
-      const response = await fetch('/api/whatsapp-verify', {
+      const response = await fetch('/api/whatsapp-request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email,
+          firstName,
+          surname,
           phone,
+          email,
+          userType,
+          trips,
           turnstileToken,
           website: websiteValue,
         }),
@@ -248,19 +265,31 @@ export default function VerificationForm({}: VerificationFormProps) {
       const data = await response.json();
       
       if (response.ok) {
+        setSuccess('Your request has been submitted successfully! A committee member will review your request and get back to you via email as soon as possible.');
         setError('');
-        setSuccess('Success! A verification link has been sent to your university email address. Please check your inbox and click the link to join the WhatsApp group.');
-      } else {
-        if (data.error?.includes('.ac.uk')) {
-          setError(data.error);
-        } else {
-          throw new Error(data.error || 'Verification failed');
+        // Reset form
+        setFirstName('');
+        setSurname('');
+        setPhone('');
+        setEmail('');
+        setUserType('');
+        setTrips('');
+        setTurnstileToken('');
+        setTermsAccepted(false);
+        // Reset Turnstile
+        if (window.turnstile && turnstileWidgetId) {
+          window.turnstile.reset(turnstileWidgetId);
         }
+        
+        if (onSuccess) {
+          onSuccess();
+        }
+      } else {
+        throw new Error(data.error || 'Request submission failed');
       }
       
     } catch {
-      setError('Verification failed. Please check your details and try again.');
-      setSuccess('');
+      setError('Request submission failed. Please check your details and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -323,8 +352,7 @@ export default function VerificationForm({}: VerificationFormProps) {
             alt="Illustration of a wooden gate surrounded by evergreen trees in a forest setting"
             width={410}
             height={273}
-            className="mx-auto w-full max-w-[280px] sm:max-w-[350px] md:max-w-[410px]"
-            style={{ width: "auto", height: "auto" }}
+            className="mx-auto w-full max-w-[280px] sm:max-w-[350px] md:max-w-[410px] h-auto"
             priority
             sizes="(max-width: 640px) 280px, (max-width: 768px) 350px, 410px"
           />
@@ -333,11 +361,11 @@ export default function VerificationForm({}: VerificationFormProps) {
         {/* Title and Subtitle */}
         <div className="text-center w-full">
           <h1 className="font-sans font-semibold text-3xl sm:text-4xl md:text-5xl text-deep-black mb-3 sm:mb-4 leading-tight">
-            Hold on a sec...
+            Request WhatsApp Access
           </h1>
-            <p className="font-sans font-medium text-base sm:text-lg text-deep-black px-2">
-            We had a lot of trouble with bots last year, therefore, this year we&apos;re only automatically sharing access to our Whatsapp community with users who have a university email address ending in <code className="font-mono bg-gray-100 px-1 rounded">.ac.uk</code>. If you don&apos;t have access to a university email address, you can request access via the <a href="/whatsapp-request" className="font-medium text-umhc-green hover:underline">manual request form</a> and a member of the Committee will approve it as soon as possible.
-            </p>
+          <p className="font-sans font-medium text-lg sm:text-xl text-deep-black px-2">
+            Please fill in your details below and a committee member will review your request to join our WhatsApp community.
+          </p>
         </div>
       </div>
 
@@ -346,25 +374,57 @@ export default function VerificationForm({}: VerificationFormProps) {
         onSubmit={handleSubmit} 
         className="flex flex-col gap-4 sm:gap-5 md:gap-6 w-full max-w-xs sm:max-w-sm md:max-w-lg"
         role="form"
-        aria-label="WhatsApp human verification form"
+        aria-label="WhatsApp manual access request form"
       >
-{/* University Email Input */}
+        {/* First Name Input */}
+        <div className="flex flex-col gap-1 w-full">
+          <label htmlFor="firstName" className="font-sans font-medium text-sm text-deep-black">
+            First Name
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="John"
+            required
+            className="w-full h-12 sm:h-14 md:h-15 px-3 sm:px-4 py-3 sm:py-4 bg-cream-white border-2 border-gray-200 rounded-lg focus:border-umhc-green focus:outline-none transition-colors font-sans text-sm sm:text-base"
+          />
+        </div>
+
+        {/* Surname Input */}
+        <div className="flex flex-col gap-1 w-full">
+          <label htmlFor="surname" className="font-sans font-medium text-sm text-deep-black">
+            Surname
+          </label>
+          <input
+            type="text"
+            id="surname"
+            value={surname}
+            onChange={(e) => setSurname(e.target.value)}
+            placeholder="Smith"
+            required
+            className="w-full h-12 sm:h-14 md:h-15 px-3 sm:px-4 py-3 sm:py-4 bg-cream-white border-2 border-gray-200 rounded-lg focus:border-umhc-green focus:outline-none transition-colors font-sans text-sm sm:text-base"
+          />
+        </div>
+
+        {/* Email Input */}
         <div className="flex flex-col gap-1 w-full">
           <label htmlFor="email" className="font-sans font-medium text-sm text-deep-black">
-            University Email Address
+            Email Address
           </label>
           <input
             type="email"
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="your.name@student.manchester.ac.uk"
+            placeholder="your.email@example.com"
             required
             className="w-full h-12 sm:h-14 md:h-15 px-3 sm:px-4 py-3 sm:py-4 bg-cream-white border-2 border-gray-200 rounded-lg focus:border-umhc-green focus:outline-none transition-colors font-sans text-sm sm:text-base"
             aria-describedby="email-help"
           />
           <p id="email-help" className="text-xs sm:text-sm text-slate-grey mt-1 font-sans">
-            Enter your university email address ending in .ac.uk
+            We&apos;ll send the approval notification to this email address
           </p>
         </div>
 
@@ -385,6 +445,45 @@ export default function VerificationForm({}: VerificationFormProps) {
           />
           <p id="phone-help" className="text-xs sm:text-sm text-slate-grey mt-1 font-sans">
             Enter your phone number with country code (e.g., +44 for UK, +1 for US)
+          </p>
+        </div>
+
+        {/* User Type Selection */}
+        <div className="flex flex-col gap-1 w-full">
+          <label htmlFor="userType" className="font-sans font-medium text-sm text-deep-black">
+            What would you consider yourself?
+          </label>
+          <select
+            id="userType"
+            value={userType}
+            onChange={(e) => setUserType(e.target.value)}
+            required
+            className="w-full h-12 sm:h-14 md:h-15 px-3 sm:px-4 py-3 sm:py-4 bg-cream-white border-2 border-gray-200 rounded-lg focus:border-umhc-green focus:outline-none transition-colors font-sans text-sm sm:text-base"
+          >
+            <option value="">Please select...</option>
+            <option value="alumni">An alumni</option>
+            <option value="public">A member of the public</option>
+            <option value="incoming">An incoming student</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        {/* Previous Trips Input */}
+        <div className="flex flex-col gap-1 w-full">
+          <label htmlFor="trips" className="font-sans font-medium text-sm text-deep-black">
+            Please list any trips you have been on with us (optional)
+          </label>
+          <textarea
+            id="trips"
+            value={trips}
+            onChange={(e) => setTrips(e.target.value)}
+            placeholder="e.g., Peak District day hike in October 2024, Lake District weekend in September 2024..."
+            rows={3}
+            className="w-full px-3 sm:px-4 py-3 sm:py-4 bg-cream-white border-2 border-gray-200 rounded-lg focus:border-umhc-green focus:outline-none transition-colors font-sans text-sm sm:text-base resize-vertical min-h-[80px]"
+            aria-describedby="trips-help"
+          />
+          <p id="trips-help" className="text-xs sm:text-sm text-slate-grey mt-1 font-sans">
+            This helps us understand your experience with UMHC (leave blank if this is your first time)
           </p>
         </div>
 
@@ -414,7 +513,7 @@ export default function VerificationForm({}: VerificationFormProps) {
           </div>
         </div>
 
-{/* Turnstile */}
+        {/* Turnstile */}
         <div className="flex flex-col items-center gap-2">
           <label htmlFor="turnstile-container" className="sr-only">
             Security verification challenge
@@ -458,21 +557,11 @@ export default function VerificationForm({}: VerificationFormProps) {
             role="alert"
             aria-live="assertive"
           >
-            {error.includes('.ac.uk') && error.includes('request access') ? (
-              <>
-                Due to lots of trouble with bots last year, automatic access to our WhatsApp community is restricted to users with access to a &apos;.ac.uk&apos; email address. You can manually request access to our WhatsApp community at{' '}
-                <a href="/whatsapp-request" className="text-umhc-green underline hover:text-stealth-green">
-                  this link
-                </a>
-                {' '}and a member of the Committee will approve it as soon as possible.
-              </>
-            ) : (
-              error
-            )}
+            {error}
           </div>
         )}
 
-        {/* Continue Button */}
+        {/* Submit Button */}
         <div className="flex justify-center">
           <Button
             type="submit"
@@ -480,11 +569,11 @@ export default function VerificationForm({}: VerificationFormProps) {
             className="px-6 sm:px-8 py-2 sm:py-3 text-base sm:text-lg"
             aria-describedby="submit-help"
           >
-            {isSubmitting ? 'Verifying...' : 'Continue'}
+            {isSubmitting ? 'Submitting Request...' : 'Submit Request'}
           </Button>
           <div id="submit-help" className="sr-only">
             {!canSubmit && !turnstileToken ? 'Complete security verification to enable button' :
-             'Submit the form to receive WhatsApp access link via email'}
+             'Submit your manual access request'}
           </div>
         </div>
 

@@ -233,12 +233,12 @@ function ScheduleContent() {
 
   return (
     <div className="bg-whellow min-h-screen px-4 sm:px-8 md:px-12 lg:px-16 pt-16 sm:pt-20 pb-12 sm:pb-16 relative overflow-hidden" data-schedule-content>
-      {/* Dynamic background decorative images - Client-side only */}
+      {/* Dynamic background decorative images - Client-side only - Hidden on mobile for better content spacing */}
       {isClient && (
         <div className="absolute inset-0 pointer-events-none z-0">
-          {/* Left edge icons - optimized rendering */}
+          {/* Left edge icons - optimized rendering - hidden on small screens */}
           {leftIcons.map((icon) => (
-            <div key={icon.id} className="hidden sm:block">
+            <div key={icon.id} className="hidden lg:block">
               <OptimizedIcon
                 src={icon.src}
                 size={icon.size}
@@ -250,9 +250,9 @@ function ScheduleContent() {
             </div>
           ))}
           
-          {/* Right edge icons - optimized rendering */}
+          {/* Right edge icons - optimized rendering - hidden on small screens */}
           {rightIcons.map((icon) => (
-            <div key={icon.id} className="hidden sm:block">
+            <div key={icon.id} className="hidden lg:block">
               <OptimizedIcon
                 src={icon.src}
                 size={icon.size}
@@ -264,17 +264,18 @@ function ScheduleContent() {
             </div>
           ))}
           
-          {/* Bottom row icons - optimized rendering - visible on mobile */}
+          {/* Bottom row icons - optimized rendering - only visible on larger screens */}
           {bottomIcons.map((icon) => (
-            <OptimizedIcon
-              key={icon.id}
-              src={icon.src}
-              size={icon.size}
-              top={icon.top}
-              left={icon.left}
-              opacity={icon.opacity}
-              id={icon.id}
-            />
+            <div key={icon.id} className="hidden md:block">
+              <OptimizedIcon
+                src={icon.src}
+                size={icon.size}
+                top={icon.top}
+                left={icon.left}
+                opacity={icon.opacity}
+                id={icon.id}
+              />
+            </div>
           ))}
         </div>
       )}
@@ -433,7 +434,7 @@ function ScheduleContent() {
               {visibleEvents.map((event) => (
                 <article
                   key={event.id}
-                  className="flex flex-row gap-3 items-start justify-start p-0 relative w-full cursor-pointer hover:bg-cream-white hover:bg-opacity-50 transition-colors duration-200 py-3 px-2 sm:px-4 rounded-lg"
+                  className="flex flex-row gap-2 sm:gap-3 items-start justify-start p-0 relative w-full cursor-pointer hover:bg-cream-white hover:bg-opacity-50 transition-colors duration-200 py-2 sm:py-3 px-2 sm:px-4 rounded-lg"
                   onClick={() => setSelectedEvent(event)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -445,86 +446,134 @@ function ScheduleContent() {
                   role="button"
                   aria-label={`View details for ${event.title}`}
                 >
-                  {/* Date Display */}
-                  <div className="flex flex-col items-center justify-start leading-tight not-italic pb-1 pt-0 px-0 relative shrink-0 text-umhc-green text-center w-16 sm:w-16 md:w-20 lg:w-24">
-                    <div className="flex flex-col font-bold justify-center relative shrink-0 text-2xl sm:text-3xl md:text-4xl lg:text-5xl w-full">
+                  {/* Date Display - Compact */}
+                  <div className="flex flex-col items-center justify-start leading-tight not-italic pb-1 pt-0 px-0 relative shrink-0 text-umhc-green text-center w-12 sm:w-14 md:w-16">
+                    <div className="flex flex-col font-bold justify-center relative shrink-0 text-xl sm:text-2xl md:text-3xl w-full">
                       <p className="block leading-normal">
                         {new Date(event.event_date).toLocaleDateString('en-GB', {
                           day: 'numeric'
                         })}
                       </p>
                     </div>
-                    <div className="flex flex-col font-semibold justify-center relative shrink-0 text-sm sm:text-base md:text-lg w-full">
+                    <div className="flex flex-col font-semibold justify-center relative shrink-0 text-xs sm:text-sm md:text-base w-full">
                       <p className="block leading-normal">
                         {new Date(event.event_date).toLocaleDateString('en-GB', {
-                          month: 'long'
+                          month: 'short'
                         })}
                       </p>
                     </div>
                   </div>
 
                   {/* Event Details */}
-                  <div className="flex flex-col gap-1 sm:gap-2 items-start justify-start p-0 relative shrink-0 flex-1 min-w-0">
-                    <div className="flex flex-row gap-2 sm:gap-3 md:gap-4 items-start justify-start p-0 relative shrink-0 flex-wrap">
-                      <div className="flex flex-col font-bold justify-start leading-tight not-italic relative shrink-0 text-deep-black text-base sm:text-lg md:text-xl lg:text-2xl text-left min-w-0 flex-1">
+                  <div className="flex flex-col gap-1 items-start justify-start p-0 relative flex-1 min-w-0">
+                    <div className="flex flex-row gap-2 items-center justify-between p-0 relative w-full">
+                      <div className="flex flex-col font-bold justify-start leading-tight not-italic relative text-deep-black text-base sm:text-lg md:text-xl text-left min-w-0 flex-1 pr-2">
                         <p className="block leading-normal break-words">{event.title}</p>
                       </div>
                       
-                      {/* Accessibility Markers - aligned with title */}
-                      {event.dda_compliant_ramp_access && (
-                        <div className="relative rounded-full border-earth-orange border border-solid hidden lg:block">
-                          <div className="flex flex-row items-center justify-center px-2 py-0.5">
-                            <div className="font-medium text-earth-orange text-xs sm:text-sm whitespace-nowrap">
-                              Wheelchair accessible
+                      {/* Accessibility Markers - responsive display */}
+                      {(() => {
+                        const accessibilityFeatures = [
+                          { key: 'dda_compliant_ramp_access', label: 'Wheelchair accessible', available: event.dda_compliant_ramp_access },
+                          { key: 'accessible_toilets', label: 'Accessible toilets', available: event.accessible_toilets },
+                          { key: 'gender_neutral_toilets', label: 'Gender neutral toilets', available: event.gender_neutral_toilets },
+                          { key: 'seating_available', label: 'Seating available', available: event.seating_available },
+                          { key: 'lift_access_within_building', label: 'Lift access', available: event.lift_access_within_building },
+                          { key: 'alcohol_served', label: 'Alcohol served', available: event.alcohol_served }
+                        ].filter(feature => feature.available)
+
+                        if (accessibilityFeatures.length === 0) return null
+
+                        return (
+                          <div className="flex items-center gap-1 shrink-0">
+                            {/* Mobile: Show 1 marker + remaining */}
+                            <div className="flex items-center gap-1 sm:hidden">
+                              <div className="relative rounded-full border-earth-orange border border-solid">
+                                <div className="flex flex-row items-center justify-center px-2 py-0.5">
+                                  <div className="font-medium text-earth-orange text-xs whitespace-nowrap">
+                                    {accessibilityFeatures[0].label}
+                                  </div>
+                                </div>
+                              </div>
+                              {accessibilityFeatures.length > 1 && (
+                                <div className="relative rounded-full border-earth-orange border border-solid">
+                                  <div className="flex flex-row items-center justify-center px-2 py-0.5">
+                                    <div className="font-medium text-earth-orange text-xs whitespace-nowrap">
+                                      +{accessibilityFeatures.length - 1}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Tablet: Show 2 markers + remaining */}
+                            <div className="hidden sm:flex md:hidden items-center gap-1">
+                              {accessibilityFeatures.slice(0, 2).map((feature) => (
+                                <div key={feature.key} className="relative rounded-full border-earth-orange border border-solid">
+                                  <div className="flex flex-row items-center justify-center px-2 py-0.5">
+                                    <div className="font-medium text-earth-orange text-xs whitespace-nowrap">
+                                      {feature.label}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              {accessibilityFeatures.length > 2 && (
+                                <div className="relative rounded-full border-earth-orange border border-solid">
+                                  <div className="flex flex-row items-center justify-center px-2 py-0.5">
+                                    <div className="font-medium text-earth-orange text-xs whitespace-nowrap">
+                                      +{accessibilityFeatures.length - 2}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Desktop: Show 3 markers + remaining */}
+                            <div className="hidden md:flex lg:hidden items-center gap-1">
+                              {accessibilityFeatures.slice(0, 3).map((feature) => (
+                                <div key={feature.key} className="relative rounded-full border-earth-orange border border-solid">
+                                  <div className="flex flex-row items-center justify-center px-2 py-0.5">
+                                    <div className="font-medium text-earth-orange text-xs whitespace-nowrap">
+                                      {feature.label}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              {accessibilityFeatures.length > 3 && (
+                                <div className="relative rounded-full border-earth-orange border border-solid">
+                                  <div className="flex flex-row items-center justify-center px-2 py-0.5">
+                                    <div className="font-medium text-earth-orange text-xs whitespace-nowrap">
+                                      +{accessibilityFeatures.length - 3}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Large Desktop: Show 4 markers + remaining */}
+                            <div className="hidden lg:flex items-center gap-1">
+                              {accessibilityFeatures.slice(0, 4).map((feature) => (
+                                <div key={feature.key} className="relative rounded-full border-earth-orange border border-solid">
+                                  <div className="flex flex-row items-center justify-center px-2 py-0.5">
+                                    <div className="font-medium text-earth-orange text-xs whitespace-nowrap">
+                                      {feature.label}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              {accessibilityFeatures.length > 4 && (
+                                <div className="relative rounded-full border-earth-orange border border-solid">
+                                  <div className="flex flex-row items-center justify-center px-2 py-0.5">
+                                    <div className="font-medium text-earth-orange text-xs whitespace-nowrap">
+                                      +{accessibilityFeatures.length - 4}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
-                        </div>
-                      )}
-                      {event.accessible_toilets && (
-                        <div className="relative rounded-full border-earth-orange border border-solid hidden lg:block">
-                          <div className="flex flex-row items-center justify-center px-2 py-0.5">
-                            <div className="font-medium text-earth-orange text-xs sm:text-sm whitespace-nowrap">
-                              Accessible toilets
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {event.gender_neutral_toilets && (
-                        <div className="relative rounded-full border-earth-orange border border-solid hidden lg:block">
-                          <div className="flex flex-row items-center justify-center px-2 py-0.5">
-                            <div className="font-medium text-earth-orange text-xs sm:text-sm whitespace-nowrap">
-                              Gender neutral toilets
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {event.seating_available && (
-                        <div className="relative rounded-full border-earth-orange border border-solid hidden lg:block">
-                          <div className="flex flex-row items-center justify-center px-2 py-0.5">
-                            <div className="font-medium text-earth-orange text-xs sm:text-sm whitespace-nowrap">
-                              Seating available
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {event.lift_access_within_building && (
-                        <div className="relative rounded-full border-earth-orange border border-solid hidden lg:block">
-                          <div className="flex flex-row items-center justify-center px-2 py-0.5">
-                            <div className="font-medium text-earth-orange text-xs sm:text-sm whitespace-nowrap">
-                              Lift access
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      {event.alcohol_served && (
-                        <div className="relative rounded-full border-earth-orange border border-solid hidden lg:block">
-                          <div className="flex flex-row items-center justify-center px-2 py-0.5">
-                            <div className="font-medium text-earth-orange text-xs sm:text-sm whitespace-nowrap">
-                              Alcohol served
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                        )
+                      })()}
                     </div>
                     
                     {event.description && (

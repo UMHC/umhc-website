@@ -16,6 +16,7 @@ const openSans = Open_Sans({
 export const metadata: Metadata = {
   title: "UMHC | Hiking Club",
   description: "The University of Manchester's best society! Lake District & Snowdonia trips from £16. Social's every week. 20+ years experience, all skill levels welcome. Trips sell out fast - book now!",
+  keywords: ['manchester', 'hiking', 'club', 'umhc', 'society', 'university', 'university of manchester', 'outdoors', 'nature', 'lake district', 'snowdonia'],
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
@@ -69,6 +70,20 @@ export default function RootLayout({
     ]
   };
 
+    const asciiArt = [
+      '',
+      '        /\\    /\\',
+      '  /\\  /  \\  /  \\    /\\      /\\',
+      ' /  \\/    \\/    \\  /  \\    /  \\',
+      '/           \\     \\/    \\  /    \\',
+      '----------------------------------',
+      '   Built by Will Hayes - 2025',
+      '----------------------------------',
+      '',
+    ].join('\n');
+
+    const consoleScript = `if (typeof window !== 'undefined') { console.log('%c' + ${JSON.stringify(asciiArt)}, 'white-space: pre; font-family: monospace; display: inline-block;'); }`;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -82,42 +97,7 @@ export default function RootLayout({
             __html: JSON.stringify(organizationSchema),
           }}
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if (typeof window !== 'undefined') {
-                console.log(String.raw\`
-██████╗░██╗░░░██╗██╗██╗░░░░░████████╗  ██████╗░██╗░░░██╗
-██╔══██╗██║░░░██║██║██║░░░░░╚══██╔══╝  ██╔══██╗╚██╗░██╔╝
-██████╦╝██║░░░██║██║██║░░░░░░░░██║░░░  ██████╦╝░╚████╔╝░
-██╔══██╗██║░░░██║██║██║░░░░░░░░██║░░░  ██╔══██╗░░╚██╔╝░░
-██████╦╝╚██████╔╝██║███████╗░░░██║░░░  ██████╦╝░░░██║░░░
-╚═════╝░░╚═════╝░╚═╝╚══════╝░░░╚═╝░░░  ╚═════╝░░░░╚═╝░░░
-
-░██╗░░░░░░░██╗██╗██╗░░░░░██╗░░░░░
-░██║░░██╗░░██║██║██║░░░░░██║░░░░░
-░╚██╗████╗██╔╝██║██║░░░░░██║░░░░░
-░░████╔═████║░██║██║░░░░░██║░░░░░
-░░╚██╔╝░╚██╔╝░██║███████╗███████╗
-░░░╚═╝░░░╚═╝░░╚═╝╚══════╝╚══════╝
-
-██╗░░██╗░█████╗░██╗░░░██╗███████╗░██████╗
-██║░░██║██╔══██╗╚██╗░██╔╝██╔════╝██╔════╝
-███████║███████║░╚████╔╝░█████╗░░╚█████╗░
-██╔══██║██╔══██║░░╚██╔╝░░██╔══╝░░░╚═══██╗
-██║░░██║██║░░██║░░░██║░░░███████╗██████╔╝
-╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚══════╝╚═════╝░
-
-██████╗░░█████╗░██████╗░███████╗
-╚════██╗██╔══██╗╚════██╗██╔════╝
-░░███╔═╝██║░░██║░░███╔═╝██████╗░
-██╔══╝░░██║░░██║██╔══╝░░╚════██╗
-███████╗╚█████╔╝███████╗██████╔╝
-╚══════╝░╚════╝░╚══════╝╚═════╝░\`);
-              }
-            `,
-          }}
-        />
+  <script dangerouslySetInnerHTML={{ __html: consoleScript }} />
       </head>
       <body
         className={`${openSans.variable} antialiased font-sans bg-whellow`}

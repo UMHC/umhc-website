@@ -1,36 +1,106 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-interface Question {
-  question: string;
-  options: string[];
-  correct: number;
-}
+import { isValidPhoneNumber } from 'libphonenumber-js';
+import { Resend } from 'resend';
+import crypto from 'crypto';
+import { tokenStore, cleanupExpiredTokens } from '@/lib/tokenStore';
 
 interface VerificationRequest {
   phone: string;
-  answer: string;
-  questionId: number;
+  email: string;
+  trips?: string;
   turnstileToken: string;
   website?: string; // Honeypot field
 }
 
-// Validate UK phone number format
-function validateUKPhoneNumber(phone: string): boolean {
-  // Remove all spaces and special characters except +
-  const cleaned = phone.replace(/[^\d+]/g, '');
-  
-  // Check if it starts with +44
-  if (!cleaned.startsWith('+44')) {
+// Validate international phone number
+function validateInternationalPhoneNumber(phone: string): boolean {
+  try {
+    return isValidPhoneNumber(phone);
+  } catch {
     return false;
   }
-  
-  // Remove +44 and check remaining digits
-  const withoutCountryCode = cleaned.substring(3);
-  
-  // UK mobile numbers typically start with 7 and have 10 digits total after +44
-  return /^7\d{9}$/.test(withoutCountryCode);
+}
+
+// Validate university email (.ac.uk)
+function validateUniversityEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email) && email.toLowerCase().endsWith('.ac.uk');
+}
+
+// Generate unique access token
+function generateAccessToken(): string {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+
+// Send verification email via Resend
+async function sendVerificationEmail(email: string, token: string): Promise<boolean> {
+  try {
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      console.error('RESEND_API_KEY not configured');
+      return false;
+    }
+    
+    const resend = new Resend(apiKey);
+    
+    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/whatsapp-access/${token}`;
+    
+    const { error } = await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || 'UMHC <noreply@umhc.co.uk>',
+      to: email,
+      subject: 'UMHC WhatsApp Group Link',
+      html: `
+        <div style="background-color: #FFFCF7; padding: 40px 0; font-family: 'Open Sans', Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #FFFEFB; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+          
+          <!-- Logo section -->
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://umhc.org.uk/api/logo?file=umhc-badge.webp" alt="UMHC Logo" width="120" style="max-width: 100%; height: auto; border: 0;">
+          </div>
+          
+          <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Hi,
+          </p>
+          
+          <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Here's the link to our WhatsApp group, please don't share this link with anyone. 
+          </p>
+          
+          <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Thank you for your patience in this process.
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${verificationUrl}" 
+              style="background-color: #1C5713; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">
+              Join WhatsApp Group
+            </a>
+          </div>
+          
+          <p style="color: #494949; font-size: 14px; line-height: 1.6; margin-top: 20px;">
+            This link is valid for 24 hours and can only be used once. If it expires, request access again <a href="https://umhc.org.uk/whatsapp-verify" style="color: #2E4E39;">here</a>
+          </p>
+          
+          <p style="color: #494949; font-size: 14px; line-height: 1.6;">
+            We look forward to seeing you on the hills
+          </p>
+          
+        </div>
+      </div>
+      `,
+    });
+    
+    if (error) {
+      console.error('Email sending error:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Email sending error:', error);
+    return false;
+  }
 }
 
 // Verify Cloudflare Turnstile token
@@ -95,7 +165,7 @@ function checkRateLimit(ip: string): boolean {
 export async function POST(request: NextRequest) {
   try {
     const body: VerificationRequest = await request.json();
-    const { phone, answer, questionId, turnstileToken, website } = body;
+    const { phone, email, trips, turnstileToken, website } = body;
 
     // Honeypot check - if website field is filled, it's a bot
     if (website && website.trim() !== '') {
@@ -116,44 +186,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate phone number
-    if (!validateUKPhoneNumber(phone)) {
+    if (!validateInternationalPhoneNumber(phone)) {
       return NextResponse.json(
-        { error: 'Invalid UK phone number format' },
+        { error: 'Invalid phone number format' },
         { status: 400 }
       );
     }
-
-    // Load questions
-    let questions: Question[];
-    try {
-      const questionsPath = path.join(process.cwd(), 'questions.json');
-      const questionsData = fs.readFileSync(questionsPath, 'utf8');
-      questions = JSON.parse(questionsData);
-    } catch (error) {
-      console.error('Error loading questions:', error);
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-
-    // Validate question ID and answer
-    if (questionId < 0 || questionId >= questions.length) {
-      return NextResponse.json(
-        { error: 'Invalid question' },
-        { status: 400 }
-      );
-    }
-
-    const question = questions[questionId];
-    const answerIndex = parseInt(answer);
     
-    if (isNaN(answerIndex) || answerIndex !== question.correct) {
+    // Validate university email
+    if (!validateUniversityEmail(email)) {
       return NextResponse.json(
-        { error: 'Incorrect answer' },
+        { error: 'Due to lots of trouble with bots last year, automatic access to our WhatsApp community is restricted to users with access to a \'.ac.uk\' email address. You can manually request access to our WhatsApp community via the manual request form and a member of the Committee will approve it as soon as possible.' },
         { status: 400 }
       );
     }
+
 
     // Verify Turnstile token
     const turnstileValid = await verifyTurnstile(turnstileToken);
@@ -164,7 +211,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // All validations passed - return WhatsApp link
+    // All validations passed - generate unique token and send email
     const whatsappLink = process.env.WHATSAPP_GROUP_LINK;
     if (!whatsappLink) {
       console.error('WHATSAPP_GROUP_LINK not configured');
@@ -173,20 +220,43 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-
-    // Log successful verification for security monitoring
-    // Note: Only log phone number hash in production for privacy
-    const phoneHash = phone.replace(/\d(?=\d{4})/g, '*'); // Mask all but last 4 digits
     
-    // Only log in development
+    // Clean up expired tokens
+    cleanupExpiredTokens();
+    
+    // Generate unique access token
+    const accessToken = generateAccessToken();
+    
+    // Store token with user data (no persistent storage)
+    tokenStore.set(accessToken, {
+      email,
+      phone,
+      trips,
+      createdAt: Date.now(),
+      used: false
+    });
+    
+    // Send verification email
+    const emailSent = await sendVerificationEmail(email, accessToken);
+    if (!emailSent) {
+      tokenStore.delete(accessToken); // Clean up token if email failed
+      return NextResponse.json(
+        { error: 'Failed to send verification email. Please try again.' },
+        { status: 500 }
+      );
+    }
+    
+    // Log successful verification for security monitoring
+    const phoneHash = phone.replace(/\d(?=\d{4})/g, '*'); // Mask all but last 4 digits
+    const emailHash = email.replace(/(.{2}).*(@.*)/, '$1***$2'); // Mask email username
+    
     if (process.env.NODE_ENV === 'development') {
-      console.log(`Successful verification: ${phoneHash} at ${new Date().toISOString()}`);
+      console.log(`Verification email sent: ${emailHash}, phone: ${phoneHash} at ${new Date().toISOString()}`);
     }
 
     return NextResponse.json({
       success: true,
-      whatsappLink,
-      message: 'Verification successful'
+      message: 'Verification link sent to your email address'
     });
 
   } catch (error) {

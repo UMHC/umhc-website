@@ -7,7 +7,7 @@ if (!supabaseServiceRoleKey) {
   throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for admin operations')
 }
 
-// Admin client with service role key - bypasses RLS
+// Admin client with service role key - can access secure schema via full table names
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
   auth: {
     autoRefreshToken: false,

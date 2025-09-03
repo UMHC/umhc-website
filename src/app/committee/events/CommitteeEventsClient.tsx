@@ -15,8 +15,9 @@ import {
   UsersIcon
 } from '@heroicons/react/24/outline';
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
-import { getScheduleEvents } from '@/lib/scheduleService';
 import { ScheduleEvent, EventType } from '@/types/schedule';
+import { CreateEventData, UpdateEventData } from '@/lib/eventService';
+import EventForm from './EventForm';
 
 interface CommitteeEventsClientProps {
   user: {
@@ -43,26 +44,39 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
   const [currentTime, setCurrentTime] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEvent | null>(null);
   const [showEventDetails, setShowEventDetails] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<ScheduleEvent | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/committee/events');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setEvents(data.events);
+        } else {
+          setError('Failed to fetch events');
+        }
+      } else {
+        setError('Failed to fetch events');
+      }
+    } catch (err) {
+      console.error('Error fetching events:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching events');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     // Update time every minute
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
-
-    const fetchEvents = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const eventsData = await getScheduleEvents();
-        setEvents(eventsData);
-      } catch (err) {
-        console.error('Error fetching events:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred while fetching events');
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchEvents();
 
@@ -167,6 +181,129 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
   const handleCloseEventDetails = () => {
     setSelectedEvent(null);
     setShowEventDetails(false);
+  };
+
+  const handleCreateEvent = () => {
+    setShowCreateForm(true);
+  };
+
+  const handleEditEvent = (event: ScheduleEvent) => {
+    setEditingEvent(event);
+    setShowEditForm(true);
+  };
+
+  const handleCloseCreateForm = () => {
+    setShowCreateForm(false);
+  };
+
+  const handleCloseEditForm = () => {
+    setShowEditForm(false);
+    setEditingEvent(null);
+  };
+
+  const handleSubmitEvent = async (eventData: CreateEventData | UpdateEventData, isEdit = false) => {
+    try {
+      setSubmitting(true);
+      const url = '/api/committee/events';
+      const method = isEdit ? 'PATCH' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(eventData),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        // Refresh events list
+        await fetchEvents();
+        
+        // Close forms
+        if (isEdit) {
+          handleCloseEditForm();
+        } else {
+          handleCloseCreateForm();
+        }
+        
+        // Show success message (you could add a toast here)
+        console.log(result.message);
+      } else {
+        setError(result.error || 'Failed to save event');
+      }
+    } catch (err) {
+      console.error('Error saving event:', err);
+      setError('An error occurred while saving the event');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteEvent = async (eventId: number) => {
+    if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const response = await fetch(`/api/committee/events?id=${eventId}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        // Refresh events list
+        await fetchEvents();
+        
+        // Close details modal if it's open for the deleted event
+        if (selectedEvent?.id === eventId) {
+          handleCloseEventDetails();
+        }
+        
+        // Show success message
+        console.log(result.message);
+      } else {
+        setError(result.error || 'Failed to delete event');
+      }
+    } catch (err) {
+      console.error('Error deleting event:', err);
+      setError('An error occurred while deleting the event');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDuplicateEvent = async (eventId: number) => {
+    try {
+      setSubmitting(true);
+      const response = await fetch('/api/committee/events/duplicate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ eventId }),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        // Refresh events list
+        await fetchEvents();
+        
+        // Show success message
+        console.log(result.message);
+      } else {
+        setError(result.error || 'Failed to duplicate event');
+      }
+    } catch (err) {
+      console.error('Error duplicating event:', err);
+      setError('An error occurred while duplicating the event');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -394,7 +531,10 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">All Events</h2>
-            <button className="flex items-center px-4 py-2 bg-umhc-green text-white rounded-lg hover:bg-stealth-green transition-colors">
+            <button 
+              onClick={handleCreateEvent}
+              className="flex items-center px-4 py-2 bg-umhc-green text-white rounded-lg hover:bg-stealth-green transition-colors"
+            >
               <PlusIcon className="w-4 h-4 mr-2" />
               Add Event
             </button>
@@ -459,7 +599,7 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            // TODO: Implement edit functionality
+                            handleEditEvent(event);
                           }}
                           className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
                           title="Edit event"
@@ -609,26 +749,65 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
                 </div>
               </div>
               
-              <div className="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
-                <button
-                  onClick={handleCloseEventDetails}
-                  className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  Close
-                </button>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 mt-6 pt-6 border-t border-gray-200">
                 <button
                   onClick={() => {
-                    // TODO: Implement edit functionality
-                    handleCloseEventDetails();
+                    handleDeleteEvent(selectedEvent.id);
                   }}
-                  className="px-4 py-2 text-sm text-white bg-umhc-green rounded-lg hover:bg-stealth-green transition-colors"
+                  className="px-4 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
                 >
-                  Edit Event
+                  Delete Event
                 </button>
+                
+                <div className="flex space-x-3">
+                  <button
+                    onClick={handleCloseEventDetails}
+                    className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleDuplicateEvent(selectedEvent.id);
+                      handleCloseEventDetails();
+                    }}
+                    className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Duplicate
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleEditEvent(selectedEvent);
+                      handleCloseEventDetails();
+                    }}
+                    className="px-4 py-2 text-sm text-white bg-umhc-green rounded-lg hover:bg-stealth-green transition-colors"
+                  >
+                    Edit Event
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Create Event Form */}
+      {showCreateForm && (
+        <EventForm
+          onSubmit={(eventData) => handleSubmitEvent(eventData, false)}
+          onCancel={handleCloseCreateForm}
+          submitting={submitting}
+        />
+      )}
+
+      {/* Edit Event Form */}
+      {showEditForm && editingEvent && (
+        <EventForm
+          event={editingEvent}
+          onSubmit={(eventData) => handleSubmitEvent(eventData, true)}
+          onCancel={handleCloseEditForm}
+          submitting={submitting}
+        />
       )}
     </div>
   );

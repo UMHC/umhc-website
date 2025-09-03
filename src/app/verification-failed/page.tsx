@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 
 export const metadata: Metadata = {
-  title: 'uMHC | Verification Failed',
+  title: 'UMHC | Verification Failed',
   description: 'Bot verification failed for UMHC WhatsApp group access.',
   robots: 'noindex, nofollow, noarchive, nosnippet, noimageindex',
 };

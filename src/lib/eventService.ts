@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabaseAdmin } from './supabase-admin';
 import { ScheduleEvent } from '@/types/schedule';
 import { clearScheduleCache } from './scheduleService';
 
@@ -27,9 +27,21 @@ export interface UpdateEventData extends CreateEventData {
 
 export class EventService {
   static async createEvent(eventData: CreateEventData): Promise<ScheduleEvent> {
-    const { data, error } = await supabase
+    // Clean the data - convert empty strings to null for optional fields
+    const cleanedData = {
+      ...eventData,
+      event_time: eventData.event_time?.trim() === '' ? null : eventData.event_time,
+      description: eventData.description?.trim() === '' ? null : eventData.description,
+      full_address: eventData.full_address?.trim() === '' ? null : eventData.full_address,
+      what3words: eventData.what3words?.trim() === '' ? null : eventData.what3words,
+      su_website_url: eventData.su_website_url?.trim() === '' ? null : eventData.su_website_url,
+      accessibility_notes: eventData.accessibility_notes?.trim() === '' ? null : eventData.accessibility_notes,
+      event_image: eventData.event_image?.trim() === '' ? null : eventData.event_image,
+    };
+
+    const { data, error } = await supabaseAdmin
       .from('schedule')
-      .insert([eventData])
+      .insert([cleanedData])
       .select()
       .single();
 
@@ -46,18 +58,45 @@ export class EventService {
   static async updateEvent(eventData: UpdateEventData): Promise<ScheduleEvent> {
     const { id, ...updateData } = eventData;
     
-    const { data, error } = await supabase
+    // First, check if the event exists
+    const { data: existingEvent, error: fetchError } = await supabaseAdmin
       .from('schedule')
-      .update({
-        ...updateData,
-        updated_at: new Date().toISOString()
-      })
+      .select('id')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !existingEvent) {
+      throw new Error(`Event with ID ${id} not found`);
+    }
+
+    // Clean the data - convert empty strings to null for optional fields
+    const cleanedData = {
+      ...updateData,
+      event_time: updateData.event_time?.trim() === '' ? null : updateData.event_time,
+      description: updateData.description?.trim() === '' ? null : updateData.description,
+      full_address: updateData.full_address?.trim() === '' ? null : updateData.full_address,
+      what3words: updateData.what3words?.trim() === '' ? null : updateData.what3words,
+      su_website_url: updateData.su_website_url?.trim() === '' ? null : updateData.su_website_url,
+      accessibility_notes: updateData.accessibility_notes?.trim() === '' ? null : updateData.accessibility_notes,
+      event_image: updateData.event_image?.trim() === '' ? null : updateData.event_image,
+      updated_at: new Date().toISOString()
+    };
+
+    // Perform the update
+    const { data, error } = await supabaseAdmin
+      .from('schedule')
+      .update(cleanedData)
       .eq('id', id)
       .select()
       .single();
 
     if (error) {
+      console.error('Update error:', error);
       throw error;
+    }
+
+    if (!data) {
+      throw new Error('Update operation completed but no data returned');
     }
 
     // Clear cache to ensure fresh data
@@ -67,7 +106,7 @@ export class EventService {
   }
 
   static async deleteEvent(id: number): Promise<void> {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('schedule')
       .delete()
       .eq('id', id);
@@ -81,7 +120,7 @@ export class EventService {
   }
 
   static async getEventById(id: number): Promise<ScheduleEvent | null> {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('schedule')
       .select('*')
       .eq('id', id)
