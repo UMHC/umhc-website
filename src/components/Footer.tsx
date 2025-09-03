@@ -13,43 +13,77 @@ export default function Footer() {
             <div className="grid grid-cols-2 gap-x-12 gap-y-8 justify-items-start sm:flex sm:flex-wrap sm:justify-center sm:gap-12 md:gap-16 lg:gap-[60px]">
           <div className="flex flex-col gap-2 items-start">
             <TextButton 
+              href="/equipment" 
+              priority
+              className="text-cream-white text-2xl sm:text-base md:text-[16px] font-semibold"
+            >
+              Equipment
+            </TextButton>
+
+            <TextButton 
+              href="/constitution" 
+              priority
+              className="text-cream-white text-2xl sm:text-base md:text-[16px] font-semibold"
+            >
+              Constitution
+            </TextButton>
+
+            <TextButton 
+              href="/membership" 
+              priority
+              className="text-cream-white text-2xl sm:text-base md:text-[16px] font-semibold"
+            >
+              Membership
+            </TextButton>
+
+            <TextButton 
+              href="/terms" 
+              priority
+              className="text-cream-white text-2xl sm:text-base md:text-[16px] font-semibold"
+            >
+              Terms
+            </TextButton>
+            
+          </div>
+          
+          <div className="flex flex-col gap-2 items-start">
+            <TextButton 
               href="/schedule" 
               priority
-              className="text-cream-white text-lg sm:text-base md:text-[16px] font-semibold"
+              className="text-cream-white text-2xl sm:text-base md:text-[16px] font-semibold"
             >
               Schedule
             </TextButton>
             <nav className="flex flex-col gap-[5px]">
-              <TextButton href="/schedule?filter=hike" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="/schedule?filter=hike" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
                 Hikes
               </TextButton>
-              <TextButton href="/schedule?filter=social" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="/schedule?filter=social" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
                 Socials
               </TextButton>
-              <TextButton href="/schedule?filter=residential" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="/schedule?filter=residential" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
                 Residential
               </TextButton>
-              <TextButton href="/schedule?filter=other" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="/schedule?filter=other" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
                 Other
               </TextButton>
             </nav>
           </div>
           
           
-          
           <div className="flex flex-col gap-2 items-start">
             <TextButton 
               href="/about" 
               priority
-              className="text-cream-white text-lg sm:text-base md:text-[16px] font-semibold"
+              className="text-cream-white text-2xl sm:text-base md:text-[16px] font-semibold"
             >
               About Us
             </TextButton>
             <nav className="flex flex-col gap-[5px]">
-              <TextButton href="/about#faqs" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="/about#faqs" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
                 FAQ&apos;s
               </TextButton>
-              <TextButton href="mailto:contact@umhc.org.uk" className="text-cream-white text-base sm:text-sm md:text-[14px] font-normal">
+              <TextButton href="mailto:contact@umhc.org.uk" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
                 Contact Us
               </TextButton>
             </nav>
@@ -138,7 +172,11 @@ export default function Footer() {
             
             {/* Logo Section */}
             <div className="flex gap-4 sm:gap-5 items-center">
-              <div className="relative w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] md:w-[43px] md:h-[43px]">
+              <Link
+                href="https://youtu.be/dQw4w9WgXcQ?si=9K3OeCkzPAnTSf9G"
+                aria-label="Rick roll"
+                className="relative w-[35px] h-[35px] sm:w-[40px] sm:h-[40px] md:w-[43px] md:h-[43px] hover:scale-105 transition-transform duration-200 focus:outline-none focus:scale-105 rounded"
+              >
                 <Image
                   src="/images/umhc-badge.webp"
                   alt="UMHC Badge Logo"
@@ -146,7 +184,7 @@ export default function Footer() {
                   sizes="43px"
                   className="object-contain"
                 />
-              </div>
+              </Link>
               <Link 
                 href="https://manchesterstudentsunion.com/activities/view/hikingclubuom" 
                 className="relative w-[45px] h-[35px] sm:w-[52px] sm:h-[40px] md:w-[57px] md:h-[43px] hover:scale-105 transition-transform duration-200 focus:outline-none focus:scale-105 rounded"
@@ -166,7 +204,7 @@ export default function Footer() {
         </div>
         
         <div className="mt-8 text-center text-xs sm:text-sm md:text-[14px] font-normal text-white/70 leading-normal">
-          <p>University of Manchester Hiking Club © 2025 {/*| <Link href="/committee" className="text-white/70 hover:text-white">Committee Console</Link>*/}</p>
+          <p>University of Manchester Hiking Club © 2025 | <Link href="/committee" className="text-white/70 hover:text-white">Committee Console</Link></p>
         </div>
       </div>
     </footer>

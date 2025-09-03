@@ -80,8 +80,8 @@ export default function MembershipPage() {
   ];
 
   const associateFeatures: MembershipFeature[] = [
-    { text: "Limited access to hikes" },
-    { text: "Limited access to ticketed social events" },
+    { text: "Access to hikes" },
+    { text: "Access to ticketed social events" },
     { text: "Discounted hike tickets" },
     { text: "£15 million combined liability insurance (via BMC)" },
     { text: "£10000 personal accident insurance cover (via BMC)" },
@@ -106,12 +106,15 @@ export default function MembershipPage() {
               membership is only available to University of Manchester students, 
               whilst the associate membership is available to anyone.
             </p>
+            <p className="text-xs sm:text-sm font-medium text-slate-grey mt-3 max-w-4xl mx-auto">
+              <em>Provisional Pricing</em>
+            </p>
           </div>
 
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-center justify-center">
             <MembershipCard
               title="Student Membership"
-              price="£25"
+              price="£30"
               period="per year"
               buttonText="Purchase on the SU Website"
               features={studentFeatures}
@@ -119,7 +122,7 @@ export default function MembershipPage() {
             
             <MembershipCard
               title="Associate Membership (Non-UoM)"
-              price="£32"
+              price="£30"
               period="per year"
               buttonText="Purchase on the SU Website"
               features={associateFeatures}

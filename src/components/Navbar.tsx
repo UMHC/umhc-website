@@ -30,6 +30,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
   
   const navigationItems = [
     { text: 'Schedule', href: '/schedule' },
+    { text: 'Equipment', href: '/equipment' },
     { text: 'Constitution', href: '/constitution' },
     { text: 'About Us', href: '/about' },
   ];

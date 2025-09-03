@@ -15,7 +15,7 @@ const openSans = Open_Sans({
 
 export const metadata: Metadata = {
   title: "UMHC | Hiking Club",
-  description: "The University of Manchester's best society! Lake District & Snowdonia trips from £16. Social's every week. 20+ years experience, all skill levels welcome. Trips sell out fast - book now!",
+  description: "The University of Manchester's best society! Lake District & Snowdonia trips from £15. Social's every week. 20+ years experience, all skill levels welcome. Trips sell out fast - book now!",
   keywords: ['manchester', 'hiking', 'club', 'umhc', 'society', 'university', 'university of manchester', 'outdoors', 'nature', 'lake district', 'snowdonia'],
   icons: {
     icon: [

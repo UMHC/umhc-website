@@ -112,8 +112,8 @@ export default function MembershipSection() {
   ];
 
   const associateFeatures: MembershipFeature[] = [
-    { text: "Limited access to hikes" },
-    { text: "Limited access to ticketed social events" },
+    { text: "Access to hikes" },
+    { text: "Access to ticketed social events" },
     { text: "Discounted hike tickets" },
     { text: "£15 million combined liability insurance (via BMC)" },
     { text: "£10000 personal accident insurance cover (via BMC)" },
@@ -137,6 +137,9 @@ export default function MembershipSection() {
             at no extra cost to receive £15 million combined liability insurance, £10000 personal accident insurance cover, 
             15% off at a variety of outdoor suppliers and more. On top of this, we tend to limit popular trips to members only.
           </p>
+          <p className="text-xs sm:text-sm font-medium text-slate-grey mt-3 max-w-4xl mx-auto">
+            <em>Provisional Pricing</em>
+          </p>
         </header>
 
         <div 
@@ -153,7 +156,7 @@ export default function MembershipSection() {
           
           <MembershipCard
             title="Student Membership"
-            price="£25"
+            price="£30"
             period="per year"
             buttonText="Purchase on the SU Website"
             buttonLink={studentMembershipUrl}
@@ -163,7 +166,7 @@ export default function MembershipSection() {
           
           <MembershipCard
             title="Associate Membership (Non-UoM)"
-            price="£32"
+            price="£30"
             period="per year"
             buttonText="Purchase on the SU Website"
             buttonLink={associateMembershipUrl}
