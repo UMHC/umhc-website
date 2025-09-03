@@ -79,7 +79,7 @@ async function sendVerificationEmail(email: string, token: string): Promise<bool
           </div>
           
           <p style="color: #494949; font-size: 14px; line-height: 1.6; margin-top: 20px;">
-            This link is valid for 24 hours and can only be used once. If it expires, request access again <a href="https://umhc.org.uk/whatsapp-verify" style="color: #2E4E39;">here</a>
+            This link is valid for 24 hours and can only be used once. If it expires, request access again <a href="https://umhc.org.uk/whatsapp" style="color: #2E4E39;">here</a>
           </p>
           
           <p style="color: #494949; font-size: 14px; line-height: 1.6;">

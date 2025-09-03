@@ -232,7 +232,7 @@ export default function VerificationForm({}: VerificationFormProps) {
       const websiteField = document.querySelector('input[name="website"]') as HTMLInputElement;
       const websiteValue = websiteField?.value || '';
       
-      const response = await fetch('/api/whatsapp-verify', {
+      const response = await fetch('/api/whatsapp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

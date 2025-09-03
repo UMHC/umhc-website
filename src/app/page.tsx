@@ -2,11 +2,12 @@ import Image from 'next/image';
 import LazySchedulePreview from '@/components/LazySchedulePreview';
 import LazySocialWall from '@/components/LazySocialWall';
 import LazyMembershipSection from '@/components/LazyMembershipSection';
+import ScrollIndicator from '@/components/ScrollIndicator';
 
 export default function Home() {
   return (
     <div className="bg-whellow min-h-screen">
-    <div className="relative h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden">
       {/* Background image layer */}
       <Image
         src="/images/hero-image/upper-part.webp"
@@ -20,12 +21,12 @@ export default function Home() {
       />
       
       {/* Text layer */}
-      <div className="absolute inset-0 flex items-center justify-center z-10 -translate-y-32">
-        <div className="text-center">
-          <p className="font-bold text-center mb-1 text-xl sm:text-2xl md:text-[26px] lg:text-[28px] xl:text-[30px] 2xl:text-[32px]" style={{ color: 'rgba(255,255,255,0.69)', lineHeight: '1' }}>
+      <div className="hero-text absolute inset-0 flex items-center justify-center z-10 pt-16 sm:pt-20 landscape:pt-24">
+        <div className="text-center px-4">
+          <p className="font-bold text-center mb-1 text-base sm:text-xl md:text-2xl lg:text-[24px] xl:text-[26px] 2xl:text-[28px]" style={{ color: 'rgba(255,255,255,0.69)', lineHeight: '1.1' }}>
             University of Manchester Hiking Club
           </p>
-          <h1 className="font-bold whitespace-nowrap text-9xl sm:text-9xl md:text-[160px] lg:text-[150px] xl:text-[180px] 2xl:text-[200px]" style={{ color: 'rgba(255,255,255,0.91)', lineHeight: '0.85' }}>
+          <h1 className="font-bold whitespace-nowrap text-8xl xs:text-9xl sm:text-[120px] md:text-[140px] lg:text-[150px] xl:text-[160px] 2xl:text-[180px]" style={{ color: 'rgba(255,255,255,0.91)', lineHeight: '0.85' }}>
             UMHC
           </h1>
         </div>
@@ -42,6 +43,9 @@ export default function Home() {
         unoptimized={true}
         sizes="100vw"
       />
+      
+      {/* Scroll indicator */}
+      <ScrollIndicator />
     </div>
     
     {/* Who Are We Section */}

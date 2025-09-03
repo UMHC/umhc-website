@@ -60,6 +60,27 @@
       transform: translateY(-20px);
     }
   }
+
+  @keyframes bounce-vertical {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-8px);
+    }
+    60% {
+      transform: translateY(-4px);
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
   
   .animate-slide-down {
     animation: slide-down 0.3s ease-out;
@@ -79,6 +100,18 @@
   
   .animate-fade-out-up {
     animation: fade-out-up 0.25s ease-in forwards;
+  }
+
+  .animate-bounce-vertical {
+    animation: bounce-vertical 2s ease-in-out infinite;
+  }
+
+  .animate-fade-out {
+    animation: fade-out 0.5s ease-out forwards;
+  }
+
+  .scroll-indicator {
+    transition: opacity 0.3s ease-out;
   }
   
   /* Fix sticky hover states on mobile */
@@ -107,6 +140,40 @@
   
   .scrollbar-hide::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
+  }
+
+  /* Hero text positioning fix for different screen sizes */
+  .hero-text {
+    transform: translateY(-155px);
+  }
+
+  /* Medium height screens */
+  @media (min-height: 700px) and (max-height: 900px) {
+    .hero-text {
+      transform: translateY(-180px);
+    }
+  }
+
+  /* Large height screens */
+  @media (min-height: 900px) {
+    .hero-text {
+      transform: translateY(-220px);
+    }
+  }
+
+  /* Small height screens */
+  @media (max-height: 600px) {
+    .hero-text {
+      transform: translateY(0px) !important;
+      z-index: 30 !important;
+    }
+  }
+
+  @media (max-height: 500px) {
+    .hero-text {
+      transform: translateY(-20px) !important;
+      z-index: 30 !important;
+    }
   }
 }
 

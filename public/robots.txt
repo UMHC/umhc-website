@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Block verification pages from all search engines
-Disallow: /whatsapp-verify
+Disallow: /whatsapp
 Disallow: /verification-failed
 Disallow: /bot-gate
 
