@@ -458,7 +458,7 @@ export default function VerificationForm({}: VerificationFormProps) {
             role="alert"
             aria-live="assertive"
           >
-            {error.includes('.ac.uk') && error.includes('request access') ? (
+            {isAcUkDomain(userEmail) && error.includes('request access') ? (
               <>
                 Due to lots of trouble with bots last year, automatic access to our WhatsApp community is restricted to users with access to a &apos;.ac.uk&apos; email address. You can manually request access to our WhatsApp community at{' '}
                 <a href="/whatsapp-request" className="text-umhc-green underline hover:text-stealth-green">
@@ -491,4 +491,13 @@ export default function VerificationForm({}: VerificationFormProps) {
       </form>
     </div>
   );
+// Add helper function inside component, before return
+function isAcUkDomain(email: string): boolean {
+  if (!email || typeof email !== 'string') return false;
+  const parts = email.split('@');
+  if (parts.length !== 2) return false;
+  const domain = parts[1].toLowerCase();
+  return domain === 'ac.uk' || domain.endsWith('.ac.uk');
+}
+
 }
