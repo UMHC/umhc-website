@@ -5,6 +5,7 @@ import AuthProvider from "@/components/AuthProvider";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ConditionalLayout from "../components/ConditionalLayout";
+import PrivacyPopup from "@/app/components/PrivacyPopup";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -106,6 +107,7 @@ export default function RootLayout({
           <ConditionalLayout>
             {children}
           </ConditionalLayout>
+          <PrivacyPopup />
         </AuthProvider>
         <Analytics/>
         <SpeedInsights/>
