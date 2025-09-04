@@ -264,8 +264,8 @@ export default function VerificationForm({}: VerificationFormProps) {
           const url = new URL(data.error);
           isAcUk = url.hostname.endsWith('.ac.uk');
         } catch {
-          // If data.error is not a valid URL, optionally fallback to substring match
-          isAcUk = typeof data.error === "string" && data.error.includes('.ac.uk');
+          // If data.error is not a valid URL, do not fallback to substring match for security reasons
+          isAcUk = false;
         }
         if (isAcUk) {
           setError(data.error);
