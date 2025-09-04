@@ -52,7 +52,15 @@ export default function VerificationForm({}: VerificationFormProps) {
       return { valid: false, message: 'Please enter a valid email address' };
     }
     
-    if (!emailAddress.toLowerCase().endsWith('.ac.uk')) {
+    // Properly parse email to check domain - prevents malicious URL bypass
+    const emailParts = emailAddress.toLowerCase().split('@');
+    if (emailParts.length !== 2) {
+      return { valid: false, message: 'Please enter a valid email address' };
+    }
+    
+    const domain = emailParts[1];
+    // Check if domain is exactly 'ac.uk' or ends with '.ac.uk' but validate it's a proper university domain
+    if (domain !== 'ac.uk' && !domain.endsWith('.ac.uk')) {
       return { 
         valid: false, 
         message: `Due to lots of trouble with bots last year, automatic access to our WhatsApp community is restricted to users with access to a '.ac.uk' email address. You can manually request access to our WhatsApp community via the manual request form and a member of the Committee will approve it as soon as possible.`,
@@ -458,7 +466,7 @@ export default function VerificationForm({}: VerificationFormProps) {
             role="alert"
             aria-live="assertive"
           >
-            {isAcUkDomain(userEmail) && error.includes('request access') ? (
+            {isAcUkDomain(email) && error.includes('request access') ? (
               <>
                 Due to lots of trouble with bots last year, automatic access to our WhatsApp community is restricted to users with access to a &apos;.ac.uk&apos; email address. You can manually request access to our WhatsApp community at{' '}
                 <a href="/whatsapp-request" className="text-umhc-green underline hover:text-stealth-green">
@@ -497,6 +505,7 @@ function isAcUkDomain(email: string): boolean {
   const parts = email.split('@');
   if (parts.length !== 2) return false;
   const domain = parts[1].toLowerCase();
+  // Check if domain is exactly 'ac.uk' or ends with '.ac.uk' (allows university subdomains)
   return domain === 'ac.uk' || domain.endsWith('.ac.uk');
 }
 

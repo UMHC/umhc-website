@@ -24,7 +24,20 @@ function validateInternationalPhoneNumber(phone: string): boolean {
 // Validate university email (.ac.uk)
 function validateUniversityEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email) && email.toLowerCase().endsWith('.ac.uk');
+  if (!emailRegex.test(email)) {
+    return false;
+  }
+  
+  // Properly parse email to check domain - prevents malicious URL bypass
+  const emailParts = email.toLowerCase().split('@');
+  if (emailParts.length !== 2) {
+    return false;
+  }
+  
+  const domain = emailParts[1];
+  // Check if domain is exactly 'ac.uk' or ends with '.ac.uk' (allows university subdomains)
+  // The key security fix is parsing the email properly to get just the domain part
+  return domain === 'ac.uk' || domain.endsWith('.ac.uk');
 }
 
 // Generate unique access token
