@@ -259,7 +259,15 @@ export default function VerificationForm({}: VerificationFormProps) {
         setError('');
         setSuccess('Success! A verification link has been sent to your university email address. Please check your inbox and click the link to join the WhatsApp group.');
       } else {
-        if (data.error?.includes('.ac.uk')) {
+        let isAcUk = false;
+        try {
+          const url = new URL(data.error);
+          isAcUk = url.hostname.endsWith('.ac.uk');
+        } catch {
+          // If data.error is not a valid URL, optionally fallback to substring match
+          isAcUk = typeof data.error === "string" && data.error.includes('.ac.uk');
+        }
+        if (isAcUk) {
           setError(data.error);
         } else {
           throw new Error(data.error || 'Verification failed');
