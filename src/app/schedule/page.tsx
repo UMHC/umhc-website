@@ -466,12 +466,12 @@ function ScheduleContent() {
 
                   {/* Event Details */}
                   <div className="flex flex-col gap-1 items-start justify-start p-0 relative flex-1 min-w-0">
-                    <div className="flex flex-row gap-2 items-center justify-between p-0 relative w-full">
-                      <div className="flex flex-col font-bold justify-start leading-tight not-italic relative text-deep-black text-base sm:text-lg md:text-xl text-left min-w-0 flex-1 pr-2">
-                        <p className="block leading-normal break-words">{event.title}</p>
-                      </div>
-                      
-                      {/* Accessibility Markers - responsive display */}
+                    {/* Title */}
+                    <div className="flex flex-col font-bold justify-start leading-tight not-italic relative text-deep-black text-base sm:text-lg md:text-xl text-left min-w-0 w-full">
+                      <p className="block leading-normal break-words">{event.title}</p>
+                    </div>
+                    
+                    {/* Accessibility Markers - responsive display - moved to separate row on mobile */}
                       {(() => {
                         const accessibilityFeatures = [
                           { key: 'dda_compliant_ramp_access', label: 'Wheelchair accessible', available: event.dda_compliant_ramp_access },
@@ -485,7 +485,7 @@ function ScheduleContent() {
                         if (accessibilityFeatures.length === 0) return null
 
                         return (
-                          <div className="flex items-center gap-1 shrink-0">
+                          <div className="flex items-center gap-1 shrink-0 mt-1">
                             {/* Mobile: Show 1 marker + remaining */}
                             <div className="flex items-center gap-1 sm:hidden">
                               <div className="relative rounded-full border-earth-orange border border-solid">
@@ -574,7 +574,6 @@ function ScheduleContent() {
                           </div>
                         )
                       })()}
-                    </div>
                     
                     {event.description && (
                       <div className="font-normal leading-relaxed min-w-full not-italic relative shrink-0 text-deep-black text-sm sm:text-base text-left">
