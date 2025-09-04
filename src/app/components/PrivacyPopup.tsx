@@ -72,7 +72,7 @@ const PrivacyPopup = () => {
       {/* Popup */}
       <div
         className={`fixed bottom-4 left-4 right-4 sm:left-6 sm:right-auto sm:max-w-md 
-          bg-whellow rounded-xl shadow-xl z-50 p-4 
+          bg-whellow rounded-xl shadow-2xl drop-shadow-xl border border-gray-200 z-50 p-4 
           transform transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] origin-bottom-left
           ${isAnimating 
             ? 'translate-x-0 translate-y-0 opacity-100 scale-100' 
