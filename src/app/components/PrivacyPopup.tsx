@@ -56,7 +56,7 @@ const PrivacyPopup = () => {
           setIsVisible(true);
           setIsAnimating(true);
         }
-      } catch (error) {
+      } catch {
         // If parsing fails, remove the item and show popup
         localStorage.removeItem('umhc-privacy-dismissed');
         setIsVisible(true);
