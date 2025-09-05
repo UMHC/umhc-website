@@ -99,7 +99,7 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
 
   const eventTypeStats: EventTypeStat[] = [
     {
-      label: 'Upcoming Hikes',
+      label: 'Upcoming Day Hikes',
       value: getUpcomingEventsByType('hike').toString(),
       type: 'hike',
       icon: CalendarDaysIcon,
@@ -113,7 +113,7 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
       color: 'text-blue-600'
     },
     {
-      label: 'Upcoming Residential',
+      label: 'Upcoming Overnight Trips',
       value: getUpcomingEventsByType('residential').toString(),
       type: 'residential',
       icon: MapPinIcon,

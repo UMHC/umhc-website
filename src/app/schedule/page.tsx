@@ -383,7 +383,7 @@ function ScheduleContent() {
                 onClick={() => setSelectedFilter('hike')}
                 className={`relative shrink-0 transition-all duration-300 pb-1 ${selectedFilter === 'hike' ? 'text-deep-black border-b-2 border-deep-black' : 'text-slate-grey'}`}
               >
-                <p className="block leading-normal whitespace-nowrap">Hikes</p>
+                <p className="block leading-normal whitespace-nowrap">Day Hikes</p>
               </button>
               <button
                 onClick={() => setSelectedFilter('social')}
@@ -395,7 +395,7 @@ function ScheduleContent() {
                 onClick={() => setSelectedFilter('residential')}
                 className={`relative shrink-0 transition-all duration-300 pb-1 ${selectedFilter === 'residential' ? 'text-deep-black border-b-2 border-deep-black' : 'text-slate-grey'}`}
               >
-                <p className="block leading-normal whitespace-nowrap">Residential</p>
+                <p className="block leading-normal whitespace-nowrap">Overnight Trips</p>
               </button>
               <button
                 onClick={() => setSelectedFilter('other')}

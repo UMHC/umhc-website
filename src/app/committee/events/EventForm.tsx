@@ -176,9 +176,9 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                   }`}
                   disabled={submitting}
                 >
-                  <option value="hike">Hike</option>
+                  <option value="hike">Day Hike</option>
                   <option value="social">Social</option>
-                  <option value="residential">Residential</option>
+                  <option value="residential">Overnight Trip</option>
                   <option value="other">Other</option>
                 </select>
                 {errors.event_type && <p className="text-red-500 text-sm mt-1">{errors.event_type}</p>}

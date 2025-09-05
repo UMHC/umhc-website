@@ -6,8 +6,8 @@ We are committed to maintaining the security of the UMHC website. Currently supp
 
 | Version | Supported          |
 | ------- | ------------------ |
-| Latest  | :white_check_mark: |
-| < Latest| :x:                |
+| v1.5  | :white_check_mark: |
+| < v1.5 | :x:                |
 
 We recommend always using the latest version deployed on the [UMHC Website Repository](https://www.github.com.umhc/umhc-website).
 

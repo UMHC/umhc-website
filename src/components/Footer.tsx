@@ -56,13 +56,13 @@ export default function Footer() {
             </TextButton>
             <nav className="flex flex-col gap-[5px]">
               <TextButton href="/schedule?filter=hike" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
-                Hikes
+                Day Hikes
               </TextButton>
               <TextButton href="/schedule?filter=social" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
                 Socials
               </TextButton>
               <TextButton href="/schedule?filter=residential" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
-                Residential
+                Overnight Trips
               </TextButton>
               <TextButton href="/schedule?filter=other" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
                 Other
