@@ -21,7 +21,7 @@ export default function UnderDevelopment() {
             Trail under Construction
           </h1>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl font-medium text-black font-sans px-2">
-            We're not quite ready to guide you down this path yet. Please check back later! 
+            We&apos;re not quite ready to guide you down this path yet. Please check back later! 
           </p>
         </div>
       </div>
