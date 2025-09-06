@@ -1,62 +1,127 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
-
+<?xml version="1.0" encoding="UTF-8"?> 
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
 <url>
-  <loc>https://umhc-website-v2.vercel.app/</loc>
-  <lastmod>2025-07-25T13:16:06+00:00</lastmod>
-  <priority>1.00</priority>
+  <loc>http://umhc.org.uk/</loc>
+  <lastmod>2025-09-06</lastmod>
 </url>
 <url>
-  <loc>https://umhc-website-v2.vercel.app/schedule</loc>
-  <lastmod>2025-07-25T13:16:06+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://umhc.org.uk/schedule</loc>
+  <lastmod>2025-09-06</lastmod>
 </url>
 <url>
-  <loc>https://umhc-website-v2.vercel.app/constitution</loc>
-  <lastmod>2025-07-25T13:16:06+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://umhc.org.uk/equipment</loc>
+  <lastmod>2025-09-06</lastmod>
 </url>
 <url>
-  <loc>https://umhc-website-v2.vercel.app/about</loc>
-  <lastmod>2025-07-25T13:16:06+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://umhc.org.uk/constitution</loc>
+  <lastmod>2025-09-06</lastmod>
 </url>
 <url>
-  <loc>https://umhc-website-v2.vercel.app/schedule?filter=hike</loc>
-  <lastmod>2025-07-25T13:16:06+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://umhc.org.uk/about</loc>
+  <lastmod>2025-09-06</lastmod>
 </url>
 <url>
-  <loc>https://umhc-website-v2.vercel.app/schedule?filter=social</loc>
-  <lastmod>2025-07-25T13:16:06+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://umhc.org.uk/membership</loc>
+  <lastmod>2025-09-06</lastmod>
 </url>
 <url>
-  <loc>https://umhc-website-v2.vercel.app/schedule?filter=residential</loc>
-  <lastmod>2025-07-25T13:16:06+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://umhc.org.uk/terms</loc>
+  <lastmod>2025-09-06</lastmod>
 </url>
 <url>
-  <loc>https://umhc-website-v2.vercel.app/schedule?filter=other</loc>
-  <lastmod>2025-07-25T13:16:06+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://umhc.org.uk/404</loc>
+  <lastmod>2025-09-06</lastmod>
 </url>
 <url>
-  <loc>https://umhc-website-v2.vercel.app/membership</loc>
-  <lastmod>2025-07-25T13:16:06+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://umhc.org.uk/under-development</loc>
+  <lastmod>2025-09-06</lastmod>
 </url>
 <url>
-  <loc>https://umhc-website-v2.vercel.app/finance</loc>
-  <lastmod>2025-07-25T13:16:06+00:00</lastmod>
-  <priority>0.20</priority>
+  <loc>http://umhc.org.uk/schedule?filter=hike</loc>
+  <lastmod>2025-09-06</lastmod>
 </url>
-
-
+<url>
+  <loc>http://umhc.org.uk/schedule?filter=social</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://umhc.org.uk/schedule?filter=residential</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://umhc.org.uk/schedule?filter=other</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://umhc.org.uk/about#faqs</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://umhc.org.uk/whatsapp</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>https://www.umhc.org.uk/404</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>https://umhc.org.uk/</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/schedule</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/equipment</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/constitution</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/about</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/membership</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/under-development</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/terms</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/schedule?filter=hike</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/schedule?filter=social</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/schedule?filter=residential</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/schedule?filter=other</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/about#faqs</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
+<url>
+  <loc>http://www.umhc.org.uk/whatsapp</loc>
+  <lastmod>2025-09-06</lastmod>
+</url>
 </urlset>
