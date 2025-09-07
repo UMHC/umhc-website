@@ -31,8 +31,8 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              // Scripts: self, Vercel Analytics, Kinde Auth, Cloudflare Turnstile (strict CSP without unsafe directives)
-              "script-src 'self' 'strict-dynamic' va.vercel-scripts.com kinde.com *.kinde.com challenges.cloudflare.com *.cloudflare.com",
+              // Scripts: self, Vercel Analytics, Kinde Auth, Cloudflare Turnstile (allowing necessary unsafe-eval for Next.js functionality)
+              "script-src 'self' 'unsafe-eval' va.vercel-scripts.com kinde.com *.kinde.com challenges.cloudflare.com *.cloudflare.com",
               // Styles: self, inline styles (required for Next.js), Google Fonts
               "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
               // Images: self, data URIs, social media CDNs, Vercel, Supabase
