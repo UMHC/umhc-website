@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState, useRef, Suspense } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { getScheduleEvents } from '@/lib/scheduleService'
 import { ScheduleEvent } from '@/types/schedule'
 import { FunnelIcon } from '@heroicons/react/24/outline'
@@ -22,7 +22,6 @@ const ACTIVITY_ICONS = [
 
 function ScheduleContent() {
   const searchParams = useSearchParams()
-  const router = useRouter()
   const [events, setEvents] = useState<ScheduleEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -43,10 +42,6 @@ function ScheduleContent() {
   const modalRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
 
-  // Redirect to under development page
-  useEffect(() => {
-    router.push('/under-development')
-  }, [router])
 
   useEffect(() => {
     async function fetchEvents() {
