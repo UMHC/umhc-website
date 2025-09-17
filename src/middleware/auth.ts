@@ -20,7 +20,7 @@ interface AuthErrorResponse {
 interface AuthSuccessResult {
   success: true;
   data: {
-    user: KindeUser;
+    user: KindeUser<Record<string, unknown>>;
     roles: KindeRoles | null;
     permissions: KindePermissions | null;
     hasCommitteeAccess: boolean;
@@ -351,7 +351,7 @@ export function hasPermission(permissions: KindePermissions | null, permissionKe
  */
 export function logSecurityEvent(
   event: string,
-  details: Record<string, any>,
+  details: Record<string, unknown>,
   request?: NextRequest
 ) {
   const logData = {

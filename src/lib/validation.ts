@@ -89,8 +89,7 @@ export const sanitizedStringValidator = (minLength: number, maxLength: number, f
 export const optionalSanitizedStringValidator = (maxLength: number) =>
   z.string()
     .max(maxLength, `Text cannot exceed ${maxLength} characters`)
-    .transform(str => str.trim() === '' ? null : str.trim())
-    .nullable()
+    .transform(str => str.trim() === '' ? undefined : str.trim())
     .optional();
 
 // ============================================================================
@@ -101,7 +100,7 @@ export const optionalSanitizedStringValidator = (maxLength: number) =>
  * User type enum for WhatsApp requests
  */
 export const userTypeSchema = z.enum(['alumni', 'public', 'incoming', 'other'], {
-  errorMap: () => ({ message: 'Please select a valid user type' })
+  message: 'Please select a valid user type'
 });
 
 /**
@@ -128,7 +127,7 @@ export const whatsAppRequestReviewSchema = z.object({
     z.number()
   ]).transform((val) => String(val)),
   action: z.enum(['approve', 'reject'], {
-    errorMap: () => ({ message: 'Action must be either approve or reject' })
+    message: 'Action must be either approve or reject'
   }),
   reviewedBy: sanitizedStringValidator(1, 100, 'Reviewer name')
 });
@@ -141,7 +140,7 @@ export const whatsAppRequestReviewSchema = z.object({
  * Transaction type enum
  */
 export const transactionTypeSchema = z.enum(['income', 'expense'], {
-  errorMap: () => ({ message: 'Transaction type must be either income or expense' })
+  message: 'Transaction type must be either income or expense'
 });
 
 /**
@@ -159,14 +158,14 @@ export const expenseCategorySchema = z.enum([
   'membership',
   'other'
 ], {
-  errorMap: () => ({ message: 'Please select a valid expense category' })
+  message: 'Please select a valid expense category'
 });
 
 /**
  * Budget period enum
  */
 export const budgetPeriodSchema = z.enum(['monthly', 'quarterly', 'annual'], {
-  errorMap: () => ({ message: 'Budget period must be monthly, quarterly, or annual' })
+  message: 'Budget period must be monthly, quarterly, or annual'
 });
 
 /**
@@ -220,7 +219,7 @@ export const budgetQuerySchema = z.object({
  * Event type enum
  */
 export const eventTypeSchema = z.enum(['hike', 'social', 'residential', 'other'], {
-  errorMap: () => ({ message: 'Please select a valid event type' })
+  message: 'Please select a valid event type'
 });
 
 /**
@@ -392,8 +391,8 @@ export async function validateRequestBody<T>(
     return { success: true, data: validatedData };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errorMessage = error.errors && Array.isArray(error.errors)
-        ? error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+      const errorMessage = error.issues && Array.isArray(error.issues)
+        ? error.issues.map((err: z.ZodIssue) => `${err.path.join('.')}: ${err.message}`).join(', ')
         : error.message || 'Validation failed';
       return { success: false, error: errorMessage };
     }
@@ -409,7 +408,7 @@ export function validateQueryParams<T>(
   schema: z.ZodSchema<T>
 ): { success: true; data: T } | { success: false; error: string } {
   try {
-    const params: Record<string, any> = {};
+    const params: Record<string, unknown> = {};
 
     // Convert URLSearchParams to object with proper type conversion
     for (const [key, value] of searchParams.entries()) {
@@ -431,8 +430,8 @@ export function validateQueryParams<T>(
     return { success: true, data: validatedData };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errorMessage = error.errors && Array.isArray(error.errors)
-        ? error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join(', ')
+      const errorMessage = error.issues && Array.isArray(error.issues)
+        ? error.issues.map((err: z.ZodIssue) => `${err.path.join('.')}: ${err.message}`).join(', ')
         : error.message || 'Validation failed';
       return { success: false, error: errorMessage };
     }

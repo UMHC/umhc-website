@@ -155,9 +155,8 @@ export async function cleanupExpiredTokens(): Promise<number> {
   try {
     // Try to use the stored function first
     const { error: rpcError } = await supabaseAdmin
-      .rpc('cleanup_expired_tokens', {}, {
-        schema: 'whatsapp_security'
-      });
+      .schema('whatsapp_security')
+      .rpc('cleanup_expired_tokens', {});
 
     if (!rpcError) {
       return 0; // Success but we don't get count from RPC

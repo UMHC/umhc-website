@@ -21,7 +21,7 @@ export interface CreateEventData {
   event_image?: string;
 }
 
-export interface UpdateEventData extends CreateEventData {
+export interface UpdateEventData extends Partial<CreateEventData> {
   id: number;
 }
 

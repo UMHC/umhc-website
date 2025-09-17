@@ -2,16 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { validateRequestBody, manualWhatsAppRequestSchema } from '@/lib/validation';
 
-interface ManualRequestData {
-  firstName: string;
-  surname: string;
-  phone: string;
-  email: string;
-  userType: string;
-  trips?: string;
-  turnstileToken: string;
-  website?: string; // Honeypot field
-}
+// interface ManualRequestData {
+//   firstName: string;
+//   surname: string;
+//   phone: string;
+//   email: string;
+//   userType: string;
+//   trips?: string;
+//   turnstileToken: string;
+//   website?: string; // Honeypot field
+// }
 
 
 // Verify Cloudflare Turnstile token

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import VerificationForm from '@/components/VerificationForm';
+// import VerificationForm from '@/components/VerificationForm';
 import UnderDevelopment from '@/app/under-development/page';
 
 export const metadata: Metadata = {

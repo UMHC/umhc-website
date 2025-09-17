@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Extract user and permission data from auth result
-    const { user, roles, permissions, hasFinanceAccess } = authResult.data;
+    const { user } = authResult.data;
 
     // Log security event for audit trail
     logSecurityEvent('finance_transaction_create_attempt', {
