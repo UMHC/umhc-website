@@ -1,21 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { createClient } from '@supabase/supabase-js';
 import { CachedFinanceService } from '@/lib/financeServiceCached';
+import { requireFinanceAccess } from '@/middleware/auth';
+import { validateRequestBody, validateQueryParams, createTransactionSchema, paginationSchema } from '@/lib/validation';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '20', 10);
 
-    // Validate parameters
-    if (page < 1 || limit < 1 || limit > 100) {
+    // Validate query parameters using Zod schema
+    const validationResult = validateQueryParams(searchParams, paginationSchema.partial());
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Invalid page or limit parameters' },
+        { error: validationResult.error },
         { status: 400 }
       );
     }
+
+    const { page = 1, limit = 20 } = validationResult.data;
 
     const result = await CachedFinanceService.getTransactions(page, limit);
 
@@ -38,147 +40,29 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const { getUser, isAuthenticated, getRoles, getPermissions } = getKindeServerSession();
-    
-    if (!isAuthenticated()) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireFinanceAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
-    
-    const user = await getUser();
-    if (!user) {
+
+    const { user } = authResult.data;
+
+    // Validate request body using Zod schema
+    const validationResult = await validateRequestBody(request, createTransactionSchema);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'User not found' },
-        { status: 401 }
-      );
-    }
-    
-    // Check authorization - only committee members or treasurers can add transactions
-    const [roles, permissions] = await Promise.all([
-      getRoles(), 
-      getPermissions()
-    ]);
-    const hasCommitteeRole = roles?.some(role => role.key === 'is-committee');
-    const hasTreasurerPermission = permissions?.permissions?.includes('is-treasurer') ?? false;
-    
-    if (!hasCommitteeRole && !hasTreasurerPermission) {
-      return NextResponse.json(
-        { error: 'Insufficient permissions. Committee or treasurer access required.' },
-        { status: 403 }
-      );
-    }
-    
-    const transaction = await request.json();
-    
-    // Validate required fields
-    if (!transaction.title || !transaction.amount || !transaction.type || !transaction.date) {
-      return NextResponse.json(
-        { error: 'Missing required fields: title, amount, type, date' },
+        { error: validationResult.error },
         { status: 400 }
       );
     }
-    
-    // Validate transaction type
-    if (!['income', 'expense'].includes(transaction.type)) {
-      return NextResponse.json(
-        { error: 'Invalid transaction type. Must be "income" or "expense"' },
-        { status: 400 }
-      );
-    }
-    
-    // Validate amount
-    if (typeof transaction.amount !== 'number' || transaction.amount <= 0) {
-      return NextResponse.json(
-        { error: 'Amount must be a positive number' },
-        { status: 400 }
-      );
-    }
-    
-    // Validate date
-    const transactionDate = new Date(transaction.date);
-    if (isNaN(transactionDate.getTime()) || transactionDate > new Date()) {
-      return NextResponse.json(
-        { error: 'Invalid date or future date not allowed' },
-        { status: 400 }
-      );
-    }
-    
-    // Validate category if provided
-    const validCategories = [
-      'accommodation', 'training', 'equipment', 'transport', 
-      'social_events', 'insurance', 'administration', 'food_catering', 
-      'membership', 'other'
-    ];
-    
-    if (transaction.category && !validCategories.includes(transaction.category)) {
-      return NextResponse.json(
-        { error: 'Invalid category' },
-        { status: 400 }
-      );
-    }
-    
-    // Sanitize inputs
-    const sanitizedTransaction = {
-      title: transaction.title.trim().substring(0, 100),
-      description: transaction.description ? transaction.description.trim().substring(0, 500) : '',
-      amount: Math.round(transaction.amount * 100) / 100, // Round to 2 decimal places
-      type: transaction.type,
-      category: transaction.category || null,
-      date: transaction.date
-    };
+
+    const sanitizedTransaction = validationResult.data;
     
     console.log('Attempting to add transaction:', sanitizedTransaction);
     console.log('User:', user.email);
     
-    // Create a Supabase client with service role key for admin operations
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    
-    console.log('Service role key available:', !!supabaseServiceRoleKey);
-    console.log('Service role key length:', supabaseServiceRoleKey?.length);
-    
-    if (!supabaseServiceRoleKey) {
-      return NextResponse.json(
-        { error: 'Server configuration error. Service role key not configured.' },
-        { status: 500 }
-      );
-    }
-    
-    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
-    
-    // First test if we can access the transactions table in finance schema
-    console.log('Testing table access in finance schema...');
-    try {
-      const { error: testError } = await supabaseAdmin
-        .schema('finance')
-        .from('transactions')
-        .select('id')
-        .limit(1);
-      
-      if (testError) {
-        console.error('Finance schema table access test failed:', {
-          message: testError.message,
-          details: testError.details,
-          hint: testError.hint,
-          code: testError.code,
-          fullError: testError
-        });
-      } else {
-        console.log('Finance schema table access test successful');
-      }
-    } catch (testErr) {
-      console.error('Finance schema table access test exception:', testErr);
-    }
-    
-    // Add transaction to finance schema (consistent with other services)
+    // Add transaction to finance schema using centralized supabase admin client
     console.log('Attempting to add transaction to finance.transactions...');
     const { data, error } = await supabaseAdmin
       .schema('finance')

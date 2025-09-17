@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { tokenStore, cleanupExpiredTokens } from '@/lib/tokenStore';
+import { getToken, markTokenAsUsed, cleanupExpiredTokens } from '@/lib/tokenStore';
 
 export async function GET(
   request: NextRequest,
@@ -13,32 +13,26 @@ export async function GET(
     }
     
     // Clean up expired tokens first
-    cleanupExpiredTokens();
-    
+    await cleanupExpiredTokens();
+
     // Check if token exists and is valid
-    const tokenData = tokenStore.get(token);
-    
+    const tokenData = await getToken(token);
+
     if (!tokenData) {
       return NextResponse.redirect(new URL('/verification-failed', request.url));
     }
-    
-    // Check if token has expired (24 hours)
-    const now = Date.now();
-    const expiry = 24 * 60 * 60 * 1000; // 24 hours
-    
-    if (now - tokenData.createdAt > expiry) {
-      tokenStore.delete(token);
-      return NextResponse.redirect(new URL('/verification-failed', request.url));
-    }
-    
+
     // Check if token has already been used
     if (tokenData.used) {
       return NextResponse.redirect(new URL('/verification-failed', request.url));
     }
-    
+
     // Mark token as used
-    tokenData.used = true;
-    tokenStore.set(token, tokenData);
+    const marked = await markTokenAsUsed(token);
+    if (!marked) {
+      console.error('Failed to mark token as used');
+      return NextResponse.redirect(new URL('/verification-failed', request.url));
+    }
     
     // Get WhatsApp link
     const whatsappLink = process.env.WHATSAPP_GROUP_LINK;

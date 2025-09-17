@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { Resend } from 'resend';
 import crypto from 'crypto';
-import { tokenStore, cleanupExpiredTokens } from '@/lib/tokenStore';
+import { createToken, deleteToken, cleanupExpiredTokens } from '@/lib/tokenStore';
 
 interface VerificationRequest {
   phone: string;
@@ -235,24 +235,33 @@ export async function POST(request: NextRequest) {
     }
     
     // Clean up expired tokens
-    cleanupExpiredTokens();
-    
+    await cleanupExpiredTokens();
+
     // Generate unique access token
     const accessToken = generateAccessToken();
-    
-    // Store token with user data (no persistent storage)
-    tokenStore.set(accessToken, {
+
+    // Store token with user data in persistent storage
+    const tokenCreated = await createToken(accessToken, {
       email,
       phone,
       trips,
       createdAt: Date.now(),
       used: false
     });
+
+    if (!tokenCreated) {
+      console.error('Failed to create token in database');
+      return NextResponse.json(
+        { error: 'Failed to create verification token. Please try again.' },
+        { status: 500 }
+      );
+    }
     
     // Send verification email
     const emailSent = await sendVerificationEmail(email, accessToken);
     if (!emailSent) {
-      tokenStore.delete(accessToken); // Clean up token if email failed
+      // Clean up token if email failed
+      await deleteToken(accessToken);
       return NextResponse.json(
         { error: 'Failed to send verification email. Please try again.' },
         { status: 500 }

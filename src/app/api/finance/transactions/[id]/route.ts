@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { CachedFinanceService } from '@/lib/financeServiceCached';
+import { requireTreasurerAccess } from '@/middleware/auth';
+import { validateRequestBody, updateTransactionSchema } from '@/lib/validation';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -8,37 +9,24 @@ interface RouteParams {
 
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    // Check authentication
-    const { getUser, isAuthenticated, getPermissions } = getKindeServerSession();
-    
-    if (!isAuthenticated()) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    const user = await getUser();
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 401 }
-      );
-    }
-
-    // Check if user has treasurer permission - only treasurers can edit transactions
-    const permissions = await getPermissions();
-    const hasTreasurerPermission = permissions?.permissions?.includes('is-treasurer') ?? false;
-    
-    if (!hasTreasurerPermission) {
-      return NextResponse.json(
-        { error: 'Treasurer permission required to edit transactions' },
-        { status: 403 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireTreasurerAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
     const { id } = await params;
-    const transaction = await request.json();
+
+    // Validate request body using Zod schema
+    const validationResult = await validateRequestBody(request, updateTransactionSchema);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: validationResult.error },
+        { status: 400 }
+      );
+    }
+
+    const transaction = validationResult.data;
     
     const result = await CachedFinanceService.updateTransaction(id, transaction);
 
@@ -53,43 +41,20 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    // Check authentication
-    const { getUser, isAuthenticated, getPermissions } = getKindeServerSession();
-    
-    if (!isAuthenticated()) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    const user = await getUser();
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 401 }
-      );
-    }
-
-    // Check if user has treasurer permission - only treasurers can delete transactions
-    const permissions = await getPermissions();
-    const hasTreasurerPermission = permissions?.permissions?.includes('is-treasurer') ?? false;
-    
-    if (!hasTreasurerPermission) {
-      return NextResponse.json(
-        { error: 'Treasurer permission required to delete transactions' },
-        { status: 403 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireTreasurerAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
     const { id } = await params;
     
     await CachedFinanceService.deleteTransaction(id);
 
-    // Return success without cache headers (mutations shouldn't be cached)
-    return NextResponse.json({ success: true });
+    // Return success response in standardized format
+    return NextResponse.json({ success: true, message: 'Transaction deleted successfully' });
   } catch (error) {
     console.error('Error deleting transaction:', error);
     return NextResponse.json(

@@ -1,26 +1,22 @@
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { NextResponse } from "next/server";
-import { hasFinancePermission } from "@/lib/permissions";
+import { NextRequest, NextResponse } from "next/server";
+import { requireFinanceAccess } from '@/middleware/auth';
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
-    const { getUser, getAccessToken, isAuthenticated, getRoles } = getKindeServerSession();
-    
-    if (!isAuthenticated()) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireFinanceAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
-    const user = await getUser();
+    const { user } = authResult.data;
+
+    // Get access token from Kinde session
+    const { getAccessToken } = await import("@kinde-oss/kinde-auth-nextjs/server").then(mod => mod.getKindeServerSession());
     const accessToken = await getAccessToken();
-    const roles = await getRoles();
 
-    if (!user || !accessToken) {
-      return NextResponse.json({ error: "User or token not found" }, { status: 401 });
-    }
-
-    // Verify user has committee or treasurer permissions
-    if (!hasFinancePermission(roles)) {
-      return NextResponse.json({ error: "Access denied: Committee member privileges required" }, { status: 403 });
+    if (!accessToken) {
+      return NextResponse.json({ error: "Access token not found" }, { status: 401 });
     }
 
     // Try using the user's access token first (recommended approach)

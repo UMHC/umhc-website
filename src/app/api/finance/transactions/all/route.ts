@@ -1,22 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { CachedFinanceService } from '@/lib/financeServiceCached';
-import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { requireCommitteeAccess } from '@/middleware/auth';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Check authentication
-    const { isAuthenticated, getRoles } = getKindeServerSession();
-    
-    if (!isAuthenticated()) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-    
-    // Check committee role
-    const roles = await getRoles();
-    const hasCommitteeRole = roles?.some(role => role.key === 'is-committee');
-    
-    if (!hasCommitteeRole) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireCommitteeAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
     const transactions = await CachedFinanceService.getAllTransactions();

@@ -1,28 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { hasCommitteePermission } from "@/lib/permissions";
 import { EventService, CreateEventData, UpdateEventData } from '@/lib/eventService';
+import { requireCommitteeAccess } from '@/middleware/auth';
+import { validateRequestBody, validateQueryParams, createEventSchema, updateEventSchema, deleteEventSchema } from '@/lib/validation';
 
 // GET - Fetch all events (same as regular schedule but with committee auth)
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { getUser, getRoles } = getKindeServerSession();
-    const user = await getUser();
-
-    if (!user?.email) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    const roles = await getRoles();
-    const hasAccess = hasCommitteePermission(roles);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: 'Committee access required' },
-        { status: 403 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireCommitteeAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
     // For now, we'll use the existing schedule service to get events
@@ -46,52 +33,24 @@ export async function GET() {
 // POST - Create new event
 export async function POST(request: NextRequest) {
   try {
-    const { getUser, getRoles } = getKindeServerSession();
-    const user = await getUser();
-
-    if (!user?.email) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireCommitteeAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
-    const roles = await getRoles();
-    const hasAccess = hasCommitteePermission(roles);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: 'Committee access required' },
-        { status: 403 }
-      );
-    }
+    const { user } = authResult.data;
 
-    const body: CreateEventData = await request.json();
-    
-    // Validate required fields
-    if (!body.title || !body.event_date || !body.event_type) {
+    // Validate request body using Zod schema
+    const validationResult = await validateRequestBody(request, createEventSchema);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Title, date, and event type are required' },
+        { error: validationResult.error },
         { status: 400 }
       );
     }
 
-    // Validate event type
-    const validTypes = ['hike', 'social', 'residential', 'other'];
-    if (!validTypes.includes(body.event_type)) {
-      return NextResponse.json(
-        { error: 'Invalid event type' },
-        { status: 400 }
-      );
-    }
-
-    // Validate date format
-    const eventDate = new Date(body.event_date);
-    if (isNaN(eventDate.getTime())) {
-      return NextResponse.json(
-        { error: 'Invalid date format' },
-        { status: 400 }
-      );
-    }
+    const body: CreateEventData = validationResult.data;
 
     // Create event
     const event = await EventService.createEvent(body);
@@ -119,64 +78,27 @@ export async function POST(request: NextRequest) {
 // PATCH - Update existing event
 export async function PATCH(request: NextRequest) {
   try {
-    const { getUser, getRoles } = getKindeServerSession();
-    const user = await getUser();
-
-    if (!user?.email) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireCommitteeAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
-    const roles = await getRoles();
-    const hasAccess = hasCommitteePermission(roles);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: 'Committee access required' },
-        { status: 403 }
-      );
-    }
+    const { user } = authResult.data;
 
-    const body: UpdateEventData = await request.json();
-    
-    // Validate required fields
-    if (!body.id || !body.title || !body.event_date || !body.event_type) {
+    // Validate request body using Zod schema
+    const validationResult = await validateRequestBody(request, updateEventSchema);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'ID, title, date, and event type are required' },
+        { error: validationResult.error },
         { status: 400 }
       );
     }
 
-    // Validate that ID is a number
-    const eventId = typeof body.id === 'string' ? parseInt(body.id, 10) : body.id;
-    if (isNaN(eventId)) {
-      return NextResponse.json(
-        { error: 'Invalid event ID' },
-        { status: 400 }
-      );
-    }
+    const body: UpdateEventData = validationResult.data;
 
-    // Validate event type
-    const validTypes = ['hike', 'social', 'residential', 'other'];
-    if (!validTypes.includes(body.event_type)) {
-      return NextResponse.json(
-        { error: 'Invalid event type' },
-        { status: 400 }
-      );
-    }
-
-    // Validate date format
-    const eventDate = new Date(body.event_date);
-    if (isNaN(eventDate.getTime())) {
-      return NextResponse.json(
-        { error: 'Invalid date format' },
-        { status: 400 }
-      );
-    }
-
-    // Update event with proper ID
-    const event = await EventService.updateEvent({ ...body, id: eventId });
+    // Update event
+    const event = await EventService.updateEvent(body);
 
     // Log the action for monitoring
     if (process.env.NODE_ENV === 'development') {
@@ -201,37 +123,28 @@ export async function PATCH(request: NextRequest) {
 // DELETE - Delete event
 export async function DELETE(request: NextRequest) {
   try {
-    const { getUser, getRoles } = getKindeServerSession();
-    const user = await getUser();
-
-    if (!user?.email) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireCommitteeAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
-    const roles = await getRoles();
-    const hasAccess = hasCommitteePermission(roles);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: 'Committee access required' },
-        { status: 403 }
-      );
-    }
-
+    const { user } = authResult.data;
     const { searchParams } = new URL(request.url);
-    const eventId = searchParams.get('id');
 
-    if (!eventId) {
+    // Validate query parameters using Zod schema
+    const validationResult = validateQueryParams(searchParams, deleteEventSchema);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Event ID is required' },
+        { error: validationResult.error },
         { status: 400 }
       );
     }
 
+    const { id: eventId } = validationResult.data;
+
     // Get event details for logging before deletion
-    const event = await EventService.getEventById(parseInt(eventId));
+    const event = await EventService.getEventById(eventId);
     if (!event) {
       return NextResponse.json(
         { error: 'Event not found' },
@@ -240,7 +153,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete event
-    await EventService.deleteEvent(parseInt(eventId));
+    await EventService.deleteEvent(eventId);
 
     // Log the action for monitoring
     if (process.env.NODE_ENV === 'development') {

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { hasCommitteePermission } from "@/lib/permissions";
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { Resend } from 'resend';
 import crypto from 'crypto';
-import { tokenStore, cleanupExpiredTokens } from '@/lib/tokenStore';
+import { createToken, cleanupExpiredTokens } from '@/lib/tokenStore';
+import { requireCommitteeAccess } from '@/middleware/auth';
+import { validateRequestBody, whatsAppRequestReviewSchema } from '@/lib/validation';
 
 
 // Generate unique access token
@@ -27,16 +27,21 @@ async function sendApprovalEmail(email: string, firstName: string, requestData: 
     const accessToken = generateAccessToken();
     
     // Clean up expired tokens first
-    cleanupExpiredTokens();
-    
+    await cleanupExpiredTokens();
+
     // Store token (using email as identifier since they don't have phone in this flow)
-    tokenStore.set(accessToken, {
+    const tokenCreated = await createToken(accessToken, {
       email,
       phone: '', // Will be empty for manual approvals
       trips: requestData.trips,
       createdAt: Date.now(),
       used: false
     });
+
+    if (!tokenCreated) {
+      console.error('Failed to create token in database');
+      return false;
+    }
     
     const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/whatsapp-access/${accessToken}`;
     
@@ -98,25 +103,12 @@ async function sendApprovalEmail(email: string, firstName: string, requestData: 
 }
 
 // GET - Fetch all WhatsApp requests
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { getUser, getRoles } = getKindeServerSession();
-    const user = await getUser();
-
-    if (!user?.email) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    const roles = await getRoles();
-    const hasAccess = hasCommitteePermission(roles);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: 'Committee access required' },
-        { status: 403 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireCommitteeAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
     // Fetch requests from secure Supabase schema, ordered by creation date (newest first)
@@ -152,34 +144,22 @@ export async function GET() {
 // PATCH - Approve or reject a request
 export async function PATCH(request: NextRequest) {
   try {
-    const { getUser, getRoles } = getKindeServerSession();
-    const user = await getUser();
-
-    if (!user?.email) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireCommitteeAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
-    const roles = await getRoles();
-    const hasAccess = hasCommitteePermission(roles);
-    if (!hasAccess) {
+    // Validate request body using Zod schema
+    const validationResult = await validateRequestBody(request, whatsAppRequestReviewSchema);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Committee access required' },
-        { status: 403 }
-      );
-    }
-
-    const body = await request.json();
-    const { requestId, action, reviewedBy } = body;
-
-    if (!requestId || !action || !['approve', 'reject'].includes(action)) {
-      return NextResponse.json(
-        { error: 'Invalid request parameters' },
+        { error: validationResult.error },
         { status: 400 }
       );
     }
+
+    const { requestId, action, reviewedBy } = validationResult.data;
 
     // Get the request details before updating from secure schema
     const { data: requestData, error: fetchError } = await supabaseAdmin

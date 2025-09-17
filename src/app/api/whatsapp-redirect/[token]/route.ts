@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { tokenStore } from '@/lib/tokenStore';
+import { getToken, deleteToken } from '@/lib/tokenStore';
 
 export async function POST(
   request: NextRequest,
@@ -30,21 +30,11 @@ export async function POST(
     }
     
     // Verify token exists and was already marked as used by the first API call
-    const tokenData = tokenStore.get(token);
-    
+    const tokenData = await getToken(token);
+
     if (!tokenData || !tokenData.used) {
       return NextResponse.json(
         { error: 'Invalid or unused token' },
-        { status: 400 }
-      );
-    }
-    
-    // Check token expiry again
-    const expiry = 24 * 60 * 60 * 1000; // 24 hours
-    if (now - tokenData.createdAt > expiry) {
-      tokenStore.delete(token);
-      return NextResponse.json(
-        { error: 'Token expired' },
         { status: 400 }
       );
     }
@@ -60,7 +50,7 @@ export async function POST(
     }
     
     // Clean up token after providing the link (single use)
-    tokenStore.delete(token);
+    await deleteToken(token);
     
     // Add additional obfuscation by base64 encoding the URL
     const obfuscatedUrl = Buffer.from(whatsappLink).toString('base64');

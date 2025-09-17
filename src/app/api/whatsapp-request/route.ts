@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isValidPhoneNumber } from 'libphonenumber-js';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { validateRequestBody, manualWhatsAppRequestSchema } from '@/lib/validation';
 
 interface ManualRequestData {
   firstName: string;
@@ -13,14 +13,6 @@ interface ManualRequestData {
   website?: string; // Honeypot field
 }
 
-// Validate international phone number
-function validateInternationalPhoneNumber(phone: string): boolean {
-  try {
-    return isValidPhoneNumber(phone);
-  } catch {
-    return false;
-  }
-}
 
 // Verify Cloudflare Turnstile token
 async function verifyTurnstile(token: string): Promise<boolean> {
@@ -84,20 +76,9 @@ function checkRateLimit(ip: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    const body: ManualRequestData = await request.json();
-    const { firstName, surname, phone, email, userType, trips, turnstileToken, website } = body;
-
-    // Honeypot check - if website field is filled, it's a bot
-    if (website && website.trim() !== '') {
-      return NextResponse.json(
-        { error: 'Bot detected' },
-        { status: 400 }
-      );
-    }
-
     // Rate limiting - simple IP-based check
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
-    
+
     if (!checkRateLimit(ip)) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
@@ -105,39 +86,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate required fields
-    if (!firstName?.trim() || !surname?.trim() || !phone?.trim() || !email?.trim() || !userType?.trim()) {
+    // Validate request body using Zod schema
+    const validationResult = await validateRequestBody(request, manualWhatsAppRequestSchema);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'All fields are required' },
-        { status: 400 }
-      );
-    }
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Please enter a valid email address' },
+        { error: validationResult.error },
         { status: 400 }
       );
     }
 
-    // Validate phone number
-    if (!validateInternationalPhoneNumber(phone)) {
-      return NextResponse.json(
-        { error: 'Invalid phone number format' },
-        { status: 400 }
-      );
-    }
-
-    // Validate user type
-    const validUserTypes = ['alumni', 'public', 'incoming', 'other'];
-    if (!validUserTypes.includes(userType)) {
-      return NextResponse.json(
-        { error: 'Invalid user type selection' },
-        { status: 400 }
-      );
-    }
+    const { firstName, surname, phone, email, userType, trips, turnstileToken } = validationResult.data;
 
     // Verify Turnstile token
     const turnstileValid = await verifyTurnstile(turnstileToken);
@@ -158,7 +116,7 @@ export async function POST(request: NextRequest) {
         email: email,
         phone: phone,
         user_type: userType,
-        trips: trips || null,
+        trips: trips,
         status: 'pending'
       });
     

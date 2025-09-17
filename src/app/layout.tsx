@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ConditionalLayout from "../components/ConditionalLayout";
 import PrivacyPopup from "@/components/PrivacyPopup";
+import ConsoleArt from "@/components/ConsoleArt";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -71,19 +72,6 @@ export default function RootLayout({
     ]
   };
 
-    const asciiArt = [
-      '',
-      '        /\\    /\\',
-      '  /\\  /  \\  /  \\    /\\      /\\',
-      ' /  \\/    \\/    \\  /  \\    /  \\',
-      '/           \\     \\/    \\  /    \\',
-      '----------------------------------',
-      '   Built by Will Hayes - 2025',
-      '----------------------------------',
-      '',
-    ].join('\n');
-
-    const consoleScript = `if (typeof window !== 'undefined') { console.log('%c' + ${JSON.stringify(asciiArt)}, 'white-space: pre; font-family: monospace; display: inline-block;'); }`;
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -98,7 +86,6 @@ export default function RootLayout({
             __html: JSON.stringify(organizationSchema),
           }}
         />
-  <script dangerouslySetInnerHTML={{ __html: consoleScript }} />
       </head>
       <body
         className={`${openSans.variable} antialiased font-sans bg-whellow`}
@@ -108,6 +95,7 @@ export default function RootLayout({
             {children}
           </ConditionalLayout>
           <PrivacyPopup />
+          <ConsoleArt />
         </AuthProvider>
         <Analytics/>
         <SpeedInsights/>

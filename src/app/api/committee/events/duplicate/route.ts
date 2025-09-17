@@ -1,42 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { hasCommitteePermission } from "@/lib/permissions";
 import { EventService } from '@/lib/eventService';
+import { requireCommitteeAccess } from '@/middleware/auth';
+import { validateRequestBody, duplicateEventSchema } from '@/lib/validation';
 
 // POST - Duplicate event
 export async function POST(request: NextRequest) {
   try {
-    const { getUser, getRoles } = getKindeServerSession();
-    const user = await getUser();
-
-    if (!user?.email) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireCommitteeAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
-    const roles = await getRoles();
-    const hasAccess = hasCommitteePermission(roles);
-    if (!hasAccess) {
-      return NextResponse.json(
-        { error: 'Committee access required' },
-        { status: 403 }
-      );
-    }
+    const { user } = authResult.data;
 
-    const body = await request.json();
-    const { eventId } = body;
-
-    if (!eventId) {
+    // Validate request body using Zod schema
+    const validationResult = await validateRequestBody(request, duplicateEventSchema);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Event ID is required' },
+        { error: validationResult.error },
         { status: 400 }
       );
     }
 
+    const { id: eventId } = validationResult.data;
+
     // Duplicate event
-    const duplicatedEvent = await EventService.duplicateEvent(parseInt(eventId));
+    const duplicatedEvent = await EventService.duplicateEvent(eventId);
 
     // Log the action for monitoring
     if (process.env.NODE_ENV === 'development') {

@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { BudgetService } from '@/lib/budgetService';
 import { ExpenseCategory } from '@/types/finance';
+import { requireTreasurerAccess } from '@/middleware/auth';
+import { validateRequestBody, validateQueryParams, budgetSchema, budgetQuerySchema } from '@/lib/validation';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const fiscalYear = searchParams.get('fiscalYear') 
-      ? parseInt(searchParams.get('fiscalYear')!) 
-      : undefined;
-    const type = searchParams.get('type') || 'budgets';
 
+    // Validate query parameters using Zod schema
+    const validationResult = validateQueryParams(searchParams, budgetQuerySchema);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: validationResult.error },
+        { status: 400 }
+      );
+    }
+
+    const { fiscalYear, type } = validationResult.data;
     console.log('Budget API called:', { type, fiscalYear });
 
     if (type === 'vs-actual') {
@@ -50,53 +57,22 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const { getUser, isAuthenticated, getPermissions } = getKindeServerSession();
-    
-    if (!isAuthenticated()) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireTreasurerAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
-    const user = await getUser();
-    if (!user) {
+    // Validate request body using Zod schema
+    const validationResult = await validateRequestBody(request, budgetSchema);
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'User not found' },
-        { status: 401 }
-      );
-    }
-
-    // Check if user has treasurer permission - only treasurers can edit budgets
-    const permissions = await getPermissions();
-    const hasTreasurerPermission = permissions?.permissions?.includes('is-treasurer') ?? false;
-    
-    if (!hasTreasurerPermission) {
-      return NextResponse.json(
-        { error: 'Treasurer access required to edit budgets' },
-        { status: 403 }
-      );
-    }
-
-    const body = await request.json();
-    const { category, budget_amount, fiscal_year, budget_period } = body;
-
-    // Validate required fields
-    if (!category || budget_amount === undefined) {
-      return NextResponse.json(
-        { error: 'Category and budget amount are required' },
+        { error: validationResult.error },
         { status: 400 }
       );
     }
 
-    // Validate budget amount
-    if (budget_amount < 0) {
-      return NextResponse.json(
-        { error: 'Budget amount must be non-negative' },
-        { status: 400 }
-      );
-    }
+    const { category, budget_amount, fiscal_year, budget_period } = validationResult.data;
 
     const result = await BudgetService.updateCategoryBudget(
       category as ExpenseCategory,
@@ -117,52 +93,32 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // Check authentication
-    const { getUser, isAuthenticated, getPermissions } = getKindeServerSession();
-    
-    if (!isAuthenticated()) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    const user = await getUser();
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 401 }
-      );
-    }
-
-    // Check if user has treasurer permission - only treasurers can edit budgets
-    const permissions = await getPermissions();
-    const hasTreasurerPermission = permissions?.permissions?.includes('is-treasurer') ?? false;
-    
-    if (!hasTreasurerPermission) {
-      return NextResponse.json(
-        { error: 'Treasurer access required to edit budgets' },
-        { status: 403 }
-      );
+    // Check authentication and authorization using centralized middleware
+    const authResult = await requireTreasurerAccess(request);
+    if (!authResult.success) {
+      return authResult.response;
     }
 
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category') as ExpenseCategory;
-    const fiscalYear = searchParams.get('fiscalYear') 
-      ? parseInt(searchParams.get('fiscalYear')!) 
-      : undefined;
-    const budgetPeriod = searchParams.get('budgetPeriod') as 'monthly' | 'quarterly' | 'annual' || 'annual';
 
-    if (!category) {
+    // Validate query parameters (partial budget schema for deletion)
+    const deleteValidationSchema = budgetSchema.pick({ category: true, fiscal_year: true, budget_period: true }).partial();
+    const validationResult = validateQueryParams(searchParams, deleteValidationSchema.extend({
+      category: budgetSchema.shape.category // Make category required for deletion
+    }));
+
+    if (!validationResult.success) {
       return NextResponse.json(
-        { error: 'Category is required' },
+        { error: validationResult.error },
         { status: 400 }
       );
     }
 
-    await BudgetService.deleteCategoryBudget(category, fiscalYear, budgetPeriod);
+    const { category, fiscal_year: fiscalYear, budget_period: budgetPeriod = 'annual' } = validationResult.data;
 
-    return NextResponse.json({ success: true });
+    await BudgetService.deleteCategoryBudget(category as ExpenseCategory, fiscalYear, budgetPeriod);
+
+    return NextResponse.json({ success: true, message: 'Budget deleted successfully' });
   } catch (error) {
     console.error('Error deleting budget:', error);
     return NextResponse.json(
