@@ -154,7 +154,7 @@ export default function Footer() {
                 </a>
                 
                 <a 
-                  href="/under-development" 
+                  href="/whatsapp" 
                   className="w-6 h-6 md:w-6 md:h-6 lg:w-7 lg:h-7 p-0.5 hover:scale-110 transition-transform duration-200 focus:outline-none focus:scale-110 rounded"
                   aria-label="Contact UMHC on WhatsApp"
                   target="_blank"

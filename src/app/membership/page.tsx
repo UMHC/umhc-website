@@ -69,7 +69,7 @@ export default function MembershipPage() {
   const studentFeatures: MembershipFeature[] = [
     { text: "Access to all hikes" },
     { text: "Access to all social events" },
-    { text: "Discounted hike tickets" },
+    { text: "Discounted hike tickets (£14.75)" },
     { text: "£15 million combined liability insurance (via BMC)" },
     { text: "£10000 personal accident insurance cover (via BMC)" },
     { text: "15% discount in Cotswold Outdoor, Snow+Rock, Runners Need and more (via BMC)" },
@@ -82,7 +82,7 @@ export default function MembershipPage() {
   const associateFeatures: MembershipFeature[] = [
     { text: "Access to hikes" },
     { text: "Access to ticketed social events" },
-    { text: "Discounted hike tickets" },
+    { text: "Discounted hike tickets (£14.75)" },
     { text: "£15 million combined liability insurance (via BMC)" },
     { text: "£10000 personal accident insurance cover (via BMC)" },
     { text: "15% discount in Cotswold Outdoor, Snow+Rock, Runners Need and more (via BMC)" },
@@ -122,7 +122,7 @@ export default function MembershipPage() {
             
             <MembershipCard
               title="Associate Membership (Non-UoM)"
-              price="£30"
+              price="£35"
               period="per year"
               buttonText="Purchase on the SU Website"
               features={associateFeatures}
