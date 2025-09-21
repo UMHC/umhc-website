@@ -3,6 +3,7 @@ import { isValidPhoneNumber } from 'libphonenumber-js';
 import { Resend } from 'resend';
 import crypto from 'crypto';
 import { createToken, deleteToken, cleanupExpiredTokens } from '@/lib/tokenStore';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 
 interface VerificationRequest {
   phone: string;
@@ -10,6 +11,11 @@ interface VerificationRequest {
   trips?: string;
   turnstileToken: string;
   website?: string; // Honeypot field
+}
+
+// Global verification code store
+declare global {
+  var verificationCodeStore: Map<string, { email: string; token: string; expiresAt: number }> | undefined;
 }
 
 // Validate international phone number
@@ -45,9 +51,16 @@ function generateAccessToken(): string {
   return crypto.randomBytes(32).toString('hex');
 }
 
+// Generate short, Outlook-safe verification code (6 digit numeric)
+function generateVerificationCode(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// generateShortCode function removed - using URL parameters instead
+
 
 // Send verification email via Resend
-async function sendVerificationEmail(email: string, token: string): Promise<boolean> {
+async function sendVerificationEmail(email: string, token: string, verificationCode: string): Promise<boolean> {
   try {
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
@@ -57,8 +70,14 @@ async function sendVerificationEmail(email: string, token: string): Promise<bool
     
     const resend = new Resend(apiKey);
     
-    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/whatsapp-access/${token}`;
-    
+    // Determine the base URL for production vs development
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
+    // Use instant verification with URL parameters (bypasses SafeLinks)
+    const instantVerificationUrl = `${baseUrl}/go?code=${verificationCode}`;
+    const fallbackUrl = `${baseUrl}/whatsapp-verify?code=${verificationCode}`;
+
     const { error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'UMHC <noreply@umhc.co.uk>',
       to: email,
@@ -66,39 +85,50 @@ async function sendVerificationEmail(email: string, token: string): Promise<bool
       html: `
         <div style="background-color: #FFFCF7; padding: 40px 0; font-family: 'Open Sans', Arial, sans-serif;">
         <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #FFFEFB; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
-          
+
           <!-- Logo section -->
           <div style="text-align: center; margin-bottom: 20px;">
             <img src="https://umhc.org.uk/api/logo?file=umhc-badge.webp" alt="UMHC Logo" width="120" style="max-width: 100%; height: auto; border: 0;">
           </div>
-          
+
           <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
             Hi,
           </p>
-          
+
           <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-            Here's the link to our WhatsApp group, please don't share this link with anyone. 
+            Here's your access to our WhatsApp group. We've provided multiple ways to join (email security may block some methods):
           </p>
-          
-          <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-            Thank you for your patience in this process.
-          </p>
-          
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${verificationUrl}" 
-              style="background-color: #1C5713; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">
-              Join WhatsApp Group
+
+          <!-- Instant verification method -->
+          <div style="text-align: center; margin: 30px 0; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
+            <h3 style="color: #1C5713; margin-bottom: 15px; font-size: 18px;">🚀 Instant Access Link</h3>
+            <a href="${instantVerificationUrl}"
+              style="background-color: #1C5713; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; margin-bottom: 15px; font-size: 16px;">
+              Join WhatsApp Group Instantly
             </a>
+            <p style="color: #666; font-size: 14px; margin: 0;">
+              Click the button above to join immediately
+            </p>
           </div>
-          
+
+          <!-- Fallback verification method -->
+          <div style="text-align: center; margin: 30px 0; padding: 20px; background-color: #fff3cd; border-radius: 8px;">
+            <h3 style="color: #856404; margin-bottom: 15px; font-size: 18px;">Method 2: Verification Code (If the link doesn't work)</h3>
+            <p style="color: #856404; font-size: 16px; margin-bottom: 15px;">Go to: <a href="${fallbackUrl}" style="color: #2E4E39; text-decoration: underline;">umhc.org.uk/whatsapp-verify</a></p>
+            <div style="background-color: #1C5713; color: white; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 2px; margin: 10px 0;">
+              ${verificationCode}
+            </div>
+            <p style="color: #856404; font-size: 14px; margin: 0;">Enter this 6-digit code on the verification page</p>
+          </div>
+
           <p style="color: #494949; font-size: 14px; line-height: 1.6; margin-top: 20px;">
-            This link is valid for 24 hours and can only be used once. If it expires, request access again <a href="https://umhc.org.uk/whatsapp" style="color: #2E4E39;">here</a>
+            Both methods are valid for 24 hours and can only be used once. If they expire, request access again <a href="https://umhc.org.uk/whatsapp" style="color: #2E4E39;">here</a>
           </p>
-          
+
           <p style="color: #494949; font-size: 14px; line-height: 1.6;">
-            We look forward to seeing you on the hills
+            We look forward to seeing you on the hills! 🏔️
           </p>
-          
+
         </div>
       </div>
       `,
@@ -234,11 +264,45 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Clean up expired tokens
+    // Clean up expired tokens and verification codes
     await cleanupExpiredTokens();
 
-    // Generate unique access token
+    // Clean up expired verification codes and short codes from database
+    try {
+      const currentTime = new Date().toISOString();
+
+      // Clean verification codes
+      await supabaseAdmin
+        .schema('whatsapp_security')
+        .from('verification_codes')
+        .delete()
+        .lt('expires_at', currentTime);
+
+      // Clean short codes (database cleanup disabled since we're using memory)
+      // await supabaseAdmin
+      //   .schema('whatsapp_security')
+      //   .from('short_codes')
+      //   .delete()
+      //   .lt('expires_at', currentTime);
+    } catch (error) {
+      console.error('Error cleaning up expired codes:', error);
+    }
+
+    // Clean up expired verification codes from memory
+    if (global.verificationCodeStore) {
+      const now = Date.now();
+      for (const [code, data] of global.verificationCodeStore.entries()) {
+        if (now > data.expiresAt) {
+          global.verificationCodeStore.delete(code);
+        }
+      }
+    }
+
+    // Short code cleanup removed - using URL parameters instead
+
+    // Generate unique access token and verification code
     const accessToken = generateAccessToken();
+    const verificationCode = generateVerificationCode();
 
     // Store token with user data in persistent storage
     const tokenCreated = await createToken(accessToken, {
@@ -256,9 +320,46 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-    
-    // Send verification email
-    const emailSent = await sendVerificationEmail(email, accessToken);
+
+    // Store verification code in database for persistence in serverless environment
+    try {
+      const { error: codeError } = await supabaseAdmin
+        .schema('whatsapp_security')
+        .from('verification_codes')
+        .insert({
+          code: verificationCode,
+          email,
+          token: accessToken,
+          expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        });
+
+      if (codeError) {
+        console.error('Failed to store verification code:', codeError);
+        // Fall back to in-memory storage if database fails
+        if (!global.verificationCodeStore) {
+          global.verificationCodeStore = new Map();
+        }
+        global.verificationCodeStore.set(verificationCode, {
+          email,
+          token: accessToken,
+          expiresAt: Date.now() + 24 * 60 * 60 * 1000
+        });
+      }
+    } catch (error) {
+      console.error('Database error storing verification code:', error);
+      // Fall back to in-memory storage
+      if (!global.verificationCodeStore) {
+        global.verificationCodeStore = new Map();
+      }
+      global.verificationCodeStore.set(verificationCode, {
+        email,
+        token: accessToken,
+        expiresAt: Date.now() + 24 * 60 * 60 * 1000
+      });
+    }
+
+    // Send verification email with instant verification
+    const emailSent = await sendVerificationEmail(email, accessToken, verificationCode);
     if (!emailSent) {
       // Clean up token if email failed
       await deleteToken(accessToken);

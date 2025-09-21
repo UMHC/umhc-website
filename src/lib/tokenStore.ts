@@ -9,6 +9,11 @@ export interface TokenData {
   used: boolean;
 }
 
+// Extended interface for in-memory storage that includes expiry
+interface TokenDataWithExpiry extends TokenData {
+  expiresAt?: number;
+}
+
 // Database row interface (internal use)
 interface TokenRow {
   id: string;
@@ -93,7 +98,7 @@ export async function getToken(token: string): Promise<TokenData | null> {
 
       // Check if token is expired (for in-memory storage)
       const now = Date.now();
-      if ((data as any).expiresAt && now > (data as any).expiresAt) {
+      if (data.expiresAt && now > data.expiresAt) {
         global.inMemoryTokenStore!.delete(token);
         return null;
       }
@@ -210,7 +215,7 @@ export async function cleanupExpiredTokens(): Promise<number> {
       let cleaned = 0;
 
       for (const [token, data] of global.inMemoryTokenStore!.entries()) {
-        if ((data as any).expiresAt && now > (data as any).expiresAt) {
+        if (data.expiresAt && now > data.expiresAt) {
           global.inMemoryTokenStore!.delete(token);
           cleaned++;
         }
@@ -250,12 +255,12 @@ export async function cleanupExpiredTokens(): Promise<number> {
 // In-memory fallback for when database is not available
 // Use global to persist across API route reloads in development
 declare global {
-  var inMemoryTokenStore: Map<string, TokenData> | undefined;
+  var inMemoryTokenStore: Map<string, TokenDataWithExpiry> | undefined;
 }
 
 // Initialize in-memory store
 if (!global.inMemoryTokenStore) {
-  global.inMemoryTokenStore = new Map<string, TokenData>();
+  global.inMemoryTokenStore = new Map<string, TokenDataWithExpiry>();
 }
 
 // Helper function to check if we should use in-memory fallback
@@ -269,7 +274,7 @@ async function shouldUseFallback(): Promise<boolean> {
       .limit(1);
 
     // If we get a table/schema not found error, use fallback
-    return error && (error.code === '42501' || error.code === '42P01');
+    return Boolean(error && (error.code === '42501' || error.code === '42P01'));
   } catch {
     return true; // Use fallback if any connection error
   }
