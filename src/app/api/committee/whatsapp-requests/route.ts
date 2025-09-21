@@ -1,18 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { Resend } from 'resend';
-import crypto from 'crypto';
 import { createToken, cleanupExpiredTokens } from '@/lib/tokenStore';
 import { requireCommitteeAccess } from '@/middleware/auth';
 import { validateRequestBody, whatsAppRequestReviewSchema } from '@/lib/validation';
 
-
-// Generate unique access token
-function generateAccessToken(): string {
-  return crypto.randomBytes(32).toString('hex');
-}
-
-// Send approval email with unique link
+// Send approval email with 6-digit verification code (same as instant verification)
 async function sendApprovalEmail(email: string, firstName: string, requestData: { trips?: string }): Promise<boolean> {
   try {
     const apiKey = process.env.RESEND_API_KEY;
@@ -20,17 +13,17 @@ async function sendApprovalEmail(email: string, firstName: string, requestData: 
       console.error('RESEND_API_KEY not configured');
       return false;
     }
-    
+
     const resend = new Resend(apiKey);
-    
-    // Generate unique access token
-    const accessToken = generateAccessToken();
-    
+
+    // Generate 6-digit verification code (same as instant verification)
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
     // Clean up expired tokens first
     await cleanupExpiredTokens();
 
-    // Store token (using email as identifier since they don't have phone in this flow)
-    const tokenCreated = await createToken(accessToken, {
+    // Store verification code (using email as identifier since they don't have phone in this flow)
+    const tokenCreated = await createToken(verificationCode, {
       email,
       phone: '', // Will be empty for manual approvals
       trips: requestData.trips,
@@ -39,62 +32,73 @@ async function sendApprovalEmail(email: string, firstName: string, requestData: 
     });
 
     if (!tokenCreated) {
-      console.error('Failed to create token in database');
+      console.error('Failed to create verification code in database');
       return false;
     }
-    
-    const verificationUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/whatsapp-access/${accessToken}`;
-    
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const instantVerificationUrl = `${baseUrl}/go?code=${verificationCode}`;
+    const manualVerificationUrl = `${baseUrl}/whatsapp-verify?code=${verificationCode}`;
+
     const { error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'UMHC <noreply@umhc.co.uk>',
       to: email,
-      subject: 'UMHC WhatsApp Group Link',
+      subject: 'UMHC WhatsApp Group Access Approved',
       html: `
         <div style="background-color: #FFFCF7; padding: 40px 0; font-family: 'Open Sans', Arial, sans-serif;">
         <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #FFFEFB; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
-          
+
           <!-- Logo section -->
           <div style="text-align: center; margin-bottom: 20px;">
             <img src="https://umhc.org.uk/api/logo?file=umhc-badge.webp" alt="UMHC Logo" width="120" style="max-width: 100%; height: auto; border: 0;">
           </div>
-          
+
           <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
             Hi ${firstName},
           </p>
-          
+
           <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-            Here's the link to our WhatsApp group, please don't share this link with anyone. 
+            Great news! Your request to join the UMHC WhatsApp group has been approved.
           </p>
-          
+
           <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-            Thank you for your patience in this process.
+            Click the button below to instantly join our WhatsApp group:
           </p>
-          
+
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${verificationUrl}" 
+            <a href="${instantVerificationUrl}"
               style="background-color: #1C5713; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">
               Join WhatsApp Group
             </a>
           </div>
-          
+
           <p style="color: #494949; font-size: 14px; line-height: 1.6; margin-top: 20px;">
-            This link is valid for 24 hours and can only be used once. If it expires, request access again <a href="https://umhc.org.uk/whatsapp" style="color: #2E4E39;">here</a>
+            <strong>Alternative:</strong> If the button doesn't work, you can manually enter your verification code <a href="${manualVerificationUrl}" style="color: #2E4E39;">here</a>
           </p>
-          
+
+          <div style="text-align: center; margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+            <p style="color: #494949; font-size: 14px; margin: 0;">Your verification code:</p>
+            <p style="color: #1C5713; font-size: 24px; font-weight: bold; font-family: monospace; margin: 5px 0; letter-spacing: 3px;">${verificationCode}</p>
+          </div>
+
           <p style="color: #494949; font-size: 14px; line-height: 1.6;">
-            We look forward to seeing you on the hills
+            This verification code is valid for 24 hours and can only be used once. Please don't share this code or link with anyone.
           </p>
-          
+
+          <p style="color: #494949; font-size: 14px; line-height: 1.6;">
+            Thank you for your patience in this process. We look forward to seeing you on the hills!
+          </p>
+
         </div>
       </div>
       `,
     });
-    
+
     if (error) {
       console.error('Approval email sending error:', error);
       return false;
     }
-    
+
     return true;
   } catch (error) {
     console.error('Approval email sending error:', error);
