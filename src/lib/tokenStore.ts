@@ -36,6 +36,24 @@ function rowToTokenData(row: TokenRow): TokenData {
 // Create a new token in the database
 export async function createToken(token: string, tokenData: TokenData): Promise<boolean> {
   try {
+    // Check if we should use fallback
+    const useFallback = await shouldUseFallback();
+
+    if (useFallback) {
+      console.log('Using in-memory token storage fallback');
+      // Add expiry information to token data
+      const tokenWithExpiry = {
+        ...tokenData,
+        expiresAt: tokenData.createdAt + 24 * 60 * 60 * 1000 // 24 hours from now
+      };
+      global.inMemoryTokenStore!.set(token, tokenWithExpiry);
+      return true;
+    }
+
+    // Set expiry to 24 hours from creation
+    const createdAt = new Date(tokenData.createdAt);
+    const expiresAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000);
+
     const { error } = await supabaseAdmin
       .schema('whatsapp_security')
       .from('verification_tokens')
@@ -44,16 +62,12 @@ export async function createToken(token: string, tokenData: TokenData): Promise<
         email: tokenData.email,
         phone: tokenData.phone,
         trips: tokenData.trips || null,
-        created_at: new Date(tokenData.createdAt).toISOString(),
+        created_at: createdAt.toISOString(),
+        expires_at: expiresAt.toISOString(),
         used: tokenData.used
       });
 
     if (error) {
-      // If table doesn't exist, log but don't fail the whole operation
-      if (error.code === '42501' || error.code === '42P01') {
-        console.log('Token storage table not set up yet - token not persisted');
-        return true; // Don't fail the whole operation
-      }
       console.error('Error creating token:', error);
       return false;
     }
@@ -68,6 +82,25 @@ export async function createToken(token: string, tokenData: TokenData): Promise<
 // Get token data from the database
 export async function getToken(token: string): Promise<TokenData | null> {
   try {
+    // Check if we should use fallback
+    const useFallback = await shouldUseFallback();
+
+    if (useFallback) {
+      const data = global.inMemoryTokenStore!.get(token);
+      if (!data) {
+        return null;
+      }
+
+      // Check if token is expired (for in-memory storage)
+      const now = Date.now();
+      if ((data as any).expiresAt && now > (data as any).expiresAt) {
+        global.inMemoryTokenStore!.delete(token);
+        return null;
+      }
+
+      return data;
+    }
+
     const { data, error } = await supabaseAdmin
       .schema('whatsapp_security')
       .from('verification_tokens')
@@ -76,11 +109,7 @@ export async function getToken(token: string): Promise<TokenData | null> {
       .single();
 
     if (error) {
-      // If table doesn't exist, this is expected - return null gracefully
-      if (error.code === '42501' || error.code === '42P01') {
-        console.log('Token storage table not set up yet - token verification skipped');
-        return null;
-      }
+      console.error('Error retrieving token:', error);
       return null;
     }
 
@@ -108,6 +137,13 @@ export async function getToken(token: string): Promise<TokenData | null> {
 // Delete a token from the database
 export async function deleteToken(token: string): Promise<boolean> {
   try {
+    // Check if we should use fallback
+    const useFallback = await shouldUseFallback();
+
+    if (useFallback) {
+      return global.inMemoryTokenStore!.delete(token);
+    }
+
     const { error } = await supabaseAdmin
       .schema('whatsapp_security')
       .from('verification_tokens')
@@ -129,6 +165,18 @@ export async function deleteToken(token: string): Promise<boolean> {
 // Mark a token as used
 export async function markTokenAsUsed(token: string): Promise<boolean> {
   try {
+    // Check if we should use fallback
+    const useFallback = await shouldUseFallback();
+
+    if (useFallback) {
+      const data = global.inMemoryTokenStore!.get(token);
+      if (data) {
+        global.inMemoryTokenStore!.set(token, { ...data, used: true });
+        return true;
+      }
+      return false;
+    }
+
     const { error } = await supabaseAdmin
       .schema('whatsapp_security')
       .from('verification_tokens')
@@ -153,6 +201,24 @@ export async function markTokenAsUsed(token: string): Promise<boolean> {
 // Clean up expired tokens (24 hour expiry)
 export async function cleanupExpiredTokens(): Promise<number> {
   try {
+    // Check if we should use fallback
+    const useFallback = await shouldUseFallback();
+
+    if (useFallback) {
+      // Clean up expired tokens from in-memory store
+      const now = Date.now();
+      let cleaned = 0;
+
+      for (const [token, data] of global.inMemoryTokenStore!.entries()) {
+        if ((data as any).expiresAt && now > (data as any).expiresAt) {
+          global.inMemoryTokenStore!.delete(token);
+          cleaned++;
+        }
+      }
+
+      return cleaned;
+    }
+
     // Try to use the stored function first
     const { error: rpcError } = await supabaseAdmin
       .schema('whatsapp_security')
@@ -170,12 +236,7 @@ export async function cleanupExpiredTokens(): Promise<number> {
       .lt('expires_at', new Date().toISOString());
 
     if (fallbackError) {
-      // If table doesn't exist, that's fine - no tokens to clean up
-      if (fallbackError.code === '42501' || fallbackError.code === '42P01') {
-        console.log('Token storage table not set up yet - skipping cleanup');
-        return 0;
-      }
-      console.error('Fallback cleanup failed:', fallbackError);
+      console.error('Cleanup failed:', fallbackError);
       return 0;
     }
 
@@ -186,13 +247,36 @@ export async function cleanupExpiredTokens(): Promise<number> {
   }
 }
 
+// In-memory fallback for when database is not available
+// Use global to persist across API route reloads in development
+declare global {
+  var inMemoryTokenStore: Map<string, TokenData> | undefined;
+}
+
+// Initialize in-memory store
+if (!global.inMemoryTokenStore) {
+  global.inMemoryTokenStore = new Map<string, TokenData>();
+}
+
+// Helper function to check if we should use in-memory fallback
+async function shouldUseFallback(): Promise<boolean> {
+  // Quick test to see if Supabase is properly configured
+  try {
+    const { error } = await supabaseAdmin
+      .schema('whatsapp_security')
+      .from('verification_tokens')
+      .select('*')
+      .limit(1);
+
+    // If we get a table/schema not found error, use fallback
+    return error && (error.code === '42501' || error.code === '42P01');
+  } catch {
+    return true; // Use fallback if any connection error
+  }
+}
+
 // Legacy compatibility functions for existing code
 // These maintain the same interface as the old in-memory store
-
-// Use global to persist across API route reloads in development (for backwards compatibility during migration)
-declare global {
-  var tokenStore: Map<string, TokenData> | undefined;
-}
 
 // Legacy Map-like interface for backwards compatibility
 export const tokenStore = {

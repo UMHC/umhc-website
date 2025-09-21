@@ -284,7 +284,7 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ eventId }),
+        body: JSON.stringify({ id: eventId }),
       });
 
       const result = await response.json();
