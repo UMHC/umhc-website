@@ -251,6 +251,37 @@ export default function EquipmentPage() {
             items={backpackItems}
           />
 
+          {/* Additional Equipment Section */}
+          <section
+            id="additional-equipment"
+            className="flex flex-col gap-3 sm:gap-3.5 w-full max-w-[1120px] px-4 sm:px-0"
+            aria-labelledby="heading-additional-equipment"
+            role="region"
+          >
+            <header>
+              <h2
+                id="heading-additional-equipment"
+                className="font-semibold text-xl sm:text-2xl md:text-3xl lg:text-[32px] text-black font-sans leading-tight mb-2 sm:mb-3"
+                tabIndex={-1}
+              >
+                Additional Equipment
+              </h2>
+              <p className="font-medium text-sm sm:text-base lg:text-[16px] text-black font-sans leading-relaxed max-w-6xl">
+                As well as the equipment shown above, we also recommend you bring the following items on our day hikes to make it much more enjoyable for you and safer for everyone else:
+              </p>
+              <div className="mt-4">
+                <ul className="font-medium text-sm sm:text-base lg:text-[16px] text-black font-sans leading-relaxed max-w-6xl list-disc pl-6 space-y-2">
+                  <li>Lunch and lots of snacks</li>
+                  <li>Plenty of water (Ideally at least 1.5L)</li>
+                  <li>Hat and Gloves</li>
+                  <li>Spare warm layers</li>
+                  <li>Headtorch</li>
+                  <li>Waterproof trousers</li>
+                </ul>
+              </div>
+            </header>
+          </section>
+
         </main>
       </div>
     </div>
