@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
-  CalendarDaysIcon, 
+import {
+  CalendarDaysIcon,
   ArrowRightOnRectangleIcon,
-  ChatBubbleLeftRightIcon
+  ChatBubbleLeftRightIcon,
+  Cog6ToothIcon
 } from '@heroicons/react/24/outline';
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
@@ -63,6 +64,13 @@ export default function CommitteeConsoleClient({ user }: CommitteeConsoleClientP
       icon: ChatBubbleLeftRightIcon,
       href: '/committee/whatsapp-requests',
       color: 'bg-purple-500 hover:bg-purple-600'
+    },
+    {
+      label: 'WhatsApp Console',
+      description: 'Manage WhatsApp links, monitor access, and generate QR codes',
+      icon: Cog6ToothIcon,
+      href: '/committee/whatsapp-console',
+      color: 'bg-green-500 hover:bg-green-600'
     }
   ];
 

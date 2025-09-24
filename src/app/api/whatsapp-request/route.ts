@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { validateRequestBody, manualWhatsAppRequestSchema } from '@/lib/validation';
+import { checkForDuplicates, formatDuplicateError } from '@/lib/access-tokens';
 
 // interface ManualRequestData {
 //   firstName: string;
@@ -102,6 +103,15 @@ export async function POST(request: NextRequest) {
     if (!turnstileValid) {
       return NextResponse.json(
         { error: 'Security verification failed' },
+        { status: 400 }
+      );
+    }
+
+    // Check for duplicate email/phone combinations
+    const duplicateCheck = await checkForDuplicates(email, phone);
+    if (duplicateCheck.emailUsed || duplicateCheck.phoneUsed) {
+      return NextResponse.json(
+        { error: formatDuplicateError() },
         { status: 400 }
       );
     }

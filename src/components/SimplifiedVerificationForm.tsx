@@ -5,10 +5,6 @@ import Button from './Button';
 import Image from 'next/image';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 
-interface ManualRequestFormProps {
-  onSuccess?: () => void;
-}
-
 interface TurnstileOptions {
   sitekey: string;
   theme?: 'light' | 'dark' | 'auto';
@@ -24,19 +20,12 @@ declare global {
       render: (container: string | HTMLElement, options: TurnstileOptions) => string;
       reset: (widgetId?: string) => void;
     };
-    onTurnstileLoad?: () => void;
-    onTurnstileSuccess?: (token: string) => void;
-    onTurnstileError?: () => void;
   }
 }
 
-export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps) {
-  const [firstName, setFirstName] = useState('');
-  const [surname, setSurname] = useState('');
-  const [phone, setPhone] = useState('');
+export default function SimplifiedVerificationForm() {
   const [email, setEmail] = useState('');
-  const [userType, setUserType] = useState('');
-  const [trips, setTrips] = useState('');
+  const [phone, setPhone] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const [turnstileWidgetId, setTurnstileWidgetId] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -45,90 +34,82 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
   const [turnstileLoaded, setTurnstileLoaded] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  // International phone number validation
+  // Email validation for .ac.uk domains
+  const validateEmail = (emailAddress: string) => {
+    if (!emailAddress.trim()) {
+      return { valid: false, message: 'University email address is required' };
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailAddress)) {
+      return { valid: false, message: 'Please enter a valid email address' };
+    }
+
+    // Parse email to check domain
+    const emailParts = emailAddress.toLowerCase().split('@');
+    if (emailParts.length !== 2) {
+      return { valid: false, message: 'Please enter a valid email address' };
+    }
+
+    const domain = emailParts[1];
+    // Check if domain is exactly 'ac.uk' or ends with '.ac.uk'
+    if (domain !== 'ac.uk' && !domain.endsWith('.ac.uk')) {
+      return {
+        valid: false,
+        message: `Due to security concerns, automatic access is restricted to users with '.ac.uk' email addresses. You can request manual access via the manual request form and a committee member will approve it.`,
+        showLink: true
+      };
+    }
+
+    return { valid: true };
+  };
+
+  // Phone number validation
   const validatePhoneNumber = (phoneNumber: string) => {
     try {
       if (!phoneNumber.trim()) {
         return { valid: false, message: 'Phone number is required' };
       }
-      
+
       const isValid = isValidPhoneNumber(phoneNumber);
       if (!isValid) {
         return { valid: false, message: 'Please enter a valid phone number with country code (e.g., +44 7123 456 789)' };
       }
-      
+
       return { valid: true };
     } catch {
       return { valid: false, message: 'Please enter a valid phone number with country code' };
     }
   };
 
-  // Email validation
-  const validateEmail = (emailAddress: string) => {
-    if (!emailAddress.trim()) {
-      return { valid: false, message: 'Email address is required' };
-    }
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailAddress)) {
-      return { valid: false, message: 'Please enter a valid email address' };
-    }
-    
-    return { valid: true };
-  };
-
   // Load Turnstile script and initialize
   useEffect(() => {
-    // Check if script already exists
     if (document.querySelector('script[src*="turnstile"]')) {
       if (window.turnstile) {
         setTurnstileLoaded(true);
         return;
       }
     }
-    
+
     const script = document.createElement('script');
     script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
     script.async = true;
     script.defer = true;
-    
+
     script.onload = () => {
-      // Wait a bit for the API to be available
       setTimeout(() => {
         if (window.turnstile) {
           setTurnstileLoaded(true);
-        } else if (process.env.NODE_ENV === 'development') {
-          console.error('Turnstile API not available after script load');
         }
       }, 100);
     };
-    
-    script.onerror = (error) => {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to load Turnstile script:', error);
-      }
+
+    script.onerror = () => {
       setError('Failed to load security verification. Please refresh the page.');
     };
-    
-    // Set up global callbacks
-    window.onTurnstileSuccess = (token: string) => {
-      setTurnstileToken(token);
-      setError(''); // Clear any previous errors
-    };
-    
-    window.onTurnstileError = () => {
-      // Check current token state (get fresh value)
-      const currentToken = document.querySelector('input[name="cf-turnstile-response"]') as HTMLInputElement;
-      if (currentToken && currentToken.value) {
-        return;
-      }
-      
-      setTurnstileToken('');
-      setError('Security verification failed. Please try again.');
-    };
-    
+
     document.head.appendChild(script);
-    
+
     return () => {
       try {
         if (document.head.contains(script)) {
@@ -143,30 +124,18 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
   // Render Turnstile when loaded
   useEffect(() => {
     if (turnstileLoaded && window.turnstile && !turnstileWidgetId) {
-      // Check if container exists
       const container = document.getElementById('turnstile-container');
-      if (!container) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('Turnstile container not found');
-        }
-        return;
-      }
-      
+      if (!container) return;
+
       try {
         const widgetId = window.turnstile.render(container, {
           sitekey: '0x4AAAAAABjQtmXdSHD15CPT',
           theme: 'light',
           callback: (token: string) => {
             setTurnstileToken(token);
-            setError(''); // Clear any previous errors
+            setError('');
           },
           'error-callback': () => {
-            // Check if we have a valid token in DOM (fresh check)
-            const currentToken = document.querySelector('input[name="cf-turnstile-response"]') as HTMLInputElement;
-            if (currentToken && currentToken.value) {
-              return;
-            }
-            
             setTurnstileToken('');
             setError('Security verification failed. Please try again.');
           },
@@ -178,12 +147,9 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
             setError('Security verification timed out. Please try again.');
           },
         });
-        
+
         setTurnstileWidgetId(widgetId);
-      } catch (renderError) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('Error rendering Turnstile widget:', renderError);
-        }
+      } catch {
         setError('Failed to initialize security verification. Please refresh the page.');
       }
     }
@@ -192,144 +158,84 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate required fields
-    if (!firstName.trim()) {
-      setError('First name is required');
-      return;
-    }
-    
-    if (!surname.trim()) {
-      setError('Surname is required');
-      return;
-    }
-    
-    // Validate phone number
-    const phoneValidation = validatePhoneNumber(phone);
-    if (!phoneValidation.valid) {
-      setError(phoneValidation.message || 'Invalid phone number');
-      return;
-    }
-    
+
     // Validate email address
     const emailValidation = validateEmail(email);
     if (!emailValidation.valid) {
       setError(emailValidation.message || 'Invalid email address');
       return;
     }
-    
-    // Validate user type selection
-    if (!userType) {
-      setError('Please select what you would consider yourself');
+
+    // Validate phone number
+    const phoneValidation = validatePhoneNumber(phone);
+    if (!phoneValidation.valid) {
+      setError(phoneValidation.message || 'Invalid phone number');
       return;
     }
-    
+
     // Check if terms are accepted
     if (!termsAccepted) {
       setError('You must agree to the Terms of Service and Privacy Policy to continue.');
       return;
     }
-    
+
     // Check if Turnstile is completed
     if (!turnstileToken) {
       setError('Please complete the security verification.');
       return;
     }
-    
+
     setIsSubmitting(true);
     setError('');
     setSuccess('');
-    
+
     try {
       // Get honeypot field value
       const websiteField = document.querySelector('input[name="website"]') as HTMLInputElement;
       const websiteValue = websiteField?.value || '';
-      
-      const response = await fetch('/api/whatsapp-request', {
+
+      const response = await fetch('/api/whatsapp-simplified', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName,
-          surname,
-          phone,
           email,
-          userType,
-          trips,
+          phone,
           turnstileToken,
           website: websiteValue,
         }),
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok) {
-        setSuccess('Your request has been submitted successfully! A committee member will review your request and get back to you via email as soon as possible.');
         setError('');
-        // Reset form
-        setFirstName('');
-        setSurname('');
-        setPhone('');
+        setSuccess('Success! A verification link has been sent to your university email address. Check your inbox and click the link to join the WhatsApp group.');
+
+        // Clear form after successful submission
         setEmail('');
-        setUserType('');
-        setTrips('');
+        setPhone('');
         setTurnstileToken('');
         setTermsAccepted(false);
-        // Reset Turnstile
+
+        // Reset Turnstile widget
         if (window.turnstile && turnstileWidgetId) {
           window.turnstile.reset(turnstileWidgetId);
         }
-        
-        if (onSuccess) {
-          onSuccess();
-        }
       } else {
-        throw new Error(data.error || 'Request submission failed');
+        setError(data.error || 'Verification failed');
       }
-      
+
     } catch {
-      setError('Request submission failed. Please check your details and try again.');
+      setError('Verification failed. Please check your details and try again.');
+      setSuccess('');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const canSubmit = turnstileToken && termsAccepted && !isSubmitting;
-  
-  // Fallback polling mechanism to detect completed Turnstile
-  useEffect(() => {
-    if (!turnstileToken && turnstileWidgetId) {
-      const pollInterval = setInterval(() => {
-        // Check if widget shows as completed
-        const widget = document.querySelector(`[data-widget-id="${turnstileWidgetId}"]`) || 
-                      document.querySelector('.cf-turnstile');
-        
-        if (widget) {
-          // Look for success indicators in the widget
-          const successElement = widget.querySelector('.mark') || 
-                                 widget.querySelector('[data-state="success"]') ||
-                                 widget.querySelector('.success');
-          
-          if (successElement) {
-            // Try to extract token from widget or use a placeholder
-            const hiddenInput = widget.querySelector('input[type="hidden"]') as HTMLInputElement;
-            if (hiddenInput && hiddenInput.value) {
-              setTurnstileToken(hiddenInput.value);
-              clearInterval(pollInterval);
-            }
-          }
-        }
-      }, 1000);
-      
-      // Clean up after 30 seconds
-      setTimeout(() => {
-        clearInterval(pollInterval);
-      }, 30000);
-      
-      return () => clearInterval(pollInterval);
-    }
-  }, [turnstileToken, turnstileWidgetId]);
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 items-center justify-start w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto">
@@ -342,89 +248,60 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
         autoComplete="off"
         aria-hidden="true"
       />
-      
+
       {/* Header Section */}
       <div className="flex flex-col items-center justify-start w-full">
         {/* Gate Illustration */}
         <div className="mb-6 sm:mb-8">
-          <Image 
-            src="/images/bot-gate-illustration.webp" 
+          <Image
+            src="/images/bot-gate-illustration.webp"
             alt="Illustration of a wooden gate surrounded by evergreen trees in a forest setting"
             width={410}
             height={273}
-            className="mx-auto w-full max-w-[280px] sm:max-w-[350px] md:max-w-[410px] h-auto"
+            className="mx-auto w-full max-w-[280px] sm:max-w-[350px] md:max-w-[410px]"
+            style={{ width: "auto", height: "auto" }}
             priority
             sizes="(max-width: 640px) 280px, (max-width: 768px) 350px, 410px"
           />
         </div>
-        
+
         {/* Title and Subtitle */}
         <div className="text-center w-full">
           <h1 className="font-sans font-semibold text-3xl sm:text-4xl md:text-5xl text-deep-black mb-3 sm:mb-4 leading-tight">
-            Request WhatsApp Access
+            Join Our Community
           </h1>
-          <p className="font-sans font-medium text-lg sm:text-xl text-deep-black px-2">
-            Please fill in your details below and a committee member will review your request to join our WhatsApp community.
+          <p className="font-sans font-medium text-base sm:text-lg text-deep-black px-2">
+            Enter your university email address to get instant access to our WhatsApp community.
+            If you don&apos;t have a <code className="font-mono bg-gray-100 px-1 rounded">.ac.uk</code> email,
+            you can <a href="/whatsapp-request" className="font-medium text-umhc-green hover:underline">request access manually</a>.
           </p>
         </div>
       </div>
 
       {/* Form Section */}
-      <form 
-        onSubmit={handleSubmit} 
+      <form
+        onSubmit={handleSubmit}
         className="flex flex-col gap-4 sm:gap-5 md:gap-6 w-full max-w-xs sm:max-w-sm md:max-w-lg"
         role="form"
-        aria-label="WhatsApp manual access request form"
+        aria-label="WhatsApp verification form"
       >
-        {/* First Name Input */}
-        <div className="flex flex-col gap-1 w-full">
-          <label htmlFor="firstName" className="font-sans font-medium text-sm text-deep-black">
-            First Name
-          </label>
-          <input
-            type="text"
-            id="firstName"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder="John"
-            required
-            className="w-full h-12 sm:h-14 md:h-15 px-3 sm:px-4 py-3 sm:py-4 bg-cream-white border-2 border-gray-200 rounded-lg focus:border-umhc-green focus:outline-none transition-colors font-sans text-sm sm:text-base"
-          />
-        </div>
-
-        {/* Surname Input */}
-        <div className="flex flex-col gap-1 w-full">
-          <label htmlFor="surname" className="font-sans font-medium text-sm text-deep-black">
-            Surname
-          </label>
-          <input
-            type="text"
-            id="surname"
-            value={surname}
-            onChange={(e) => setSurname(e.target.value)}
-            placeholder="Smith"
-            required
-            className="w-full h-12 sm:h-14 md:h-15 px-3 sm:px-4 py-3 sm:py-4 bg-cream-white border-2 border-gray-200 rounded-lg focus:border-umhc-green focus:outline-none transition-colors font-sans text-sm sm:text-base"
-          />
-        </div>
-
-        {/* Email Input */}
+        {/* University Email Input */}
         <div className="flex flex-col gap-1 w-full">
           <label htmlFor="email" className="font-sans font-medium text-sm text-deep-black">
-            Email Address
+            University Email Address
           </label>
           <input
             type="email"
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="your.email@example.com"
+            placeholder="your.name@student.manchester.ac.uk"
             required
             className="w-full h-12 sm:h-14 md:h-15 px-3 sm:px-4 py-3 sm:py-4 bg-cream-white border-2 border-gray-200 rounded-lg focus:border-umhc-green focus:outline-none transition-colors font-sans text-sm sm:text-base"
             aria-describedby="email-help"
           />
           <p id="email-help" className="text-xs sm:text-sm text-slate-grey mt-1 font-sans">
-            We&apos;ll send the approval notification to this email address
+            Enter your university email address ending in .ac.uk
           </p>
         </div>
 
@@ -444,46 +321,7 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
             aria-describedby="phone-help"
           />
           <p id="phone-help" className="text-xs sm:text-sm text-slate-grey mt-1 font-sans">
-            Enter your phone number with country code (e.g., +44 for UK, +1 for US)
-          </p>
-        </div>
-
-        {/* User Type Selection */}
-        <div className="flex flex-col gap-1 w-full">
-          <label htmlFor="userType" className="font-sans font-medium text-sm text-deep-black">
-            What would you consider yourself?
-          </label>
-          <select
-            id="userType"
-            value={userType}
-            onChange={(e) => setUserType(e.target.value)}
-            required
-            className="w-full h-12 sm:h-14 md:h-15 px-3 sm:px-4 py-3 sm:py-4 bg-cream-white border-2 border-gray-200 rounded-lg focus:border-umhc-green focus:outline-none transition-colors font-sans text-sm sm:text-base"
-          >
-            <option value="">Please select...</option>
-            <option value="alumni">An alumni</option>
-            <option value="public">A member of the public</option>
-            <option value="incoming">An incoming student</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-
-        {/* Previous Trips Input */}
-        <div className="flex flex-col gap-1 w-full">
-          <label htmlFor="trips" className="font-sans font-medium text-sm text-deep-black">
-            Please list any trips you have been on with us (optional)
-          </label>
-          <textarea
-            id="trips"
-            value={trips}
-            onChange={(e) => setTrips(e.target.value)}
-            placeholder="e.g., Peak District day hike in October 2024, Lake District weekend in September 2024..."
-            rows={3}
-            className="w-full px-3 sm:px-4 py-3 sm:py-4 bg-cream-white border-2 border-gray-200 rounded-lg focus:border-umhc-green focus:outline-none transition-colors font-sans text-sm sm:text-base resize-vertical min-h-[80px]"
-            aria-describedby="trips-help"
-          />
-          <p id="trips-help" className="text-xs sm:text-sm text-slate-grey mt-1 font-sans">
-            This helps us understand your experience with UMHC (leave blank if this is your first time)
+            Enter your phone number with country code (e.g., +44 for UK, +1 for US). This helps us verify WhatsApp group members.
           </p>
         </div>
 
@@ -500,9 +338,9 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
             />
             <label htmlFor="terms" className="font-sans text-sm text-deep-black leading-relaxed">
               I agree to the{' '}
-              <a 
-                href="/terms" 
-                target="_blank" 
+              <a
+                href="/terms"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-umhc-green hover:text-stealth-green underline font-medium transition-colors"
               >
@@ -518,14 +356,13 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
           <label htmlFor="turnstile-container" className="sr-only">
             Security verification challenge
           </label>
-          <div 
-            id="turnstile-container" 
+          <div
+            id="turnstile-container"
             className="min-h-[78px] flex items-center justify-center"
             role="region"
             aria-label="Security verification widget"
             aria-live="polite"
           >
-            {/* Turnstile widget will render here */}
             {!turnstileLoaded && (
               <div className="text-slate-grey text-xs sm:text-sm font-sans" aria-live="polite">
                 Loading security verification...
@@ -541,7 +378,7 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
 
         {/* Success Message */}
         {success && (
-          <div 
+          <div
             className="bg-green-50 border border-green-200 text-green-700 px-3 sm:px-4 py-2 sm:py-3 rounded-md text-xs sm:text-sm font-sans leading-relaxed"
             role="status"
             aria-live="polite"
@@ -557,7 +394,15 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
             role="alert"
             aria-live="assertive"
           >
-            {error.includes('whatsapp@umhc.org.uk') ? (
+            {error.includes('manual request') ? (
+              <>
+                Due to security concerns, automatic access is restricted to users with &apos;.ac.uk&apos; email addresses. You can{' '}
+                <a href="/whatsapp-request" className="text-umhc-green underline hover:text-stealth-green">
+                  request access manually
+                </a>
+                {' '}and a committee member will approve it.
+              </>
+            ) : error.includes('whatsapp@umhc.org.uk') ? (
               // Handle duplicate detection errors with contact information
               <div>
                 {error.split('whatsapp@umhc.org.uk').map((part, index, array) => (
@@ -580,7 +425,7 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
           </div>
         )}
 
-        {/* Submit Button */}
+        {/* Continue Button */}
         <div className="flex justify-center">
           <Button
             type="submit"
@@ -588,14 +433,13 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
             className="px-6 sm:px-8 py-2 sm:py-3 text-base sm:text-lg"
             aria-describedby="submit-help"
           >
-            {isSubmitting ? 'Submitting Request...' : 'Submit Request'}
+            {isSubmitting ? 'Sending...' : 'Get Access Link'}
           </Button>
           <div id="submit-help" className="sr-only">
             {!canSubmit && !turnstileToken ? 'Complete security verification to enable button' :
-             'Submit your manual access request'}
+             'Submit the form to receive WhatsApp access link via email'}
           </div>
         </div>
-
       </form>
     </div>
   );

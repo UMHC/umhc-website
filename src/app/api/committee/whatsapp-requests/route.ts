@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { Resend } from 'resend';
-import { createToken, cleanupExpiredTokens } from '@/lib/tokenStore';
+// import { createToken, cleanupExpiredTokens } from '@/lib/tokenStore';
 import { requireCommitteeAccess } from '@/middleware/auth';
 import { validateRequestBody, whatsAppRequestReviewSchema } from '@/lib/validation';
 
-// Send approval email with 6-digit verification code (same as instant verification)
-async function sendApprovalEmail(email: string, firstName: string, requestData: { trips?: string }): Promise<boolean> {
+// Send approval email with fragment-based verification link
+async function sendApprovalEmail(email: string, firstName: string): Promise<boolean> {
   try {
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
@@ -16,29 +16,19 @@ async function sendApprovalEmail(email: string, firstName: string, requestData: 
 
     const resend = new Resend(apiKey);
 
-    // Generate 6-digit verification code (same as instant verification)
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // Import the new access token system
+    const { createAccessToken } = await import('@/lib/access-tokens');
 
-    // Clean up expired tokens first
-    await cleanupExpiredTokens();
+    // Create fragment token for manual approval
+    const token = await createAccessToken(email, 'manual_approval');
 
-    // Store verification code (using email as identifier since they don't have phone in this flow)
-    const tokenCreated = await createToken(verificationCode, {
-      email,
-      phone: '', // Will be empty for manual approvals
-      trips: requestData.trips,
-      createdAt: Date.now(),
-      used: false
-    });
-
-    if (!tokenCreated) {
-      console.error('Failed to create verification code in database');
+    if (!token) {
+      console.error('Failed to create access token for manual approval');
       return false;
     }
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const instantVerificationUrl = `${baseUrl}/go?code=${verificationCode}`;
-    const manualVerificationUrl = `${baseUrl}/whatsapp-verify?code=${verificationCode}`;
+    const fragmentUrl = `${baseUrl}/join#${token}`;
 
     const { error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'UMHC <noreply@umhc.co.uk>',
@@ -62,31 +52,30 @@ async function sendApprovalEmail(email: string, firstName: string, requestData: 
           </p>
 
           <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-            Click the button below to instantly join our WhatsApp group:
+            Click the button below to join our WhatsApp group:
           </p>
 
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${instantVerificationUrl}"
-              style="background-color: #1C5713; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">
+            <a href="${fragmentUrl}"
+              style="background-color: #1C5713; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; font-size: 16px;">
               Join WhatsApp Group
             </a>
           </div>
 
           <p style="color: #494949; font-size: 14px; line-height: 1.6; margin-top: 20px;">
-            <strong>Alternative:</strong> If the button doesn't work, you can manually enter your verification code <a href="${manualVerificationUrl}" style="color: #2E4E39;">here</a>
+            <strong>Can't click the button?</strong> Copy and paste this link into your browser:
           </p>
 
-          <div style="text-align: center; margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
-            <p style="color: #494949; font-size: 14px; margin: 0;">Your verification code:</p>
-            <p style="color: #1C5713; font-size: 24px; font-weight: bold; font-family: monospace; margin: 5px 0; letter-spacing: 3px;">${verificationCode}</p>
+          <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 10px; margin: 10px 0; word-break: break-all;">
+            <code style="color: #1C5713; font-size: 14px;">${fragmentUrl}</code>
           </div>
 
           <p style="color: #494949; font-size: 14px; line-height: 1.6;">
-            This verification code is valid for 24 hours and can only be used once. Please don't share this code or link with anyone.
+            This link is valid for 24 hours and can only be used once. Please don't share this link with anyone.
           </p>
 
           <p style="color: #494949; font-size: 14px; line-height: 1.6;">
-            Thank you for your patience in this process. We look forward to seeing you on the hills!
+            Thank you for your patience in this process. We look forward to seeing you on the hills! 🏔️
           </p>
 
         </div>
@@ -203,7 +192,7 @@ export async function PATCH(request: NextRequest) {
 
     // If approved, send email with access link
     if (action === 'approve') {
-      const emailSent = await sendApprovalEmail(requestData.email, requestData.first_name, requestData);
+      const emailSent = await sendApprovalEmail(requestData.email, requestData.first_name);
       if (!emailSent) {
         // Log warning but don't fail the request
         console.warn(`Approval processed but email failed for request ${requestId}`);
