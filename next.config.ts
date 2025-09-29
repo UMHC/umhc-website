@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    qualities: [75, 85, 90, 95, 100], // Add quality 85 and other common values
     minimumCacheTTL: 31536000, // 1 year for static images
     remotePatterns: [
       {
@@ -23,6 +24,52 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      // Static image cache headers for image optimization cost reduction
+      {
+        source: '/images/activity-images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable', // 1 year, immutable
+          },
+        ],
+      },
+      {
+        source: '/images/equipment/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable', // 1 year, immutable
+          },
+        ],
+      },
+      {
+        source: '/images/umhc-(.*).webp',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable', // 1 year, immutable
+          },
+        ],
+      },
+      {
+        source: '/images/hero-image/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable', // 1 year, immutable
+          },
+        ],
+      },
+      {
+        source: '/logos/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable', // 1 year, immutable
+          },
+        ],
+      },
       {
         source: '/(.*)',
         headers: [
