@@ -106,9 +106,6 @@ export default function MembershipPage() {
               membership is only available to University of Manchester students, 
               whilst the associate membership is available to anyone.
             </p>
-            <p className="text-xs sm:text-sm font-medium text-slate-grey mt-3 max-w-4xl mx-auto">
-              <em>Provisional Pricing</em>
-            </p>
           </div>
 
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-center justify-center">
