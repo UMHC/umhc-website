@@ -67,7 +67,7 @@ export default function SchedulePreview() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const data = await getScheduleEvents()
+        const data = await getScheduleEvents(true) // Only fetch upcoming events
         // Get next 4 upcoming events for more compact display
         const upcomingEvents = data.slice(0, 4)
         setEvents(upcomingEvents)
