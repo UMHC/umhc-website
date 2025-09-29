@@ -444,7 +444,7 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
             aria-describedby="phone-help"
           />
           <p id="phone-help" className="text-xs sm:text-sm text-slate-grey mt-1 font-sans">
-            Enter your phone number with country code (e.g., +44 for UK, +1 for US)
+            Enter the phone number with the country code (e.g., +44 for UK, +1 for US) that you will be using to join the WhatsApp Community with. This helps us verify WhatsApp group members.
           </p>
         </div>
 

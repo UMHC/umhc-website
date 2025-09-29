@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isValidPhoneNumber } from 'libphonenumber-js';
-import { Resend } from 'resend';
+// import { Resend } from 'resend'; // DEPRECATED: Keeping commented for rollback
+import { sendMailgunEmail } from '@/lib/mailgun';
 import crypto from 'crypto';
 import { createToken, deleteToken, cleanupExpiredTokens } from '@/lib/tokenStore';
 import { supabaseAdmin } from '@/lib/supabase-admin';
@@ -59,16 +60,19 @@ function generateVerificationCode(): string {
 // generateShortCode function removed - using URL parameters instead
 
 
-// Send verification email via Resend
+// Send verification email via Mailgun
 async function sendVerificationEmail(email: string, token: string, verificationCode: string): Promise<boolean> {
   try {
+    // DEPRECATED: Resend implementation kept for rollback
+    /*
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
       console.error('RESEND_API_KEY not configured');
       return false;
     }
-    
+
     const resend = new Resend(apiKey);
+    */
     
     // Determine the base URL for production vs development
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
@@ -78,6 +82,8 @@ async function sendVerificationEmail(email: string, token: string, verificationC
     const instantVerificationUrl = `${baseUrl}/go?code=${verificationCode}`;
     const fallbackUrl = `${baseUrl}/whatsapp-verify?code=${verificationCode}`;
 
+    // DEPRECATED: Resend email sending kept for rollback
+    /*
     const { error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'UMHC <noreply@umhc.co.uk>',
       to: email,
@@ -133,13 +139,73 @@ async function sendVerificationEmail(email: string, token: string, verificationC
       </div>
       `,
     });
-    
+    */
+
+    // NEW: Mailgun email sending
+    const emailSent = await sendMailgunEmail({
+      to: email,
+      from: process.env.MAILGUN_FROM_EMAIL || 'UMHC <noreply@verify.umhc.org.uk>',
+      subject: 'UMHC WhatsApp Group Link',
+      html: `
+        <div style="background-color: #FFFCF7; padding: 40px 0; font-family: 'Open Sans', Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #FFFEFB; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+
+          <!-- Logo section -->
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://umhc.org.uk/api/logo?file=umhc-badge.webp" alt="UMHC Logo" width="120" style="max-width: 100%; height: auto; border: 0;">
+          </div>
+
+          <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Hi,
+          </p>
+
+          <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Here's your access to our WhatsApp group. We've provided multiple ways to join (email security may block some methods):
+          </p>
+
+          <!-- Instant verification method -->
+          <div style="text-align: center; margin: 30px 0; padding: 20px; background-color: #f8f9fa; border-radius: 8px;">
+            <h3 style="color: #1C5713; margin-bottom: 15px; font-size: 18px;">🚀 Instant Access Link</h3>
+            <a href="${instantVerificationUrl}"
+              style="background-color: #1C5713; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; margin-bottom: 15px; font-size: 16px;">
+              Join WhatsApp Group Instantly
+            </a>
+            <p style="color: #666; font-size: 14px; margin: 0;">
+              Click the button above to join immediately
+            </p>
+          </div>
+
+          <!-- Fallback verification method -->
+          <div style="text-align: center; margin: 30px 0; padding: 20px; background-color: #fff3cd; border-radius: 8px;">
+            <h3 style="color: #856404; margin-bottom: 15px; font-size: 18px;">Method 2: Verification Code (If the link doesn't work)</h3>
+            <p style="color: #856404; font-size: 16px; margin-bottom: 15px;">Go to: <a href="${fallbackUrl}" style="color: #2E4E39; text-decoration: underline;">umhc.org.uk/whatsapp-verify</a></p>
+            <div style="background-color: #1C5713; color: white; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 2px; margin: 10px 0;">
+              ${verificationCode}
+            </div>
+            <p style="color: #856404; font-size: 14px; margin: 0;">Enter this 6-digit code on the verification page</p>
+          </div>
+
+          <p style="color: #494949; font-size: 14px; line-height: 1.6; margin-top: 20px;">
+            Both methods are valid for 24 hours and can only be used once. If they expire, request access again <a href="https://umhc.org.uk/whatsapp" style="color: #2E4E39;">here</a>
+          </p>
+
+          <p style="color: #494949; font-size: 14px; line-height: 1.6;">
+            We look forward to seeing you on the hills! 🏔️
+          </p>
+
+        </div>
+      </div>
+      `
+    });
+
+    /* DEPRECATED: Resend error handling kept for rollback
     if (error) {
       console.error('Email sending error:', error);
       return false;
     }
-    
-    return true;
+    */
+
+    return emailSent;
   } catch (error) {
     console.error('Email sending error:', error);
     return false;

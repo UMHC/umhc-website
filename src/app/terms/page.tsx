@@ -112,7 +112,7 @@ export default function TermsPage() {
             sectionText={`• "User", "you", or "your" means any individual accessing or using the Services.
 • "Committee Member" means an authorised representative of UMHC with administrative or decision-making responsibilities.
 • "Personal Data" means any information relating to an identified or identifiable natural person as defined under the UK General Data Protection Regulation ("UK GDPR").
-• "Third-Party Providers" means the external services UMHC engages, including but not limited to Supabase, Kinde, Resend, Vercel, Cloudflare, and WhatsApp.`}
+• "Third-Party Providers" means the external services UMHC engages, including but not limited to Supabase, Kinde, Mailgun, Vercel, Cloudflare, and WhatsApp.`}
           />
 
           <TermsSection
@@ -128,7 +128,7 @@ UMHC may collect and process the following Personal Data when you submit a manua
 	•	Optional: trip participation history with UMHC
 
 When automatic access is granted, we process the following:
-	•	Email address (for delivery of the WhatsApp link via Resend)
+	•	Email address (for delivery of the WhatsApp link via Mailgun)
 	•	Telephone number, provided once by the User as a verification step to reduce automated and fraudulent submissions. This number is processed transiently for validation purposes only. It is not stored, or retained in any database or system controlled by UMHC or its Third-Party Providers.
 
 2.2 Website and Analytics Data
@@ -171,7 +171,7 @@ If you contact UMHC by email, we will process any Personal Data contained in you
             sectionText={`UMHC does not sell Personal Data. Data may be shared only with Third-Party Providers strictly necessary to operate the Services, namely:
 • Supabase (data storage)
 • Kinde (authentication and committee management)
-• Resend (email sending)
+• Mailgun (email sending)
 • Vercel (hosting, analytics, performance monitoring)
 • Cloudflare (security and optimisation)
 • WhatsApp (community hosting, subject to WhatsApp's own terms)
@@ -220,7 +220,7 @@ No system can guarantee absolute security. UMHC shall not be held liable for una
             sectionText={`• The Services are provided on an "as is" and "as available" basis.
 • UMHC disclaims all warranties, express or implied, including but not limited to fitness for a particular purpose.
 • UMHC shall not be liable for indirect, incidental, or consequential damages arising out of or related to use of the Services.
-• UMHC shall not be responsible for interruptions, errors, or failures caused by Third-Party Providers, including but not limited to WhatsApp, Vercel, Supabase, Resend, Cloudflare, or Kinde.
+• UMHC shall not be responsible for interruptions, errors, or failures caused by Third-Party Providers, including but not limited to WhatsApp, Vercel, Supabase, Mailgun, Cloudflare, or Kinde.
 • To the maximum extent permitted by law, UMHC's total liability to any User shall not exceed £100.`}
           />
 

@@ -225,6 +225,15 @@ export default function SimplifiedVerificationForm() {
         }
       } else {
         setError(data.error || 'Verification failed');
+
+        // Only reset Turnstile if it's not a rate limiting error (status 429 or 503)
+        // Rate limiting errors should keep the error message visible
+        if (response.status !== 429 && response.status !== 503) {
+          setTurnstileToken('');
+          if (window.turnstile && turnstileWidgetId) {
+            window.turnstile.reset(turnstileWidgetId);
+          }
+        }
       }
 
     } catch {
@@ -321,7 +330,7 @@ export default function SimplifiedVerificationForm() {
             aria-describedby="phone-help"
           />
           <p id="phone-help" className="text-xs sm:text-sm text-slate-grey mt-1 font-sans">
-            Enter your phone number with country code (e.g., +44 for UK, +1 for US). This helps us verify WhatsApp group members.
+            Enter the phone number with the country code (e.g., +44 for UK, +1 for US) that you will be using to join the WhatsApp Community with. This helps us verify WhatsApp group members.
           </p>
         </div>
 

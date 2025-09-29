@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isValidPhoneNumber } from 'libphonenumber-js';
-import { Resend } from 'resend';
-import { createAccessToken, cleanupExpiredTokens, checkForDuplicates, formatDuplicateError } from '@/lib/access-tokens';
+// import { Resend } from 'resend'; // DEPRECATED: Keeping commented for rollback
+import { sendMailgunEmailWithError } from '@/lib/mailgun';
+import { createAccessToken, cleanupExpiredTokens, checkForDuplicates, formatDuplicateError, deleteAccessToken } from '@/lib/access-tokens';
 
 interface VerificationRequest {
   email: string;
@@ -10,18 +11,41 @@ interface VerificationRequest {
   website?: string; // Honeypot field
 }
 
-// Rate limiting - simple IP-based check
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+// Rate limiting - IP-based and email/phone-based checks
+const ipRateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const emailPhoneRateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
-function checkRateLimit(ip: string): boolean {
+function checkIPRateLimit(ip: string): boolean {
   const now = Date.now();
   const windowMs = 15 * 60 * 1000; // 15 minutes
-  const maxAttempts = 3; // Reduced for simplified flow
+  const maxAttempts = 5; // IP-based limit
 
-  const record = rateLimitMap.get(ip);
+  const record = ipRateLimitMap.get(ip);
 
   if (!record || now > record.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    ipRateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+
+  if (record.count >= maxAttempts) {
+    return false;
+  }
+
+  record.count++;
+  return true;
+}
+
+function checkEmailPhoneRateLimit(email: string, phone: string): boolean {
+  const now = Date.now();
+  const windowMs = 30 * 60 * 1000; // 30 minute window for email/phone combo
+  const maxAttempts = 3; // 3 attempts per email/phone combo per 30 minutes
+
+  // Create a key combining email and phone for rate limiting
+  const key = `${email.toLowerCase()}:${phone}`;
+  const record = emailPhoneRateLimitMap.get(key);
+
+  if (!record || now > record.resetTime) {
+    emailPhoneRateLimitMap.set(key, { count: 1, resetTime: now + windowMs });
     return true;
   }
 
@@ -93,23 +117,16 @@ async function verifyTurnstile(token: string): Promise<boolean> {
   }
 }
 
-// Send fragment-based verification email
-async function sendFragmentVerificationEmail(email: string, token: string): Promise<boolean> {
+// Send fragment-based verification email with detailed error handling
+async function sendFragmentVerificationEmail(email: string, token: string): Promise<{ success: boolean; isRateLimit?: boolean; error?: string }> {
   try {
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) {
-      console.error('RESEND_API_KEY not configured');
-      return false;
-    }
-
-    const resend = new Resend(apiKey);
-
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const fragmentUrl = `${baseUrl}/join#${token}`;
 
-    const { error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'UMHC <noreply@umhc.co.uk>',
+    // Use new Mailgun function with error details
+    const result = await sendMailgunEmailWithError({
       to: email,
+      from: process.env.MAILGUN_FROM_EMAIL || 'UMHC <noreply@verify.umhc.org.uk>',
       subject: 'UMHC WhatsApp Group Access',
       html: `
         <div style="background-color: #FFFCF7; padding: 40px 0; font-family: 'Open Sans', Arial, sans-serif;">
@@ -153,18 +170,25 @@ async function sendFragmentVerificationEmail(email: string, token: string): Prom
 
         </div>
       </div>
-      `,
+      `
     });
 
-    if (error) {
-      console.error('Email sending error:', error);
-      return false;
+    if (result.success) {
+      return { success: true };
+    } else {
+      return {
+        success: false,
+        isRateLimit: result.error?.isRateLimit,
+        error: result.error?.error
+      };
     }
-
-    return true;
   } catch (error) {
     console.error('Email sending error:', error);
-    return false;
+    return {
+      success: false,
+      isRateLimit: false,
+      error: 'Email sending failed'
+    };
   }
 }
 
@@ -181,12 +205,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Rate limiting
+    // Rate limiting - both IP and email/phone based
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
-    if (!checkRateLimit(ip)) {
+    // Check IP-based rate limit
+    if (!checkIPRateLimit(ip)) {
       return NextResponse.json(
-        { error: 'Too many attempts. Please try again later.' },
+        { error: 'Too many attempts from your network. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
+    // Check email/phone combination rate limit
+    if (!checkEmailPhoneRateLimit(email, phone)) {
+      return NextResponse.json(
+        { error: 'You have already requested access with these details recently. Please check your email for the verification link, or wait 30 minutes before trying again.' },
         { status: 429 }
       );
     }
@@ -240,12 +273,23 @@ export async function POST(request: NextRequest) {
     }
 
     // Send fragment-based verification email
-    const emailSent = await sendFragmentVerificationEmail(email, token);
-    if (!emailSent) {
-      return NextResponse.json(
-        { error: 'Failed to send verification email. Please try again.' },
-        { status: 500 }
-      );
+    const emailResult = await sendFragmentVerificationEmail(email, token);
+
+    if (!emailResult.success) {
+      // Clean up the token we just created since email failed
+      await deleteAccessToken(token);
+
+      if (emailResult.isRateLimit) {
+        return NextResponse.json(
+          { error: 'We\'re experiencing high email volume right now. Please try again in a few hours, or contact us directly if urgent.' },
+          { status: 503 } // Service Temporarily Unavailable
+        );
+      } else {
+        return NextResponse.json(
+          { error: emailResult.error || 'Failed to send verification email. Please try again.' },
+          { status: 500 }
+        );
+      }
     }
 
     // Log successful verification for monitoring

@@ -211,6 +211,29 @@ export async function logAccess(
 }
 
 /**
+ * Delete a specific access token (for cleanup when email sending fails)
+ */
+export async function deleteAccessToken(token: string): Promise<boolean> {
+  try {
+    const { error } = await supabaseAdmin
+      .schema('whatsapp_security')
+      .from('access_tokens')
+      .delete()
+      .eq('token', token);
+
+    if (error) {
+      console.error('Error deleting access token:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Unexpected error deleting access token:', error);
+    return false;
+  }
+}
+
+/**
  * Clean up expired tokens (call periodically)
  */
 export async function cleanupExpiredTokens(): Promise<number> {

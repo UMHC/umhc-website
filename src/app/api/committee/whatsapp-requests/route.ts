@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { Resend } from 'resend';
+// import { Resend } from 'resend'; // DEPRECATED: Keeping commented for rollback
+import { sendMailgunEmail } from '@/lib/mailgun';
 // import { createToken, cleanupExpiredTokens } from '@/lib/tokenStore';
 import { requireCommitteeAccess } from '@/middleware/auth';
 import { validateRequestBody, whatsAppRequestReviewSchema } from '@/lib/validation';
@@ -8,6 +9,8 @@ import { validateRequestBody, whatsAppRequestReviewSchema } from '@/lib/validati
 // Send approval email with fragment-based verification link
 async function sendApprovalEmail(email: string, firstName: string): Promise<boolean> {
   try {
+    // DEPRECATED: Resend implementation kept for rollback
+    /*
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
       console.error('RESEND_API_KEY not configured');
@@ -15,6 +18,7 @@ async function sendApprovalEmail(email: string, firstName: string): Promise<bool
     }
 
     const resend = new Resend(apiKey);
+    */
 
     // Import the new access token system
     const { createAccessToken } = await import('@/lib/access-tokens');
@@ -30,6 +34,8 @@ async function sendApprovalEmail(email: string, firstName: string): Promise<bool
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const fragmentUrl = `${baseUrl}/join#${token}`;
 
+    // DEPRECATED: Resend email sending kept for rollback
+    /*
     const { error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'UMHC <noreply@umhc.co.uk>',
       to: email,
@@ -82,13 +88,70 @@ async function sendApprovalEmail(email: string, firstName: string): Promise<bool
       </div>
       `,
     });
+    */
 
+    // NEW: Mailgun email sending
+    const emailSent = await sendMailgunEmail({
+      to: email,
+      from: process.env.MAILGUN_FROM_EMAIL || 'UMHC <noreply@verify.umhc.org.uk>',
+      subject: 'UMHC WhatsApp Group Access Approved',
+      html: `
+        <div style="background-color: #FFFCF7; padding: 40px 0; font-family: 'Open Sans', Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #FFFEFB; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+
+          <!-- Logo section -->
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://umhc.org.uk/api/logo?file=umhc-badge.webp" alt="UMHC Logo" width="120" style="max-width: 100%; height: auto; border: 0;">
+          </div>
+
+          <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Hi ${firstName},
+          </p>
+
+          <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Great news! Your request to join the UMHC WhatsApp group has been approved.
+          </p>
+
+          <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+            Click the button below to join our WhatsApp group:
+          </p>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${fragmentUrl}"
+              style="background-color: #1C5713; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; font-size: 16px;">
+              Join WhatsApp Group
+            </a>
+          </div>
+
+          <p style="color: #494949; font-size: 14px; line-height: 1.6; margin-top: 20px;">
+            <strong>Can't click the button?</strong> Copy and paste this link into your browser:
+          </p>
+
+          <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 10px; margin: 10px 0; word-break: break-all;">
+            <code style="color: #1C5713; font-size: 14px;">${fragmentUrl}</code>
+          </div>
+
+          <p style="color: #494949; font-size: 14px; line-height: 1.6;">
+            This link is valid for 24 hours and can only be used once. Please don't share this link with anyone.
+          </p>
+
+          <p style="color: #494949; font-size: 14px; line-height: 1.6;">
+            Thank you for your patience in this process. We look forward to seeing you on the hills! 🏔️
+          </p>
+
+        </div>
+      </div>
+      `
+    });
+
+    /* DEPRECATED: Resend error handling kept for rollback
     if (error) {
       console.error('Approval email sending error:', error);
       return false;
     }
+    */
 
-    return true;
+    return emailSent;
   } catch (error) {
     console.error('Approval email sending error:', error);
     return false;

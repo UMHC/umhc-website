@@ -54,6 +54,12 @@ export async function GET(request: NextRequest) {
           'Access-Control-Allow-Origin': '*', // Allow cross-origin requests for emails
           'Access-Control-Allow-Methods': 'GET',
           'Access-Control-Allow-Headers': 'Content-Type',
+          // Prevent email clients from requesting transformed versions
+          'X-Content-Type-Options': 'nosniff',
+          'X-Robots-Tag': 'noindex, nofollow',
+          // Discourage image optimization by email clients
+          'Content-Disposition': 'inline; filename="' + sanitizedFilename + '"',
+          'Vary': 'Accept-Encoding',
         },
       });
     } catch {

@@ -4,7 +4,7 @@
 
 # UMHC Website
 
-This is a [Next.js](https://nextjs.org), [React](react.dev), and [TailwindCSS](tailwindcss.com) codebase deployed to [Vercel](vercel.com), and integrated with [Supabase](supabase.com), [RapidAPI](rapidapi.com), [Resend](resend.com) and [Cloudflare](cloudflare.com) services to provide an efficient yet secure web service to all society members.
+This is a [Next.js](https://nextjs.org), [React](react.dev), and [TailwindCSS](tailwindcss.com) codebase deployed to [Vercel](vercel.com), and integrated with [Supabase](supabase.com), [RapidAPI](rapidapi.com), [Mailgun](mailgun.com) and [Cloudflare](cloudflare.com) services to provide an efficient yet secure web service to all society members.
 
 This is the full code base for the 2025 website which is currently running in production at [umhc.org.uk](umhc.org.uk).
 ## Publishing changes to Vercel
@@ -44,8 +44,10 @@ Below are all of the environment variables used throughout this codebase
 | :-------- | :------------------------- |
 | `WHATSAPP_GROUP_LINK` | Just set this as the link to the Whatsapp Group |
 | `TURNSTILE_SECRET_KEY` | Get this from the [Cloudflare Dashboard](dash.cloudlfare.com) Turnstile area|
-| `RESEND_API_KEY` | Get this from [Resend](resend.com)|
-| `RESEND_FROM_EMAIL` | The email address you want to send from, I used `UMHC Hiking Club <response@mail.umhc.org.uk>`|
+| `MAILGUN_API_KEY` | Get this from [Mailgun](mailgun.com) - use your private API key from the verify.umhc.org.uk domain|
+| `MAILGUN_FROM_EMAIL` | _(Optional)_ The email address you want to send from, defaults to `UMHC <noreply@verify.umhc.org.uk>`|
+<!-- DEPRECATED: | `RESEND_API_KEY` | Get this from [Resend](resend.com)| -->
+<!-- DEPRECATED: | `RESEND_FROM_EMAIL` | The email address you want to send from, I used `UMHC Hiking Club <response@mail.umhc.org.uk>`| -->
 | `NEXT_PUBLIC_BASE_URL` | The URL for your site `localhost:3000` for local development and `umhc.org.uk` for production|
 | `NODE_ENV` | The code environment, just use `production`|
 | `NEXT_PUBLIC_SUPABASE_URL` | The URL for your [Supabase](supabase.com) database|
