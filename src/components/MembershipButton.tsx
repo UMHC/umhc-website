@@ -7,7 +7,7 @@ interface MembershipButtonProps {
 
 export default function MembershipButton({ buttonText, title }: MembershipButtonProps) {
   const handleButtonClick = () => {
-    const url = buttonText.includes('Purchase') ? 
+    const url = title.includes('Student') ? 
       process.env.NEXT_PUBLIC_STUDENT_MEMBERSHIP_URL : 
       process.env.NEXT_PUBLIC_ASSOCIATE_MEMBERSHIP_URL;
     
