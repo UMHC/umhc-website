@@ -457,13 +457,13 @@ export const envVariablesSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'Supabase service role key is required'),
   TURNSTILE_SECRET_KEY: z.string().min(1, 'Turnstile secret key is required'),
 
-  // NEW: Mailgun environment variables
-  MAILGUN_API_KEY: z.string().min(1, 'Mailgun API key is required'),
-  MAILGUN_FROM_EMAIL: z.string().email('Invalid Mailgun from email address').optional(),
+  // NEW: Resend environment variables (switched back from Mailgun)
+  RESEND_API_KEY: z.string().min(1, 'Resend API key is required'),
+  RESEND_FROM_EMAIL: z.string().email('Invalid from email address'),
 
-  // DEPRECATED: Resend environment variables - keeping for rollback compatibility
-  // RESEND_API_KEY: z.string().min(1, 'Resend API key is required'),
-  // RESEND_FROM_EMAIL: z.string().email('Invalid from email address'),
+  // DEPRECATED: Mailgun environment variables - keeping for rollback compatibility
+  // MAILGUN_API_KEY: z.string().min(1, 'Mailgun API key is required'),
+  // MAILGUN_FROM_EMAIL: z.string().email('Invalid Mailgun from email address').optional(),
 
   NEXT_PUBLIC_BASE_URL: z.string().url('Invalid base URL')
 });

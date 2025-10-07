@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isValidPhoneNumber } from 'libphonenumber-js';
-// import { Resend } from 'resend'; // DEPRECATED: Keeping commented for rollback
-import { sendMailgunEmail } from '@/lib/mailgun';
+import { sendResendEmail } from '@/lib/resend';
+// import { sendMailgunEmail } from '@/lib/mailgun'; // DEPRECATED: Keeping commented for rollback
 import crypto from 'crypto';
 import { createToken, deleteToken, cleanupExpiredTokens } from '@/lib/tokenStore';
 import { supabaseAdmin } from '@/lib/supabase-admin';
@@ -141,10 +141,10 @@ async function sendVerificationEmail(email: string, token: string, verificationC
     });
     */
 
-    // NEW: Mailgun email sending
-    const emailSent = await sendMailgunEmail({
+    // NEW: Resend email sending
+    const emailSent = await sendResendEmail({
       to: email,
-      from: process.env.MAILGUN_FROM_EMAIL || 'UMHC <noreply@verify.umhc.org.uk>',
+      from: process.env.RESEND_FROM_EMAIL || 'UMHC Hiking Club <response@mail.umhc.org.uk>',
       subject: 'UMHC WhatsApp Group Link',
       html: `
         <div style="background-color: #FFFCF7; padding: 40px 0; font-family: 'Open Sans', Arial, sans-serif;">

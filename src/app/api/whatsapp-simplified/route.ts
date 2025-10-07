@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isValidPhoneNumber } from 'libphonenumber-js';
-// import { Resend } from 'resend'; // DEPRECATED: Keeping commented for rollback
-import { sendMailgunEmailWithError } from '@/lib/mailgun';
+import { sendResendEmailWithError } from '@/lib/resend';
+// import { sendMailgunEmailWithError } from '@/lib/mailgun'; // DEPRECATED: Keeping commented for rollback
 import { createAccessToken, cleanupExpiredTokens, checkForDuplicates, formatDuplicateError, deleteAccessToken } from '@/lib/access-tokens';
 
 interface VerificationRequest {
@@ -123,10 +123,10 @@ async function sendFragmentVerificationEmail(email: string, token: string): Prom
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const fragmentUrl = `${baseUrl}/join#${token}`;
 
-    // Use new Mailgun function with error details
-    const result = await sendMailgunEmailWithError({
+    // Use new Resend function with error details
+    const result = await sendResendEmailWithError({
       to: email,
-      from: process.env.MAILGUN_FROM_EMAIL || 'UMHC <noreply@verify.umhc.org.uk>',
+      from: process.env.RESEND_FROM_EMAIL || 'UMHC Hiking Club <response@mail.umhc.org.uk>',
       subject: 'UMHC WhatsApp Group Access',
       html: `
         <div style="background-color: #FFFCF7; padding: 40px 0; font-family: 'Open Sans', Arial, sans-serif;">

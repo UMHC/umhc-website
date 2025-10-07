@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-// import { Resend } from 'resend'; // DEPRECATED: Keeping commented for rollback
-import { sendMailgunEmail } from '@/lib/mailgun';
+import { sendResendEmail } from '@/lib/resend';
+// import { sendMailgunEmail } from '@/lib/mailgun'; // DEPRECATED: Keeping commented for rollback
 // import { createToken, cleanupExpiredTokens } from '@/lib/tokenStore';
 import { requireCommitteeAccess } from '@/middleware/auth';
 import { validateRequestBody, whatsAppRequestReviewSchema } from '@/lib/validation';
@@ -90,10 +90,10 @@ async function sendApprovalEmail(email: string, firstName: string): Promise<bool
     });
     */
 
-    // NEW: Mailgun email sending
-    const emailSent = await sendMailgunEmail({
+    // NEW: Resend email sending
+    const emailSent = await sendResendEmail({
       to: email,
-      from: process.env.MAILGUN_FROM_EMAIL || 'UMHC <noreply@verify.umhc.org.uk>',
+      from: process.env.RESEND_FROM_EMAIL || 'UMHC Hiking Club <response@mail.umhc.org.uk>',
       subject: 'UMHC WhatsApp Group Access Approved',
       html: `
         <div style="background-color: #FFFCF7; padding: 40px 0; font-family: 'Open Sans', Arial, sans-serif;">
