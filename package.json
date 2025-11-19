@@ -3,7 +3,8 @@
   "version": "1.6",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "dev:turbo": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -46,10 +47,11 @@
     "@types/trusted-types": "^2.0.7",
     "@types/ws": "^8.18.1",
     "autoprefixer": "^10.4.20",
+    "baseline-browser-mapping": "^2.8.29",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^3.4.18",
     "typescript": "^5"
   }
 }

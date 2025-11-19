@@ -96,7 +96,7 @@ export default function CommitteeConsoleClient({ user }: CommitteeConsoleClientP
               {/* Logo */}
               <Link 
                 href="/"
-                className="h-[32px] w-[56px] relative shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-umhc-green focus-visible:ring-offset-2 rounded"
+                className="h-8 w-14 relative shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-umhc-green focus-visible:ring-offset-2 rounded"
                 aria-label="UMHC Homepage"
               >
                 <div className="relative w-full h-full">
@@ -163,7 +163,7 @@ export default function CommitteeConsoleClient({ user }: CommitteeConsoleClientP
                   className="group relative rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-center">
-                    <div className={`flex-shrink-0 p-3 rounded-lg ${action.color}`}>
+                    <div className={`shrink-0 p-3 rounded-lg ${action.color}`}>
                       <action.icon className="w-6 h-6 text-white" />
                     </div>
                     <div className="ml-4">

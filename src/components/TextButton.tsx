@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+import Link from 'next/link';
 
 interface TextButtonProps {
   children: React.ReactNode;
@@ -38,7 +39,7 @@ const TextButton = forwardRef<HTMLAnchorElement | HTMLButtonElement, TextButtonP
 
   if (href) {
     return (
-      <a
+      <Link
         ref={ref as React.Ref<HTMLAnchorElement>}
         href={href}
         className={baseClasses}
@@ -48,7 +49,7 @@ const TextButton = forwardRef<HTMLAnchorElement | HTMLButtonElement, TextButtonP
         {...props}
       >
         {children}
-      </a>
+      </Link>
     );
   }
 

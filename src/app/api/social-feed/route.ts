@@ -85,6 +85,14 @@ interface InstagramPost {
 
 async function getInstagramPosts(): Promise<SocialPost[]> {
   try {
+    // Check if API key is configured
+    if (!CONFIG.instagram.rapidApiKey || CONFIG.instagram.rapidApiKey === 'undefined') {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Instagram: RAPID_API_KEY not configured');
+      }
+      return [];
+    }
+
     const response = await fetch(
       `https://instagram-api-fast-reliable-data-scraper.p.rapidapi.com/feed?user_id=${CONFIG.instagram.userId}`,
       {
@@ -99,8 +107,28 @@ async function getInstagramPosts(): Promise<SocialPost[]> {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Instagram API error:', response.status, errorText);
-      throw new Error(`Instagram API failed: ${response.status}`);
+      
+      if (process.env.NODE_ENV === 'development') {
+        // Parse the error to give more helpful feedback
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.error === 'not authorized to view user') {
+            console.warn(`Instagram API: Not authorized to view user ID ${CONFIG.instagram.userId}. This could mean:`);
+            console.warn('  1. The Instagram account is private');
+            console.warn('  2. Your RapidAPI subscription tier doesn\'t have access');
+            console.warn('  3. The user ID might be incorrect');
+            console.warn(`  Current username: ${CONFIG.instagram.username}`);
+          } else {
+            console.warn(`Instagram API returned ${response.status}:`, errorData.error || errorText);
+          }
+        } catch {
+          console.warn(`Instagram API returned ${response.status}. Check your RapidAPI subscription and Instagram user ID.`);
+        }
+      } else {
+        console.error('Instagram API error:', response.status, errorText);
+      }
+      // Return empty array instead of throwing to allow other feeds to load
+      return [];
     }
 
     const data = await response.json();
@@ -146,7 +174,10 @@ async function getInstagramPosts(): Promise<SocialPost[]> {
       };
     });
   } catch (error) {
-    console.error('Instagram fetch error:', error);
+    // Only log errors in production, development failures are expected without API keys
+    if (process.env.NODE_ENV !== 'development') {
+      console.error('Instagram fetch error:', error);
+    }
     return [];
   }
 }
@@ -166,8 +197,14 @@ async function getTikTokVideos(): Promise<SocialPost[]> {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('TikTok API error:', response.status, errorText);
-      throw new Error(`TikTok API failed: ${response.status}`);
+      // Only log in development, and make it less alarming
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`TikTok API returned ${response.status}. This is normal in development if API credentials are not configured.`);
+      } else {
+        console.error('TikTok API error:', response.status, errorText);
+      }
+      // Return empty array instead of throwing to allow other feeds to load
+      return [];
     }
 
     const data = await response.json();
@@ -216,7 +253,10 @@ async function getTikTokVideos(): Promise<SocialPost[]> {
       }
     }));
   } catch (error) {
-    console.error('TikTok fetch error:', error);
+    // Only log errors in production, development failures are expected without API keys
+    if (process.env.NODE_ENV !== 'development') {
+      console.error('TikTok fetch error:', error);
+    }
     return [];
   }
 }
@@ -283,7 +323,10 @@ async function getStravaActivities(): Promise<SocialPost[]> {
       }
     }));
   } catch (error) {
-    console.error('Strava fetch error:', error);
+    // Only log errors in production, development failures are expected without API keys
+    if (process.env.NODE_ENV !== 'development') {
+      console.error('Strava fetch error:', error);
+    }
     return [];
   }
 }

@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
@@ -96,8 +98,8 @@ const nextConfig: NextConfig = {
               "base-uri 'self'",
               // Form actions: self and auth providers
               "form-action 'self' kinde.com *.kinde.com",
-              // Upgrade insecure requests
-              "upgrade-insecure-requests"
+              // Upgrade insecure requests (only in production)
+              ...(isProduction ? ["upgrade-insecure-requests"] : [])
             ].join('; ')
           },
           // Prevent clickjacking
@@ -124,11 +126,11 @@ const nextConfig: NextConfig = {
               'geolocation=(self)'
             ].join(', ')
           },
-          // Enforce HTTPS (only in production)
-          {
+          // Enforce HTTPS (only in production to avoid TLS errors on localhost)
+          ...(isProduction ? [{
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains; preload'
-          }
+          }] : [])
         ]
       }
     ];

@@ -149,7 +149,6 @@ export default function Navbar({ className = '' }: NavbarProps) {
             href="/"
             className="h-[32px] w-[56px] relative shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-umhc-green focus-visible:ring-offset-2 rounded"
             aria-label="UMHC Homepage"
-            onClick={(e) => e.currentTarget.blur()}
           >
             <div className="relative w-full h-full">
               <Image
