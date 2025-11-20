@@ -93,6 +93,7 @@ async function getInstagramPosts(): Promise<SocialPost[]> {
       return [];
     }
 
+    // Use the /feed endpoint with user_id
     const response = await fetch(
       `https://instagram-api-fast-reliable-data-scraper.p.rapidapi.com/feed?user_id=${CONFIG.instagram.userId}`,
       {
@@ -108,24 +109,19 @@ async function getInstagramPosts(): Promise<SocialPost[]> {
     if (!response.ok) {
       const errorText = await response.text();
       
+      // Only show detailed errors in development
       if (process.env.NODE_ENV === 'development') {
-        // Parse the error to give more helpful feedback
         try {
           const errorData = JSON.parse(errorText);
-          if (errorData.error === 'not authorized to view user') {
-            console.warn(`Instagram API: Not authorized to view user ID ${CONFIG.instagram.userId}. This could mean:`);
-            console.warn('  1. The Instagram account is private');
-            console.warn('  2. Your RapidAPI subscription tier doesn\'t have access');
-            console.warn('  3. The user ID might be incorrect');
-            console.warn(`  Current username: ${CONFIG.instagram.username}`);
-          } else {
-            console.warn(`Instagram API returned ${response.status}:`, errorData.error || errorText);
-          }
+          console.warn('Instagram API Error:', {
+            status: response.status,
+            error: errorData,
+            userId: CONFIG.instagram.userId,
+            username: CONFIG.instagram.username
+          });
         } catch {
-          console.warn(`Instagram API returned ${response.status}. Check your RapidAPI subscription and Instagram user ID.`);
+          console.warn(`Instagram API returned ${response.status}:`, errorText);
         }
-      } else {
-        console.error('Instagram API error:', response.status, errorText);
       }
       // Return empty array instead of throwing to allow other feeds to load
       return [];
@@ -135,12 +131,18 @@ async function getInstagramPosts(): Promise<SocialPost[]> {
     
     // Only log in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('Instagram API response:', JSON.stringify(data, null, 2));
+      console.log('Instagram API response structure:', {
+        hasItems: !!data.items,
+        hasPosts: !!data.posts,
+        hasDataPosts: !!data.data?.posts,
+        itemsLength: Array.isArray(data.items) ? data.items.length : 'not an array',
+        topLevelKeys: Object.keys(data)
+      });
     }
     
-    // The new instagram120 API returns data in a different structure
-    // Handle various possible response structures
-    const posts = data.data?.posts || data.posts || data.items || data || [];
+    // IMPORTANT: The Instagram API returns posts in the `items` array at the top level
+    // Not in `data.posts` or `posts` as some other APIs might
+    const posts = data.items || data.data?.items || data.data?.posts || data.posts || [];
 
     if (!Array.isArray(posts)) {
       console.error('Instagram API: posts is not an array:', posts);
@@ -355,9 +357,18 @@ export async function GET() {
     if (process.env.NODE_ENV === 'development') {
       console.log(`Social feed: ${allPosts.length} posts loaded`);
     }
-    return NextResponse.json(allPosts);
+    return NextResponse.json(allPosts, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   } catch (error) {
     console.error('Social feed error:', error);
-    return NextResponse.json({ error: 'Failed to fetch social data' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch social data' }, { 
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
 }
