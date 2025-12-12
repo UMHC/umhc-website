@@ -30,6 +30,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
   
   const navigationItems = [
     { text: 'Schedule', href: '/schedule' },
+    /*{ text: 'Guides', href: '/guides' },*/
     { text: 'Equipment', href: '/equipment' },
     { text: 'Constitution', href: '/constitution' },
     { text: 'About Us', href: '/about' },
@@ -153,7 +154,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
             <div className="relative w-full h-full">
               <Image
                 src="/images/umhc-logo.webp"
-                alt="UMHC - University of Manchester Hiking Club"
+                alt="University of Manchester Hiking Club Logo of 'UMHC' letters with mountain graphic with the sun above"
                 fill
                 sizes="56px"
                 className="object-contain"

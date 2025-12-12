@@ -1,0 +1,18 @@
+{
+  "guides": [
+    {
+      "id": "winter-hiking",
+      "title": "How To Best Prepare For Hiking In Winter",
+      "description": "As the year comes to an end, snow begins to fall across all of our favourite hiking routes and that means we need to adapt to be able to handle these changes",
+      "image": "/images/guide-images/winter-hiking.jpg",
+      "slug": "winter-hiking"
+    },
+    {
+      "id": "mountain-help",
+      "title": "Getting Help On The Mountain",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ",
+      "image": "/images/guide-images/mountain-help.jpg",
+      "slug": "mountain-help"
+    }
+  ]
+}

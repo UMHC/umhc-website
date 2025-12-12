@@ -90,7 +90,7 @@ export default function MonthlyIncomeExpensesChart({ transactions }: MonthlyInco
       tooltip: {
         callbacks: {
           label: function(context: TooltipItem<'bar'>) {
-            return `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`;
+            return `${context.dataset.label}: ${formatCurrency(context.parsed.y ?? 0)}`;
           },
         },
       },

@@ -28,13 +28,13 @@ export default function Footer() {
               Constitution
             </TextButton>
 
-            <TextButton 
-              href="/membership" 
+            {/* TextButton 
+              href="/guides" 
               priority
               className="text-cream-white text-2xl sm:text-base md:text-[16px] font-semibold"
             >
-              Membership
-            </TextButton>
+              Guides
+            </TextButton> */}
 
             <TextButton 
               href="/terms" 

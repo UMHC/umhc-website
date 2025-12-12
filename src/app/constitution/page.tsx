@@ -100,9 +100,9 @@ function ConstitutionSection({
   );
 }
 
-export default function ConstitutionPage() {
+export default function Constitution() {
   return (
-    <div className="bg-whellow min-h-screen px-2 sm:px-4 md:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12">
+    <div className="bg-cream-white min-h-screen px-2 sm:px-4 md:px-6 lg:px-8 pt-16 sm:pt-20 pb-8 sm:pb-12">
       <div className="max-w-5xl mx-auto">
         {/* Header Section */}
         <header className="text-center space-y-2 mb-4 sm:mb-4">
