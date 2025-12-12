@@ -3,6 +3,7 @@ import LazySchedulePreview from '@/components/LazySchedulePreview';
 import LazySocialWall from '@/components/LazySocialWall';
 import LazyMembershipSection from '@/components/LazyMembershipSection';
 import ScrollIndicator from '@/components/ScrollIndicator';
+import TypewriterHero from '@/components/TypewriterHero';
 
 export default function Home() {
   return (
@@ -23,9 +24,7 @@ export default function Home() {
       {/* Text layer */}
       <div className="hero-text absolute inset-0 flex items-center justify-center z-10 pt-16 sm:pt-20 landscape:pt-24">
         <div className="text-center px-4">
-          <p className="font-bold text-center mb-1 text-base sm:text-xl md:text-2xl lg:text-[24px] xl:text-[26px] 2xl:text-[28px]" style={{ color: 'rgba(255,255,255,0.69)', lineHeight: '1.1' }}>
-            University of Manchester Hiking Club
-          </p>
+          <TypewriterHero />
           <h1 className="font-bold whitespace-nowrap text-8xl xs:text-9xl sm:text-[120px] md:text-[140px] lg:text-[150px] xl:text-[160px] 2xl:text-[180px]" style={{ color: 'rgba(255,255,255,0.91)', lineHeight: '0.85' }}>
             UMHC
           </h1>
