@@ -5,6 +5,7 @@ import LazyMembershipSection from '@/components/LazyMembershipSection';
 import ScrollIndicator from '@/components/ScrollIndicator';
 import TypewriterHero from '@/components/TypewriterHero';
 import ScrollingBanner from '@/components/ScrollingBanner';
+// import EGMSection from '@/components/EGMSection';
 import { getBannerMessages } from '@/lib/bannerService';
 
 export const revalidate = 600; // Revalidate every 10 minutes
@@ -57,6 +58,9 @@ export default async function Home() {
       <ScrollIndicator />
     </div>
     
+    {/* EGM Section - Uncomment when ready to announce */}
+    {/* <EGMSection /> */}
+
     {/* Who Are We Section */}
     <section className="bg-whellow">
       <div className="flex flex-col items-center w-full">
