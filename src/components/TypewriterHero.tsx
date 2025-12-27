@@ -9,15 +9,7 @@ export default function TypewriterHero() {
   const [displayText, setDisplayText] = useState(originalText);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  useEffect(() => {
-    // Start animation after a short delay
-    const startDelay = setTimeout(() => {
-      setIsAnimating(true);
-      animateText();
-    }, 2000);
-
-    return () => clearTimeout(startDelay);
-  }, []);
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const animateText = async () => {
     // Wait a bit before starting
@@ -26,7 +18,7 @@ export default function TypewriterHero() {
     // Backspace original text
     for (let i = originalText.length; i >= 0; i--) {
       setDisplayText(originalText.substring(0, i));
-      await sleep(50);
+      await sleep(70);
     }
     
     await sleep(300);
@@ -34,7 +26,7 @@ export default function TypewriterHero() {
     // Type Christmas message
     for (let i = 0; i <= christmasText.length; i++) {
       setDisplayText(christmasText.substring(0, i));
-      await sleep(80);
+      await sleep(100);
     }
     
     // Stay for a while
@@ -43,7 +35,7 @@ export default function TypewriterHero() {
     // Backspace Christmas message
     for (let i = christmasText.length; i >= 0; i--) {
       setDisplayText(christmasText.substring(0, i));
-      await sleep(50);
+      await sleep(70);
     }
     
     await sleep(300);
@@ -51,13 +43,22 @@ export default function TypewriterHero() {
     // Type original text back
     for (let i = 0; i <= originalText.length; i++) {
       setDisplayText(originalText.substring(0, i));
-      await sleep(80);
+      await sleep(100);
     }
     
     setIsAnimating(false);
   };
 
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  useEffect(() => {
+    // Start animation after a short delay
+    const startDelay = setTimeout(() => {
+      setIsAnimating(true);
+      animateText();
+    }, 2000);
+
+    return () => clearTimeout(startDelay);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <p 

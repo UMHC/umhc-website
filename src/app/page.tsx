@@ -4,8 +4,13 @@ import LazySocialWall from '@/components/LazySocialWall';
 import LazyMembershipSection from '@/components/LazyMembershipSection';
 import ScrollIndicator from '@/components/ScrollIndicator';
 import TypewriterHero from '@/components/TypewriterHero';
+import ScrollingBanner from '@/components/ScrollingBanner';
+import { getBannerMessages } from '@/lib/bannerService';
 
-export default function Home() {
+export const revalidate = 600; // Revalidate every 10 minutes
+
+export default async function Home() {
+  const bannerMessages = await getBannerMessages();
   return (
     <div className="bg-whellow min-h-screen">
     <div className="relative min-h-screen overflow-hidden">
@@ -42,6 +47,11 @@ export default function Home() {
         unoptimized={true}
         sizes="100vw"
       />
+      
+      {/* Scrolling Banner - positioned at bottom of hero */}
+      <div className="absolute bottom-0 left-0 right-0 z-30">
+        <ScrollingBanner messages={bannerMessages} />
+      </div>
       
       {/* Scroll indicator */}
       <ScrollIndicator />

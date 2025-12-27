@@ -7,7 +7,8 @@ import {
   CalendarDaysIcon,
   ArrowRightOnRectangleIcon,
   ChatBubbleLeftRightIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
+  MegaphoneIcon
 } from '@heroicons/react/24/outline';
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
@@ -71,6 +72,13 @@ export default function CommitteeConsoleClient({ user }: CommitteeConsoleClientP
       icon: Cog6ToothIcon,
       href: '/committee/whatsapp-console',
       color: 'bg-green-500 hover:bg-green-600'
+    },
+    {
+      label: 'Banner Management',
+      description: 'Edit scrolling banner messages on the homepage',
+      icon: MegaphoneIcon,
+      href: '/committee/banner',
+      color: 'bg-orange-500 hover:bg-orange-600'
     }
   ];
 
@@ -148,7 +156,6 @@ export default function CommitteeConsoleClient({ user }: CommitteeConsoleClientP
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">

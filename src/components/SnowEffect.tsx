@@ -30,7 +30,7 @@ export default function SnowEffect() {
 
     // Create snowflakes (reduced number for gentle effect)
     const snowflakes: Snowflake[] = [];
-    const numberOfSnowflakes = Math.floor((window.innerWidth * window.innerHeight) / 10000); // More visible amount
+    const numberOfSnowflakes = Math.floor((window.innerWidth * window.innerHeight) / 20000); // Reduced for better performance
 
     for (let i = 0; i < numberOfSnowflakes; i++) {
       snowflakes.push({
@@ -45,23 +45,21 @@ export default function SnowEffect() {
 
     // Animation
     let animationFrameId: number;
+    let lastTime = performance.now();
 
-    const animate = () => {
+    const animate = (currentTime: number) => {
+      // Throttle animation to prevent performance issues
+      const deltaTime = currentTime - lastTime;
+      if (deltaTime < 33) { // ~30fps cap for better performance
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+      lastTime = currentTime;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       snowflakes.forEach((flake) => {
-        // Draw darker outline for visibility on light backgrounds
-        ctx.beginPath();
-        ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(200, 220, 240, ${flake.opacity})`;
-        ctx.fill();
-        
-        // Add darker stroke for definition
-        ctx.strokeStyle = `rgba(150, 180, 210, ${flake.opacity * 0.6})`;
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
-
-        // Update position
+        // Update position first
         flake.y += flake.speed;
         flake.x += flake.drift;
 
@@ -75,22 +73,70 @@ export default function SnowEffect() {
         } else if (flake.x < 0) {
           flake.x = canvas.width;
         }
+
+        // Draw with subtle appearance
+        ctx.beginPath();
+        ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`;
+        ctx.fill();
+        
+        // Add subtle stroke
+        ctx.strokeStyle = `rgba(240, 245, 250, ${flake.opacity * 0.5})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
       });
 
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    animate();
+    animate(performance.now());
 
-    // Handle window resize
+    // Handle window resize with throttling
+    let resizeTimeout: NodeJS.Timeout;
     const handleResize = () => {
-      setCanvasSize();
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const oldWidth = canvas.width;
+        setCanvasSize();
+        
+        // Redistribute snowflakes across new width
+        snowflakes.forEach((flake) => {
+          if (canvas.width > oldWidth) {
+            // Window expanded - spread snowflakes proportionally
+            flake.x = (flake.x / oldWidth) * canvas.width;
+          } else {
+            // Window shrunk - keep snowflakes if they fit, otherwise reposition
+            if (flake.x > canvas.width) {
+              flake.x = Math.random() * canvas.width;
+            }
+          }
+        });
+        
+        // Add more snowflakes if window got bigger
+        const newTargetCount = Math.floor((canvas.width * canvas.height) / 20000);
+        while (snowflakes.length < newTargetCount) {
+          snowflakes.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 2.5 + 2,
+            speed: Math.random() * 0.5 + 0.3,
+            drift: Math.random() * 0.3 - 0.15,
+            opacity: Math.random() * 0.3 + 0.6,
+          });
+        }
+        
+        // Remove excess snowflakes if window got smaller
+        if (snowflakes.length > newTargetCount) {
+          snowflakes.splice(newTargetCount);
+        }
+      }, 100);
     };
     window.addEventListener('resize', handleResize);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
     };
   }, []);
 
