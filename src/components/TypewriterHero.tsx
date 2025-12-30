@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 export default function TypewriterHero() {
   const originalText = 'University of Manchester Hiking Club';
-  const christmasText = 'Merry Christmas from UMHC!';
+  const christmasText = 'Happy New Year from UMHC!';
   
   const [displayText, setDisplayText] = useState(originalText);
   const [isAnimating, setIsAnimating] = useState(false);
