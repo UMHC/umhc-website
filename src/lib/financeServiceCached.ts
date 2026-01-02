@@ -58,10 +58,10 @@ export class CachedFinanceService {
   // Cache invalidation methods
   static async invalidateCache(tags?: string[]) {
     if (tags) {
-      tags.forEach(tag => revalidateTag(tag));
+      tags.forEach(tag => revalidateTag(tag, {}));
     } else {
       // Invalidate all financial data caches
-      Object.values(CACHE_TAGS).forEach(tag => revalidateTag(tag));
+      Object.values(CACHE_TAGS).forEach(tag => revalidateTag(tag, {}));
     }
   }
 
