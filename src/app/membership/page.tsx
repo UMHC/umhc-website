@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import MembershipButton from '@/components/MembershipButton';
 
 export const metadata: Metadata = {
-  title: 'Membership - UMHC | University of Manchester Hiking Club',
+  title: 'UMHC | Membership',
   description: 'Join UMHC with our Student or Associate membership options. Access to hikes, social events, insurance coverage and more.',
 };
 
@@ -69,29 +69,21 @@ function MembershipCard({ title, price, period, buttonText, features }: Membersh
 
 export default function MembershipPage() {
   const studentFeatures: MembershipFeature[] = [
-    { text: "Access to all hikes" },
-    { text: "Access to all social events" },
-    { text: "Discounted hike tickets (£14.75)" },
-    { text: "£15 million combined liability insurance (via BMC)" },
-    { text: "£10000 personal accident insurance cover (via BMC)" },
-    { text: "15% discount in Cotswold Outdoor, Snow+Rock, Runners Need and more (via BMC)" },
-    { text: "Access to BMC Travel Insurance (via BMC)" },
-    { text: "Mountain Training Registration (via BMC)" },
-    { text: "Discounted membership or extended free trials with Strava, OS Maps, Komoot, AllTrails, and more (via BMC)" },
-    { text: "96% discount on YHA membership if you're under 26 (via BMC)" }
+    { text: "Reduced price day hike tickets (£14.75)" },
+    { text: "Priority on waiting lists" },
+    { text: "Reduced price weekend trip tickets" },
+    { text: "More tickets available for members " },
+    { text: "Reduced price easter trip tickets" },
+    { text: "The ability to vote at EGMs & our AGM)" }
   ];
 
   const associateFeatures: MembershipFeature[] = [
-    { text: "Access to hikes" },
-    { text: "Access to ticketed social events" },
-    { text: "Discounted hike tickets (£14.75)" },
-    { text: "£15 million combined liability insurance (via BMC)" },
-    { text: "£10000 personal accident insurance cover (via BMC)" },
-    { text: "15% discount in Cotswold Outdoor, Snow+Rock, Runners Need and more (via BMC)" },
-    { text: "Access to BMC Travel Insurance (via BMC)" },
-    { text: "Mountain Training Registration (via BMC)" },
-    { text: "Discounted membership or extended free trials with Strava, OS Maps, Komoot, AllTrails, and more (via BMC)" },
-    { text: "96% discount on YHA membership if you're under 26 (via BMC)" }
+    { text: "Reduced price day hike tickets (£14.75)" },
+    { text: "Priority on waiting lists" },
+    { text: "Reduced price weekend trip tickets" },
+    { text: "More tickets available for members " },
+    { text: "Reduced price easter trip tickets" },
+    { text: "The ability to vote at EGMs & our AGM)" }
   ];
 
   return (
@@ -100,29 +92,26 @@ export default function MembershipPage() {
         <div className="max-w-[1120px] mx-auto">
           <div className="text-center mb-10">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-3">
-              Take your pick
+              Membership
             </h1>
             <p className="text-base md:text-lg lg:text-xl font-medium text-black max-w-4xl mx-auto">
-              We&apos;d love to have you as a member! Select which membership applies 
-              to you below and we&apos;ll send you to the correct place. A student 
-              membership is only available to University of Manchester students, 
-              whilst the associate membership is available to anyone.
+              Our semester 2 membership offers a more reduced packaged compared to our full year membership that we offered throughout semester one, this is mainly due to it not including BMC membership. Student membership is only available to UoM students whilst the associate membership is available for anyone else
             </p>
           </div>
 
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-center justify-center">
             <MembershipCard
               title="Student Membership"
-              price="£30"
-              period="per year"
+              price="£10"
+              period="for sem 2"
               buttonText="Purchase on the SU Website"
               features={studentFeatures}
             />
             
             <MembershipCard
               title="Associate Membership (Non-UoM)"
-              price="£35"
-              period="per year"
+              price="£10"
+              period="for sem 2"
               buttonText="Purchase on the SU Website"
               features={associateFeatures}
             />
