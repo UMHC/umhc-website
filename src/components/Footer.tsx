@@ -96,13 +96,13 @@ export default function Footer() {
             {/* Become a Member Button and Social Icons */}
             <div className="flex flex-col md:flex-row lg:flex-col items-center gap-5 md:gap-4 lg:gap-5 w-full justify-center">
               {/* Become a Member Button */}
-              <div className="shrink-0">
+              {/*<div className="shrink-0">
                 <Link href="/membership">
                   <Button className="text-sm md:text-sm lg:text-base" aria-label="Become a member of UMHC">
                     Become a Member
                   </Button>
                 </Link>
-              </div>
+              </div>*/}
               
               {/* Social Icons */}
               <div className="flex gap-4 md:gap-3 lg:gap-4 items-center shrink-0">
@@ -207,7 +207,7 @@ export default function Footer() {
         </div>
         
         <div className="mt-8 text-center text-xs sm:text-sm md:text-[14px] font-normal text-white/70 leading-normal">
-          <p>University of Manchester Hiking Club © 2025 | <Link href="/committee" className="text-white/70 hover:text-white">Committee Console</Link></p>
+          <p>University of Manchester Hiking Club © 2026 | <Link href="/committee" className="text-white/70 hover:text-white">Committee Console</Link></p>
         </div>
       </div>
     </footer>
