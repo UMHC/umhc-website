@@ -60,7 +60,7 @@ export default async function Home() {
       <ScrollIndicator />
     </div>
     
-    {/* EGM Section - Uncomment when ready to announce */}
+    {/* EGM Section - CURRENTLY NOT VISIBLE */}
     {/* <EGMSection /> */}
 
     {/* Who Are We Section */}
@@ -83,8 +83,8 @@ export default async function Home() {
     {/* Social Wall Section */}
     <LazySocialWall />
     
-    {/* Membership Section */}
-    <LazyMembershipSection />
+    {/* Membership Section - CURRENTLY NOT VISIBLE */}
+    {/* <LazyMembershipSection /> */}
     </div>
   );
 }
