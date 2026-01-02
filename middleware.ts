@@ -1,23 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getRedirectUrl } from './src/lib/subdomain-redirects';
-import { getRewriteUrl } from './src/lib/subdomain-rewrites';
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
-  
-  // Check if the hostname should be rewritten (proxied)
-  const rewriteUrl = getRewriteUrl(hostname);
-  
-  if (rewriteUrl) {
-    // REWRITE: Proxy content from external URL while keeping subdomain visible
-    const url = new URL(request.url);
-    const externalUrl = new URL(rewriteUrl);
-    externalUrl.pathname = url.pathname;
-    externalUrl.search = url.search;
-    
-    return NextResponse.rewrite(externalUrl);
-  }
   
   // Check if the hostname matches any subdomain redirects
   const redirectUrl = getRedirectUrl(hostname);
