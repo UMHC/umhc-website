@@ -7,7 +7,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import ConditionalLayout from "../components/ConditionalLayout";
 import PrivacyPopup from "@/components/PrivacyPopup";
 import ConsoleArt from "@/components/ConsoleArt";
-import SnowEffect from "@/components/SnowEffect";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -91,7 +90,6 @@ export default function RootLayout({
       <body
         className={`${openSans.variable} antialiased font-sans bg-whellow`}
       >
-        <SnowEffect />
         <AuthProvider>
           <ConditionalLayout>
             {children}
