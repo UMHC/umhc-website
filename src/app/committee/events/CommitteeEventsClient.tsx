@@ -431,7 +431,8 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-8">
             <div className="text-red-600 mb-4">
-              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Error">
+                <title>Error</title>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
@@ -627,7 +628,8 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
                   onClick={handleCloseEventDetails}
                   className="text-gray-400 hover:text-gray-600"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Close">
+                    <title>Close</title>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -692,7 +694,8 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
                   <div className="space-y-1">
                     {selectedEvent.dda_compliant_ramp_access && (
                       <div className="flex items-center text-sm text-green-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
+                          <title>Available</title>
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                         DDA compliant ramp access
@@ -700,7 +703,8 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
                     )}
                     {selectedEvent.lift_access_within_building && (
                       <div className="flex items-center text-sm text-green-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
+                          <title>Available</title>
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                         Lift access within building
@@ -708,7 +712,8 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
                     )}
                     {selectedEvent.accessible_toilets && (
                       <div className="flex items-center text-sm text-green-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
+                          <title>Available</title>
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                         Accessible toilets
@@ -716,7 +721,8 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
                     )}
                     {selectedEvent.gender_neutral_toilets && (
                       <div className="flex items-center text-sm text-green-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
+                          <title>Available</title>
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                         Gender neutral toilets
@@ -724,7 +730,8 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
                     )}
                     {selectedEvent.seating_available && (
                       <div className="flex items-center text-sm text-green-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
+                          <title>Available</title>
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                         Seating available
@@ -732,7 +739,8 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
                     )}
                     {selectedEvent.alcohol_served && (
                       <div className="flex items-center text-sm text-blue-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
+                          <title>Available</title>
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                         Alcohol served

@@ -81,17 +81,17 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               // Scripts: more permissive for Next.js functionality
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' va.vercel-scripts.com kinde.com *.kinde.com challenges.cloudflare.com *.cloudflare.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' va.vercel-scripts.com kinde.com *.kinde.com challenges.cloudflare.com *.cloudflare.com cdn.userway.org",
               // Styles: self, inline styles (required for Next.js), Google Fonts
-              "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
-              // Images: self, data URIs, social media CDNs, Vercel, Supabase
-              "img-src 'self' data: blob: *.cdninstagram.com *.tiktokcdn.com *.tiktokcdn-eu.com vercel.com *.supabase.co",
-              // Fonts: self, Google Fonts
-              "font-src 'self' fonts.gstatic.com",
-              // Connect: self, Vercel Analytics, Kinde Auth, Supabase, social APIs, Cloudflare Turnstile
-              "connect-src 'self' vitals.vercel-insights.com kinde.com *.kinde.com *.supabase.co graph.instagram.com api.tiktok.com challenges.cloudflare.com *.cloudflare.com",
-              // Frames: social media embeds, Kinde auth, Cloudflare Turnstile
-              "frame-src 'self' kinde.com *.kinde.com www.instagram.com www.tiktok.com challenges.cloudflare.com *.cloudflare.com",
+              "style-src 'self' 'unsafe-inline' fonts.googleapis.com cdn.userway.org",
+              // Images: self, data URIs, social media CDNs, Vercel, Supabase, UserWay
+              "img-src 'self' data: blob: *.cdninstagram.com *.tiktokcdn.com *.tiktokcdn-eu.com vercel.com *.supabase.co cdn.userway.org",
+              // Fonts: self, Google Fonts, UserWay
+              "font-src 'self' fonts.gstatic.com cdn.userway.org",
+              // Connect: self, Vercel Analytics, Kinde Auth, Supabase, social APIs, Cloudflare Turnstile, UserWay
+              "connect-src 'self' vitals.vercel-insights.com kinde.com *.kinde.com *.supabase.co graph.instagram.com api.tiktok.com challenges.cloudflare.com *.cloudflare.com api.userway.org cdn.userway.org",
+              // Frames: social media embeds, Kinde auth, Cloudflare Turnstile, UserWay
+              "frame-src 'self' kinde.com *.kinde.com www.instagram.com www.tiktok.com challenges.cloudflare.com *.cloudflare.com cdn.userway.org",
               // Objects: none for security
               "object-src 'none'",
               // Base URI: self only

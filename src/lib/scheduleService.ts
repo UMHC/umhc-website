@@ -4,7 +4,7 @@ import { ScheduleEvent } from '@/types/schedule'
 const CACHE_KEY = 'umhc_schedule_data'
 const CACHE_EXPIRY_KEY = 'umhc_schedule_expiry'
 const CACHE_DATE_KEY = 'umhc_schedule_cache_date'
-const CACHE_DURATION = 3 * 60 * 60 * 1000 // 3 hours in milliseconds
+const CACHE_DURATION = 30 * 60 * 1000 // 30 minutes in milliseconds
 
 function isCacheValid(forUpcomingOnly: boolean = false): boolean {
   if (typeof window === 'undefined') return false

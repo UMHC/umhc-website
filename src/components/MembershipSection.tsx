@@ -21,8 +21,9 @@ function CheckIcon() {
       fill="currentColor"
       viewBox="0 0 14 14"
       aria-hidden="true"
-      role="presentation"
+      role="img"
     >
+      <title>Check mark</title>
       <path
         clipRule="evenodd"
         fillRule="evenodd"

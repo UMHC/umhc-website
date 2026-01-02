@@ -47,7 +47,10 @@ export default function EGMSection() {
                   fill="none" 
                   xmlns="http://www.w3.org/2000/svg"
                   className="flex-shrink-0"
+                  role="img"
+                  aria-hidden="true"
                 >
+                  <title>Arrow</title>
                   <path 
                     d="M8.5 1L13.5 6M13.5 6L8.5 11M13.5 6H0.5" 
                     stroke="currentColor" 

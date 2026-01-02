@@ -33,8 +33,16 @@ export default function About() {
   }, []);
   return (
     <div className="bg-whellow min-h-screen">
+      {/* Skip Navigation Link */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100000] focus:top-4 focus:left-4 focus:bg-umhc-green focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:outline-none focus:ring-2 focus:ring-white"
+      >
+        Skip to main content
+      </a>
       {/* Who Are We section */}
       <section className="pt-16 pb-1 bg-cream-white" aria-labelledby="about-heading">
+        <main id="main-content">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <header className="text-center space-y-2 mb-8 sm:mb-12">
             <h1 id="about-heading" className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-deep-black leading-tight font-sans px-2">
@@ -47,6 +55,7 @@ export default function About() {
             </div>
           </header>
         </div>
+        </main>
       </section>
 
       {/* FAQ section */}

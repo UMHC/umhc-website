@@ -136,7 +136,8 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
               className="text-gray-400 hover:text-gray-600"
               disabled={submitting}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Close">
+                <title>Close</title>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>

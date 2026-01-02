@@ -43,7 +43,7 @@ const TextButton = forwardRef<HTMLAnchorElement | HTMLButtonElement, TextButtonP
         ref={ref as React.Ref<HTMLAnchorElement>}
         href={href}
         className={baseClasses}
-        role={role || "button"}
+        role={role}
         tabIndex={0}
         onClick={onClick}
         {...props}

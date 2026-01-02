@@ -360,6 +360,7 @@ export async function GET() {
     return NextResponse.json(allPosts, {
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'public, s-maxage=172800, stale-while-revalidate=86400', // 2 days cache, 1 day stale
       },
     });
   } catch (error) {
@@ -368,6 +369,7 @@ export async function GET() {
       status: 500,
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache', // Don't cache errors
       },
     });
   }

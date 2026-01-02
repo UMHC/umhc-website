@@ -65,6 +65,25 @@ export default function SchedulePreview() {
   const router = useRouter()
 
   useEffect(() => {
+    // Try to load from cache first for instant display
+    const cached = localStorage.getItem('umhc_schedule_data')
+    const expiry = localStorage.getItem('umhc_schedule_expiry')
+    
+    if (cached && expiry && Date.now() < parseInt(expiry)) {
+      try {
+        const cachedData = JSON.parse(cached)
+        const today = new Date().toISOString().split('T')[0]
+        const upcomingEvents = cachedData
+          .filter((event: ScheduleEvent) => event.event_date >= today)
+          .slice(0, 4)
+        setEvents(upcomingEvents)
+        setLoading(false)
+        return // Don't fetch if we have valid cache
+      } catch (error) {
+        console.error('Error loading cache:', error)
+      }
+    }
+    
     async function fetchEvents() {
       try {
         const data = await getScheduleEvents(true) // Only fetch upcoming events

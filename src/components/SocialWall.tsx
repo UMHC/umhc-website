@@ -31,6 +31,28 @@ const SocialWall = () => {
   const scrollContainerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const scrollIntervalIds = useRef<NodeJS.Timeout[]>([]);
 
+  // Load cached data immediately on mount (synchronously)
+  useEffect(() => {
+    try {
+      const cachedItem = localStorage.getItem('socialWallCache');
+      if (cachedItem) {
+        const { data, expiry } = JSON.parse(cachedItem);
+        
+        // If cache is valid, use it immediately
+        if (Date.now() < expiry && data && Array.isArray(data) && data.length > 0) {
+          setPosts(data);
+          setLoading(false);
+          return; // Don't fetch if we have valid cache
+        }
+      }
+    } catch (error) {
+      console.error('Error loading cache:', error);
+    }
+    
+    // If no valid cache, show loading state and fetch
+    setLoading(true);
+  }, []);
+
   const loadFallbackData = useCallback(() => {
     // Fallback data in case everything fails
     const fallbackPosts: SocialPost[] = [
@@ -92,7 +114,7 @@ const SocialWall = () => {
   const fetchSocialData = useCallback(async () => {
     try {
       const response = await fetch('/api/social-feed', {
-        next: { revalidate: 172800 } // Cache for 2 days
+        cache: 'force-cache', // Use Next.js cache aggressively
       });
       
       if (!response.ok) {
@@ -111,7 +133,7 @@ const SocialWall = () => {
       const shuffled = [...data].sort(() => Math.random() - 0.5);
       setPosts(shuffled);
       
-      // Cache the successful data
+      // Cache the successful data in localStorage
       cacheData(shuffled);
       setLoading(false);
     } catch {
@@ -120,12 +142,15 @@ const SocialWall = () => {
   }, [loadCachedData]);
 
   useEffect(() => {
-    fetchSocialData();
+    // Only fetch if we don't have posts already (from cache)
+    if (posts.length === 0 && loading) {
+      fetchSocialData();
+    }
     
-    // Refresh data every 2 days
+    // Refresh data every 2 days in background
     const interval = setInterval(fetchSocialData, 2 * 24 * 60 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [fetchSocialData]);
+  }, [fetchSocialData, posts.length, loading]);
 
   const cacheData = (data: SocialPost[]) => {
     try {
@@ -254,7 +279,8 @@ const SocialWall = () => {
                 <Play className="w-12 h-12 text-white fill-white" />
               </div>
               <div className="absolute top-2 right-2 bg-white rounded-full p-1.5">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="TikTok">
+                  <title>TikTok</title>
                   <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
                 </svg>
               </div>

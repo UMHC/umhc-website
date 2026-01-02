@@ -80,6 +80,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="dns-prefetch" href="https://vercel.com" />
         <link rel="dns-prefetch" href="https://vitals.vercel-insights.com" />
+        <script src="https://cdn.userway.org/widget.js" data-account="qEdFeVF9HV" data-position="3"></script>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -42,8 +42,26 @@ function ScheduleContent() {
   const modalRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
 
-
+  // Load cached data immediately on mount
   useEffect(() => {
+    // Try to load from cache first
+    const cached = localStorage.getItem('umhc_schedule_data')
+    const expiry = localStorage.getItem('umhc_schedule_expiry')
+    
+    if (cached && expiry && Date.now() < parseInt(expiry)) {
+      try {
+        const cachedData = JSON.parse(cached)
+        const today = new Date().toISOString().split('T')[0]
+        const upcomingEvents = cachedData.filter((event: ScheduleEvent) => event.event_date >= today)
+        setEvents(upcomingEvents)
+        setLoading(false)
+        return // Don't fetch if we have valid cache
+      } catch (error) {
+        console.error('Error loading cache:', error)
+      }
+    }
+    
+    // If no valid cache, fetch from server
     async function fetchEvents() {
       try {
         const data = await getScheduleEvents(true) // Only fetch upcoming events
@@ -211,11 +229,11 @@ function ScheduleContent() {
   if (loading) {
     return (
       <div className="bg-whellow min-h-screen px-4 sm:px-8 md:px-12 lg:px-16 pt-16 sm:pt-20 pb-8 sm:pb-12">
-        <div className="max-w-5xl mx-auto">
+        <main id="main-content" className="max-w-5xl mx-auto">
           <div className="text-center py-12">
             <p className="text-lg text-slate-grey">Loading events...</p>
           </div>
-        </div>
+        </main>
       </div>
     )
   }
@@ -223,11 +241,11 @@ function ScheduleContent() {
   if (error) {
     return (
       <div className="bg-whellow min-h-screen px-4 sm:px-8 md:px-12 lg:px-16 pt-16 sm:pt-20 pb-8 sm:pb-12">
-        <div className="max-w-5xl mx-auto">
+        <main id="main-content" className="max-w-5xl mx-auto">
           <div className="text-center py-12">
             <p className="text-lg text-red-600">{error}</p>
           </div>
-        </div>
+        </main>
       </div>
     )
   }
@@ -281,7 +299,7 @@ function ScheduleContent() {
         </div>
       )}
       
-      <div className="max-w-5xl mx-auto relative z-10">
+      <main id="main-content" className="max-w-5xl mx-auto relative z-10">
         {/* Header Section */}
         <header className="text-center space-y-2 mb-4 sm:mb-4">
           <div className="flex items-center justify-center gap-6 sm:gap-12 md:gap-16 lg:gap-20 w-full max-w-6xl mx-auto">
@@ -425,7 +443,7 @@ function ScheduleContent() {
         </div>
 
         {/* Schedule Content */}
-        <main className="space-y-0 max-w-5xl mx-auto px-4" role="main">
+        <div className="space-y-0 max-w-5xl mx-auto px-4">
           {filteredEvents.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-lg text-slate-grey">No upcoming events found.</p>
@@ -605,24 +623,25 @@ function ScheduleContent() {
               </button>
             </div>
           )}
-        </main>
-
-        {/* Dedicated space for bottom icons - adjusted positioning */}
-        <div className="h-28 sm:h-32 md:h-36 lg:h-32 relative" data-icon-zone aria-hidden="true">
-          {/* This space is reserved for bottom icons */}
         </div>
+      </main>
 
-        {/* Filter Modal */}
-        {showFilterModal && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-[9999]"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="filter-modal-title"
-          >
-            <div className="bg-cream-white rounded-lg w-full max-w-xs sm:max-w-sm max-h-[75vh] sm:max-h-[90vh] overflow-y-auto">
-              <div className="p-3 sm:p-4">
-                <div className="flex items-center justify-between mb-3">
+      {/* Dedicated space for bottom icons - adjusted positioning */}
+      <div className="h-28 sm:h-32 md:h-36 lg:h-32 relative" data-icon-zone aria-hidden="true">
+        {/* This space is reserved for bottom icons */}
+      </div>
+
+      {/* Filter Modal */}
+      {showFilterModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-[9999]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="filter-modal-title"
+        >
+          <div className="bg-cream-white rounded-lg w-full max-w-xs sm:max-w-sm max-h-[75vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="p-3 sm:p-4">
+              <div className="flex items-center justify-between mb-3">
                   <h2 id="filter-modal-title" className="text-base sm:text-lg font-bold text-umhc-green">
                     Filter Events
                   </h2>
@@ -690,18 +709,18 @@ function ScheduleContent() {
               </div>
             </div>
           </div>
-        )}
+      )}
 
-        {/* Event Detail Modal */}
-        {selectedEvent && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center pt-24 pb-3 px-3 z-[100000] overflow-y-auto"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="event-modal-title"
-            aria-describedby="event-modal-description"
-            onClick={() => setSelectedEvent(null)}
-            onKeyDown={(e) => {
+      {/* Event Detail Modal */}
+      {selectedEvent && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center pt-24 pb-3 px-3 z-[100000] overflow-y-auto"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="event-modal-title"
+          aria-describedby="event-modal-description"
+          onClick={() => setSelectedEvent(null)}
+          onKeyDown={(e) => {
               if (e.key === 'Escape') {
                 setSelectedEvent(null)
               }
@@ -875,7 +894,6 @@ function ScheduleContent() {
           </div>
         )}
       </div>
-    </div>
   )
 }
 
@@ -895,6 +913,13 @@ function LoadingFallback() {
 export default function SchedulePage() {
   return (
     <Suspense fallback={<LoadingFallback />}>
+      {/* Skip Navigation Link */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100000] focus:top-4 focus:left-4 focus:bg-umhc-green focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:outline-none focus:ring-2 focus:ring-white"
+      >
+        Skip to main content
+      </a>
       <ScheduleContent />
     </Suspense>
   )
