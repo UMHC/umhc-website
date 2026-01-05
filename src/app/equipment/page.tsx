@@ -195,7 +195,7 @@ export default function EquipmentPage() {
       {/* Skip Navigation Link */}
       <a 
         href="#main-content" 
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-umhc-green text-white px-4 py-2 rounded-md z-50 focus:ring-2 focus:ring-white"
+        className="hidden"
       >
         Skip to main content
       </a>

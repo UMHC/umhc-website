@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import AddToCalendarButton from "@/components/AddToCalendarButton";
 
 export const metadata: Metadata = {
   title: "UMHC | Understanding our EGM",
-  description: "Join us for an Extraordinary General Meeting (EGM) to appoint committee members and vote on changes to our constitution. This page intends to provide information about the process and how to get involved in shaping your society.",
+  description: "Join us for an Extraordinary General Meeting (EGM) to appoint committee members and vote on changes to our constitution. This page aims to help you understand the process and how to get involved in shaping your society.",
   openGraph: {
     title: "UMHC | Understanding our EGM",
-    description: "Join us for an Extraordinary General Meeting (EGM) to appoint committee members and vote on changes to our constitution. This page intends to provide information about the process and how to get involved in shaping your society.",
+    description: "Join us for an Extraordinary General Meeting (EGM) to appoint committee members and vote on changes to our constitution. This page aims to help you understand the process and how to get involved in shaping your society.",
     images: [
       {
         url: "/images/activity-images/vote-box.webp",
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "UMHC | Understanding our EGM",
-    description: "Join us for an Extraordinary General Meeting (EGM) to appoint committee members and vote on changes to our constitution. This page intends to provide information about the process and how to get involved in shaping your society.",
+    description: "Join us for an Extraordinary General Meeting (EGM) to appoint committee members and vote on changes to our constitution. This page aims to help you understand the process and how to get involved in shaping your society.",
     images: ["/images/activity-images/vote-box.webp"],
   },
 };
@@ -37,8 +38,19 @@ export default function EGMPage() {
     "@type": "Event",
     "name": "UMHC Extraordinary General Meeting (EGM)",
     "description": "Join us for an Extraordinary General Meeting (EGM) to appoint committee members and vote on changes to our constitution.",
-    "image": "https://umhc.co.uk/images/activity-images/vote-box.webp",
-    "organizer": {
+    "image": "https://umhc.co.uk/images/activity-images/vote-box.webp",    "startDate": "2026-02-03T19:00:00+00:00",
+    "endDate": "2026-02-03T21:00:00+00:00",
+    "location": {
+      "@type": "Place",
+      "name": "Uni Place",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Oxford Road",
+        "addressLocality": "Manchester",
+        "postalCode": "M13 9PL",
+        "addressCountry": "GB"
+      }
+    },    "organizer": {
       "@type": "Organization",
       "name": "University of Manchester Hiking Club",
       "url": "https://umhc.co.uk"
@@ -58,7 +70,7 @@ export default function EGMPage() {
       {/* Skip to Main Content Link */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-[#b15539] focus:text-white focus:px-4 focus:py-2 focus:rounded focus:outline-none focus:ring-2 focus:ring-white"
+        className="hidden"
       >
         Skip to main content
       </a>
@@ -80,20 +92,18 @@ export default function EGMPage() {
           We&apos;re Having an EGM
         </h1>
         <p className="font-medium text-sm sm:text-base text-center text-black max-w-4xl mb-4">
-          Due to recent internal events within our committee, we will now be hosting an Extraordinary General Meeting (EGM) to appoint new committee members and potentially introduce new laws to our constitution. Almost anyone can apply for an open role within the committee and we encourage all of our members to join us to vote on the upcoming changes. This page hopes to help you understand what&apos;s going on within your committee, how things work, and what you can do to get involved.
+          Due to recent internal events within our committee, we&apos;re hosting an Extraordinary General Meeting (EGM) to appoint new committee members and potentially introduce new laws to our constitution. Almost anyone can apply for an open role within the committee, and we encourage all of you to join us to vote on the upcoming changes. This page aims to help you understand how things work and what you can do to get involved.
         </p>
-        <p className="font-bold text-base sm:text-lg md:text-xl text-center text-[#494949] leading-relaxed sm:leading-10">
-          The Date and Location have not yet been arranged
+        <p className="font-bold text-base sm:text-lg md:text-xl text-center text-[#494949]">
+          3rd February | 7:00 PM | Room 5.206, Uni Place
         </p>
       </section>
 
-      {/* Action Buttons */}
-      <nav aria-label="EGM application actions" className="flex flex-col sm:flex-row gap-4 sm:gap-9 items-center justify-center w-full">
-        <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="bg-[#b15539] text-[#fffefb] font-semibold text-[15px] px-3.5 py-1.5 rounded-full shadow-md hover:bg-[#9a4730] transition-colors text-center whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2" aria-label="Apply for a proxy vote to vote on your behalf">
-          Apply for a Proxy Vote
-        </Link>
-        <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="bg-[#b15539] text-[#fffefb] font-semibold text-[15px] px-3.5 py-1.5 rounded-full shadow-md hover:bg-[#9a4730] transition-colors text-center whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2" aria-label="Apply for an open committee role">
-          Apply for a Role
+      {/* Action Button */}
+      <nav aria-label="EGM application actions" className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full">
+        <AddToCalendarButton />
+        <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="bg-[#b15539] text-[#fffefb] font-semibold text-[15px] px-3.5 py-1.5 rounded-full shadow-md hover:bg-[#9a4730] transition-colors text-center whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2" aria-label="Apply for a proxy vote or committee role">
+          Apply for Proxy Vote or Role
         </Link>
       </nav>
 
@@ -103,7 +113,7 @@ export default function EGMPage() {
           What is an EGM?
         </h2>
         <p className="font-medium text-sm sm:text-base text-black">
-          EGM is an acronym for the full phrase Extraordinary General Meeting. We normally hold an Annual General Meeting (AGM) in March to appoint new committee members and laws to our constitution, however when an event occurs that can&apos;t wait for the AGM, we hold an EGM to handle it. In this case, we&apos;ve had multiple committee members step down from their roles and we must vote to appoint new committee members for these open roles for our club to function correctly once again.
+          EGM stands for Extraordinary General Meeting. We normally hold an Annual General Meeting (AGM) in March to appoint new committee members and approve amendments to our constitution; however, when something occurs that can&apos;t wait for the AGM, we hold an EGM to handle it. In this case, we&apos;ve had multiple committee members step down from their roles, and we need to vote to appoint new committee members so our club can function properly once again.
         </p>
       </section>
 
@@ -129,7 +139,7 @@ export default function EGMPage() {
                 Chair
               </h3>
               <p className="font-medium text-sm sm:text-base text-black">
-                This is a crucial role and required for the society to function, this person will take the chair at all meetings at which they are present and should be available in person when necessary to ensure the smooth running of the society. They also contribute to all aspects of the functions of the society including arranging our Winter and Easter trips.
+                This is a crucial role and is required for the society to function. The Chair will lead all meetings at which they are present and should be available in person when necessary to ensure the smooth running of the society. They also contribute to all aspects of the society&apos;s functions, including arranging our Winter and Easter trips.
               </p>
             </div>
           </div>
@@ -150,7 +160,7 @@ export default function EGMPage() {
                 Vice-Chair
               </h3>
               <p className="font-medium text-sm sm:text-base text-black">
-                The Vice-Chair assists the Chair where possible and will fill in for them when necessary. They also help to ensure the society runs smoothly whilst coordinating the work of the Hikes Secretaries to make sure everything is prepared for day trips every week.
+                The Vice-Chair assists the Chair wherever possible and fills in for them when necessary. They also help to ensure the society runs smoothly whilst coordinating the work of the Hikes Secretaries to make sure everything is prepared for our day trips every week.
               </p>
             </div>
           </div>
@@ -171,7 +181,7 @@ export default function EGMPage() {
                 Hike Secretary
               </h3>
               <p className="font-medium text-sm sm:text-base text-black">
-                We have three hike secretaries who all work together to plan the routes for all of our upcoming day trip hikes and scrambles across Snowdonia and the Lake District. As part of the role, the hike secretary should also give notice of routes to the trip leader and members, as well as organise the booking of coaches, including the drop-off and collection points, for the day hikes. Please note, a suggestion has been made to reduce the number of hike secretaries down from three to two; this may be voted on within this EGM before voting is open for an applicant to be appointed to the role.
+                We have three Hike Secretaries who all work together to plan the routes for all of our upcoming day trip hikes and scrambles across Snowdonia and the Lake District. As part of the role, the Hike Secretary should also give notice of routes to the trip leader and members, as well as organise the booking of coaches, including the drop-off and collection points, for the day hikes. Please note: a suggestion has been made to reduce the number of Hike Secretaries from three to two; this may be voted on at this EGM before voting opens for an applicant to be appointed to the role.
               </p>
             </div>
           </div>
@@ -192,7 +202,7 @@ export default function EGMPage() {
                 Social Secretary
               </h3>
               <p className="font-medium text-sm sm:text-base text-black">
-                We have two social secretaries who both work together to organise all of our upcoming social events, whether it&apos;s the usual weekly socials or special events such as our Christmas dinner or Annual Dinner (we like our food). Their work helps to keep everyone in our society involved and included so that the club can be as fun, active, and welcoming as possible.
+                We have two Social Secretaries who both work together to organise all of our upcoming social events, whether it&apos;s the usual weekly socials or special events such as our Christmas Dinner or Annual Dinner (we like our food). Their work helps to keep everyone in our society involved and included, so that the club can be as fun, active, and welcoming as possible.
               </p>
             </div>
           </div>
@@ -209,10 +219,10 @@ export default function EGMPage() {
             Yes! All of our roles are open for almost anyone to apply for. The only condition is that you must either be a current student (at any Manchester University) or have special permission from the Student Union if not.
           </p>
           <p>
-            If you wish to apply for a role whilst not a current student, it may be best to request special permission from the Student Union; it&apos;s advised to do so ahead of time to prevent any later issues if unsuccessful. They will ask you a few questions to grant you an exception to the SU rules, one of which may be whether the role you wish to run for is uncontested, and you may also be required to prove permission from the UMHC committee to be a part of it. At the end of the day, whether you can run for a role whilst not being a current student is at the discretion of the Student Union.
+            If you wish to apply for a role whilst not being a current student, it may be best to request special permission from the Student Union; we&apos;d advise doing so ahead of time to prevent any issues. They&apos;ll ask you a few questions to grant you an exception to the SU rules, one of which may be whether the role you wish to run for is uncontested, and you may also be required to prove you have permission from the UMHC committee to be a part of it. At the end of the day, whether you can run for a role whilst not being a current student is at the discretion of the Student Union.
           </p>
           <p>
-            It&apos;s greatly encouraged that anyone put their hat into the ring to run for an open role in the committee; if you wish to do so, then please <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="text-[#b15539] underline hover:text-[#9a4730] focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2 rounded" aria-label="Fill in the role application form">fill in the form which you can find at this link</Link> no later than 24 hours before the EGM.
+            We greatly encourage anyone to put their hat in the ring to run for an open role on the committee; if you wish to do so, please <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="text-[#b15539] underline hover:text-[#9a4730] focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2 rounded" aria-label="Fill in the role application form">fill in this form</Link> no later than 24 hours before the EGM.
           </p>
         </div>
       </section>
@@ -224,16 +234,31 @@ export default function EGMPage() {
         </h2>
         <div className="font-medium text-sm sm:text-base text-black space-y-4">
           <p>
-            For many, the EGM or AGM is completely new to them so it&apos;s understandable to not be too sure how everything works. While some societies just take down applications via a form, post it on their social media and then leave it for their members to vote, we perform our applicant process slightly differently.
+            For many of you, the EGM or AGM might be completely new, so it&apos;s understandable if you&apos;re not quite sure how everything works. Whilst some societies just take applications via a form, post it on their social media, and then leave it for their members to vote, we run our application process slightly differently.
           </p>
           <p>
-            Like other societies, we require all applicants to fill in an online form; this allows us to prepare ballots and other resources ahead of the EGM so that we can ensure everything is ready so that the event runs smoothly. This form will ask you what role you wish to apply for, as well as the name of the person you wish to have nominate you (we&apos;ll explain this in a second). The applicant form is also shared with the proxy vote form; a proxy vote just provides the ability for a member to nominate someone ahead of time to vote for them if they can&apos;t make it to the EGM. You don&apos;t need to fill in the proxy vote input if you&apos;re running for a role.
+            Like other societies, we require all applicants to fill in an online form; this allows us to prepare ballots and other resources ahead of the EGM to ensure the event runs smoothly. This form will ask what role you wish to apply for, as well as the name of the person you wish to have nominate you (we&apos;ll explain this in a second). The application form is also shared with the proxy vote form; a proxy vote simply provides the ability for a member to nominate someone ahead of time to vote for them if they can&apos;t make it to the EGM. You don&apos;t need to fill in the proxy vote section if you&apos;re running for a role.
           </p>
           <p>
-            Once you&apos;ve filled in the form and the big day has arrived, the EGM will work as follows. An introductory speech will be made to welcome everyone from the chair and to commence the EGM. Once complete, any amendments to the constitution will be put forward along with an explanation of why the person believes such amendments should be made; after they&apos;ve pitched their amendment, anyone from the room may ask them questions about their suggestion, closely followed by a vote on such amendment. Finally, once all constitutional amendments have been voted upon, we move onto the roles. We&apos;ll work through the available roles with each applicant&apos;s nominee introducing them with a short speech about the applicant; once the nominee has finished their speech, it will become the applicant&apos;s turn to make a speech about why they believe they&apos;re a good fit for the role and why people should vote for them. Once all applicants for a role have had their turn, voting for the role will open; after that has completed for the role, we&apos;ll move onto the next available role until all roles have been voted upon. Finally, this will result in the announcement and appointment of our new committee members, and we head off to celebrate.
+            Once you&apos;ve filled in the form and the big day has arrived, the EGM will work as follows. The Chair will make an introductory speech to welcome everyone and commence the EGM. Once complete, any amendments to the constitution will be put forward along with an explanation of why they should be made; after the proposer has pitched their amendment, anyone in the room may ask them questions about it, closely followed by a vote on the amendment. Finally, once all constitutional amendments have been voted upon, we&apos;ll move on to the roles. We&apos;ll work through the available roles with each applicant&apos;s nominee introducing them with a short speech; once the nominee has finished, it&apos;ll be the applicant&apos;s turn to make a speech about why they believe they&apos;re a good fit for the role and why you should vote for them. Once all applicants for a role have had their turn, voting for the role will open; after that&apos;s completed, we&apos;ll move on to the next available role until all roles have been voted upon. Finally, we&apos;ll announce and appoint our new committee members, and head off to celebrate!
           </p>
           <p>
-            All in all, it can be a lengthy process, however an EGM is much shorter and quicker than an AGM which will occur in March.
+            All in all, it can be a lengthy process; however, an EGM is much shorter and quicker than an AGM, which will occur in March.
+          </p>
+        </div>
+      </section>
+
+      {/* Constitution Amendments Section */}
+      <section aria-labelledby="constitution-amendments" className="flex flex-col w-full max-w-4xl">
+        <h2 id="constitution-amendments" className="font-bold text-2xl sm:text-3xl md:text-4xl text-black mb-2">
+          Constitution Amendments
+        </h2>
+        <div className="font-medium text-sm sm:text-base text-black space-y-4">
+          <p>
+            Our <Link href="https://umhc.org.uk/constitution" className="text-[#b15539] underline hover:text-[#9a4730] focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2 rounded" aria-label="View the UMHC constitution">constitution</Link> defines the rules and structure of our club. Any member can propose an amendment, which must be seconded by another member. Both members will be required to present their amendment at the EGM before voting begins.
+          </p>
+          <p>
+            Submit your amendment proposals <Link href="https://docs.google.com/forms/d/e/1FAIpQLSc12G7lhQAF5JMjG079KRq4p6SKFZhuQKALgmUQvO127z1Tgw/viewform?usp=header" className="text-[#b15539] underline hover:text-[#9a4730] focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2 rounded" aria-label="Submit a constitution amendment proposal">using this form</Link>. The deadline is 7:00 PM on 27th January to give the committee time to prepare.
           </p>
         </div>
       </section>
@@ -245,10 +270,10 @@ export default function EGMPage() {
         </h2>
         <div className="font-medium text-sm sm:text-base text-black space-y-4">
           <p>
-            Voting is open for all members of the club, whether you have a student membership, an associate membership, or a lifetime membership. You can even purchase a membership up until just minutes before the voting begins! It&apos;s very strongly encouraged that all of our members vote at the EGM as it ensures that the club stays focussed around our members and not the interests of a small few people. If you&apos;re entitled to vote but can&apos;t make it to the EGM then you have the right to a proxy vote which allows you to appoint a member of the club who can make it to the EGM to vote for you on your behalf. To do this, please <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="text-[#b15539] underline hover:text-[#9a4730] focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2 rounded" aria-label="Fill in the proxy vote application form">fill in the form which you can find at this link</Link> no later than 24 hours before the EGM (please note this is a shared form for role applicants to also fill in, you do not need to fill in the role applicant parts if you&apos;re just applying for a proxy vote).
+            Voting is open to all members of the club, whether you have a student membership, an associate membership, or a lifetime membership. You can even purchase a membership right up until just minutes before voting begins! We strongly encourage all of you to vote at the EGM, as it ensures that the club stays focussed on our members and not the interests of just a few people. If you&apos;re entitled to vote but can&apos;t make it to the EGM, you have the right to a proxy vote, which allows you to appoint another member to vote on your behalf. To do this, please <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="text-[#b15539] underline hover:text-[#9a4730] focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2 rounded" aria-label="Fill in the proxy vote application form">fill in this form</Link> no later than 24 hours before the EGM. (Please note: this is a shared form for role applicants as well; you don&apos;t need to fill in the role application sections if you&apos;re just applying for a proxy vote.)
           </p>
           <p>
-            Finally, if this is your first EGM or AGM, it&apos;s crucial to know that on all voting slips, you will be provided with an option titled &apos;RON&apos;; this option is available if you do not wish any of the current applicants to be awarded the role. If this option wins the election, nominations for the role will be reopened for fresh applications and either voted for again on the spot or at a later EGM (dependent on the circumstances).
+            Finally, if this is your first EGM or AGM, it&apos;s crucial to know that on all voting slips, you&apos;ll be provided with an option called &apos;RON&apos; (Re-Open Nominations). This option is available if you don&apos;t wish any of the current applicants to be awarded the role. If this option wins the election, nominations for the role will be reopened for fresh applications and voted on either again on the spot or at a later EGM, depending on the circumstances.
           </p>
         </div>
       </section>
@@ -259,19 +284,9 @@ export default function EGMPage() {
           I&apos;m a Member, how do I get involved?
         </h2>
         <p className="font-medium text-sm sm:text-base text-black">
-          It&apos;s super easy! Just come along to our EGM and vote for whoever you wish to be elected to the role. If you can&apos;t make it then you&apos;re entitled to a proxy vote, where another member who will be there can vote on your behalf. If you wish to do this then <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="text-[#b15539] underline hover:text-[#9a4730] focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2 rounded" aria-label="Fill in the proxy vote form">please fill in this form.</Link>
+          It&apos;s super easy! Just come along to our EGM and vote for whoever you wish to be elected to the role. If you can&apos;t make it, you&apos;re entitled to a proxy vote, where another member who will be there can vote on your behalf. If you wish to do this, <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="text-[#b15539] underline hover:text-[#9a4730] focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2 rounded" aria-label="Fill in the proxy vote form">please fill in this form.</Link>
         </p>
       </section>
-
-      {/* Bottom Action Buttons */}
-      <nav aria-label="EGM application actions" className="flex flex-col sm:flex-row gap-4 sm:gap-9 items-center justify-center w-full">
-        <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="bg-[#b15539] text-[#fffefb] font-semibold text-[15px] px-3.5 py-1.5 rounded-full shadow-md hover:bg-[#9a4730] transition-colors text-center whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2" aria-label="Apply for a proxy vote to vote on your behalf">
-          Apply for a Proxy Vote
-        </Link>
-        <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="bg-[#b15539] text-[#fffefb] font-semibold text-[15px] px-3.5 py-1.5 rounded-full shadow-md hover:bg-[#9a4730] transition-colors text-center whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2" aria-label="Apply for an open committee role">
-          Apply for a Role
-        </Link>
-      </nav>
     </main>
     </>
   );

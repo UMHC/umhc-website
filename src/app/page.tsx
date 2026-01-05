@@ -6,6 +6,7 @@ import ScrollIndicator from '@/components/ScrollIndicator';
 import TypewriterHero from '@/components/TypewriterHero';
 import ScrollingBanner from '@/components/ScrollingBanner';
 import SnowEffect from '@/components/SnowEffect';
+import EGMSection from '@/components/EGMSection';
 // import EGMSection from '@/components/EGMSection';
 import { getBannerMessages } from '@/lib/bannerService';
 
@@ -18,7 +19,7 @@ export default async function Home() {
       {/* Skip Navigation Link */}
       <a 
         href="#main-content" 
-        className="sr-only focus:not-sr-only focus:absolute focus:z-[100000] focus:top-4 focus:left-4 focus:bg-umhc-green focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:outline-none focus:ring-2 focus:ring-white"
+        className="hidden"
       >
         Skip to main content
       </a>
@@ -67,8 +68,8 @@ export default async function Home() {
       <ScrollIndicator />
     </div>
     
-    {/* EGM Section - CURRENTLY NOT VISIBLE */}
-    {/* <EGMSection /> */}
+    {/* EGM Section */}
+    <EGMSection />
 
     {/* Who Are We Section */}
     <section className="bg-whellow">

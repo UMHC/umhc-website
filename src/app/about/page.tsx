@@ -36,7 +36,7 @@ export default function About() {
       {/* Skip Navigation Link */}
       <a 
         href="#main-content" 
-        className="sr-only focus:not-sr-only focus:absolute focus:z-[100000] focus:top-4 focus:left-4 focus:bg-umhc-green focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:outline-none focus:ring-2 focus:ring-white"
+        className="hidden"
       >
         Skip to main content
       </a>
