@@ -92,7 +92,7 @@ function ConstitutionSection({
       </div>
       <div className="pl-4 sm:pl-6">
         <div 
-          className="text-sm sm:text-base text-deep-black font-medium font-sans leading-relaxed"
+          className="text-base text-deep-black font-medium font-sans leading-relaxed"
           dangerouslySetInnerHTML={{ __html: parseMarkdown(sectionText) }}
         />
       </div>
@@ -110,7 +110,7 @@ export default function Constitution() {
             Constitution
           </h1>
           <div className="max-w-5xl mx-auto px-2">
-            <p className="text-xs sm:text-sm md:text-base text-deep-black font-medium font-sans leading-relaxed">
+            <p className="text-base text-deep-black font-medium font-sans leading-relaxed">
               As a society under The University of Manchester Student Union, we&apos;re committed to creating a welcoming and inclusive community for all of our members. Our constitution outlines the principles and guidelines that help us maintain a safe, respectful, and welcoming environment where everyone can enjoy hiking and socialising together. These rules ensure fair participation in our activities, from weekend hikes to social events, while protecting the interests of all members. Whether you&apos;re a committee member or a general society member, understanding our constitution helps create the positive community experience we&apos;re all here for. (Last updated July 2025)
             </p>
           </div>
