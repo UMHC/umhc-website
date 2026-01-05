@@ -91,7 +91,7 @@ export default function EGMPage() {
         <h1 id="egm-title" className="font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center text-black mb-4">
           We&apos;re Having an EGM
         </h1>
-        <p className="font-medium text-sm sm:text-base text-center text-black max-w-4xl mb-4">
+        <p className="font-medium text-base text-center text-black max-w-4xl mb-4">
           Due to recent internal events within our committee, we&apos;re hosting an Extraordinary General Meeting (EGM) to appoint new committee members and potentially introduce new laws to our constitution. Almost anyone can apply for an open role within the committee, and we encourage all of you to join us to vote on the upcoming changes. This page aims to help you understand how things work and what you can do to get involved.
         </p>
         <p className="font-bold text-base sm:text-lg md:text-xl text-center text-[#494949]">
@@ -112,7 +112,7 @@ export default function EGMPage() {
         <h2 id="what-is-egm" className="font-bold text-2xl sm:text-3xl md:text-4xl text-black mb-2">
           What is an EGM?
         </h2>
-        <p className="font-medium text-sm sm:text-base text-black">
+        <p className="font-medium text-base text-black">
           EGM stands for Extraordinary General Meeting. We normally hold an Annual General Meeting (AGM) in March to appoint new committee members and approve amendments to our constitution; however, when something occurs that can&apos;t wait for the AGM, we hold an EGM to handle it. In this case, we&apos;ve had multiple committee members step down from their roles, and we need to vote to appoint new committee members so our club can function properly once again.
         </p>
       </section>
@@ -138,7 +138,7 @@ export default function EGMPage() {
               <h3 className="font-bold text-xl sm:text-2xl text-black mb-1">
                 Chair
               </h3>
-              <p className="font-medium text-sm sm:text-base text-black">
+              <p className="font-medium text-base text-black">
                 This is a crucial role and is required for the society to function. The Chair will lead all meetings at which they are present and should be available in person when necessary to ensure the smooth running of the society. They also contribute to all aspects of the society&apos;s functions, including arranging our Winter and Easter trips.
               </p>
             </div>
@@ -159,7 +159,7 @@ export default function EGMPage() {
               <h3 className="font-bold text-xl sm:text-2xl text-black mb-1">
                 Vice-Chair
               </h3>
-              <p className="font-medium text-sm sm:text-base text-black">
+              <p className="font-medium text-base text-black">
                 The Vice-Chair assists the Chair wherever possible and fills in for them when necessary. They also help to ensure the society runs smoothly whilst coordinating the work of the Hikes Secretaries to make sure everything is prepared for our day trips every week.
               </p>
             </div>
@@ -180,7 +180,7 @@ export default function EGMPage() {
               <h3 className="font-bold text-xl sm:text-2xl text-black mb-1">
                 Hike Secretary
               </h3>
-              <p className="font-medium text-sm sm:text-base text-black">
+              <p className="font-medium text-base text-black">
                 We have three Hike Secretaries who all work together to plan the routes for all of our upcoming day trip hikes and scrambles across Snowdonia and the Lake District. As part of the role, the Hike Secretary should also give notice of routes to the trip leader and members, as well as organise the booking of coaches, including the drop-off and collection points, for the day hikes. Please note: a suggestion has been made to reduce the number of Hike Secretaries from three to two; this may be voted on at this EGM before voting opens for an applicant to be appointed to the role.
               </p>
             </div>
@@ -201,7 +201,7 @@ export default function EGMPage() {
               <h3 className="font-bold text-xl sm:text-2xl text-black mb-1">
                 Social Secretary
               </h3>
-              <p className="font-medium text-sm sm:text-base text-black">
+              <p className="font-medium text-base text-black">
                 We have two Social Secretaries who both work together to organise all of our upcoming social events, whether it&apos;s the usual weekly socials or special events such as our Christmas Dinner or Annual Dinner (we like our food). Their work helps to keep everyone in our society involved and included, so that the club can be as fun, active, and welcoming as possible.
               </p>
             </div>
@@ -214,7 +214,7 @@ export default function EGMPage() {
         <h2 id="run-for-role" className="font-bold text-2xl sm:text-3xl md:text-4xl text-black mb-2">
           Can I run for an Open Role?
         </h2>
-        <div className="font-medium text-sm sm:text-base text-black space-y-4">
+        <div className="font-medium text-base text-black space-y-4">
           <p>
             Yes! All of our roles are open for almost anyone to apply for. The only condition is that you must either be a current student (at any Manchester University) or have special permission from the Student Union if not.
           </p>
@@ -232,7 +232,7 @@ export default function EGMPage() {
         <h2 id="process" className="font-bold text-2xl sm:text-3xl md:text-4xl text-black mb-2">
           How does the process work?
         </h2>
-        <div className="font-medium text-sm sm:text-base text-black space-y-4">
+        <div className="font-medium text-base text-black space-y-4">
           <p>
             For many of you, the EGM or AGM might be completely new, so it&apos;s understandable if you&apos;re not quite sure how everything works. Whilst some societies just take applications via a form, post it on their social media, and then leave it for their members to vote, we run our application process slightly differently.
           </p>
@@ -253,7 +253,7 @@ export default function EGMPage() {
         <h2 id="constitution-amendments" className="font-bold text-2xl sm:text-3xl md:text-4xl text-black mb-2">
           Constitution Amendments
         </h2>
-        <div className="font-medium text-sm sm:text-base text-black space-y-4">
+        <div className="font-medium text-base text-black space-y-4">
           <p>
             Our <Link href="https://umhc.org.uk/constitution" className="text-[#b15539] underline hover:text-[#9a4730] focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2 rounded" aria-label="View the UMHC constitution">constitution</Link> defines the rules and structure of our club. Any member can propose an amendment, which must be seconded by another member. Both members will be required to present their amendment at the EGM before voting begins.
           </p>
@@ -268,7 +268,7 @@ export default function EGMPage() {
         <h2 id="voting-info" className="font-bold text-2xl sm:text-3xl md:text-4xl text-black mb-2">
           Crucial Voting Info
         </h2>
-        <div className="font-medium text-sm sm:text-base text-black space-y-4">
+        <div className="font-medium text-base text-black space-y-4">
           <p>
             Voting is open to all members of the club, whether you have a student membership, an associate membership, or a lifetime membership. You can even purchase a membership right up until just minutes before voting begins! We strongly encourage all of you to vote at the EGM, as it ensures that the club stays focussed on our members and not the interests of just a few people. If you&apos;re entitled to vote but can&apos;t make it to the EGM, you have the right to a proxy vote, which allows you to appoint another member to vote on your behalf. To do this, please <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="text-[#b15539] underline hover:text-[#9a4730] focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2 rounded" aria-label="Fill in the proxy vote application form">fill in this form</Link> no later than 24 hours before the EGM. (Please note: this is a shared form for role applicants as well; you don&apos;t need to fill in the role application sections if you&apos;re just applying for a proxy vote.)
           </p>
@@ -283,7 +283,7 @@ export default function EGMPage() {
         <h2 id="get-involved" className="font-bold text-2xl sm:text-3xl md:text-4xl text-black mb-2">
           I&apos;m a Member, how do I get involved?
         </h2>
-        <p className="font-medium text-sm sm:text-base text-black">
+        <p className="font-medium text-base text-black">
           It&apos;s super easy! Just come along to our EGM and vote for whoever you wish to be elected to the role. If you can&apos;t make it, you&apos;re entitled to a proxy vote, where another member who will be there can vote on your behalf. If you wish to do this, <Link href="https://docs.google.com/forms/d/e/1FAIpQLScsVt2nCYl2xG_tdSpZrELyOU4sLeuj0Mu2ISwYNeWu-O894Q/viewform?usp=dialog" className="text-[#b15539] underline hover:text-[#9a4730] focus:outline-none focus:ring-2 focus:ring-[#b15539] focus:ring-offset-2 rounded" aria-label="Fill in the proxy vote form">please fill in this form.</Link>
         </p>
       </section>

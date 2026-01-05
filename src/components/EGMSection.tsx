@@ -29,7 +29,7 @@ export default function EGMSection() {
               3rd February | 7:00 PM | Room 5.206, Uni Place
             </p>
             
-            <div className="font-medium text-sm sm:text-base text-black space-y-4 text-center lg:text-left">
+            <div className="font-medium text-base text-black space-y-4 text-center lg:text-left">
               <p>
                 Due to recent internal events within our committee, we will now be hosting an Extraordinary General Meeting (EGM) to appoint new committee members and potentially introduce new laws to our constitution. Almost anyone can apply for an open role within the committee and we encourage all of our members to join us to vote on the upcoming changes.
               </p>
