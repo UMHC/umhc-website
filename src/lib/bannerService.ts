@@ -1,10 +1,24 @@
 // Banner message management using Edge Config
 import { get } from '@vercel/edge-config';
+import { unstable_cache } from 'next/cache';
 
 export interface BannerMessage {
   text: string;
   order: number;
 }
+
+// Cached function to get banner messages
+const getCachedBannerMessages = unstable_cache(
+  async () => {
+    const messages = await get('banner_messages');
+    return messages;
+  },
+  ['banner-messages'],
+  {
+    revalidate: 1200, // 20 minutes
+    tags: ['banner-messages']
+  }
+);
 
 /**
  * Get banner messages from Edge Config
@@ -12,7 +26,7 @@ export interface BannerMessage {
  */
 export async function getBannerMessages(): Promise<BannerMessage[]> {
   try {
-    const messages = await get('banner_messages');
+    const messages = await getCachedBannerMessages();
 
     if (Array.isArray(messages) && messages.length > 0) {
       // Validate the structure

@@ -5,12 +5,11 @@ import LazyMembershipSection from '@/components/LazyMembershipSection';
 import ScrollIndicator from '@/components/ScrollIndicator';
 import TypewriterHero from '@/components/TypewriterHero';
 import ScrollingBanner from '@/components/ScrollingBanner';
-import SnowEffect from '@/components/SnowEffect';
 import EGMSection from '@/components/EGMSection';
 // import EGMSection from '@/components/EGMSection';
 import { getBannerMessages } from '@/lib/bannerService';
 
-export const revalidate = 600; // Revalidate every 10 minutes
+export const revalidate = 1200; // Revalidate every 20 minutes
 
 export default async function Home() {
   const bannerMessages = await getBannerMessages();
@@ -23,7 +22,6 @@ export default async function Home() {
       >
         Skip to main content
       </a>
-      <SnowEffect />
     <div className="relative min-h-screen overflow-hidden">
       {/* Background image layer */}
       <Image

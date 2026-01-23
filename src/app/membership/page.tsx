@@ -110,7 +110,7 @@ export default function MembershipPage() {
             
             <MembershipCard
               title="Associate Membership (Non-UoM)"
-              price="£10"
+              price="£15"
               period="for sem 2"
               buttonText="Purchase on the SU Website"
               features={associateFeatures}
