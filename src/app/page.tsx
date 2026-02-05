@@ -67,7 +67,7 @@ export default async function Home() {
     </div>
     
     {/* EGM Section */}
-    <EGMSection />
+    {/* <EGMSection /> */}
 
     {/* Who Are We Section */}
     <section className="bg-whellow">
