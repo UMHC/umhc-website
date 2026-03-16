@@ -1,0 +1,241 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Respect user's motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:root {
+  --background: #FFFCF7; /* whellow */
+  --foreground: #494949; /* slate-grey */
+  
+  /* UMHC Brand Colors */
+  --umhc-green: #1C5713;
+  --stealth-green: #2E4E39;
+  --earth-orange: #B15539;
+  --slate-grey: #494949;
+  --deep-black: #000000;
+  --whellow: #FFFCF7;
+  --cream-white: #FFFEFB;
+}
+
+@layer utilities {
+  @keyframes slide-down {
+    from {
+      transform: scaleY(0);
+      opacity: 0;
+    }
+    to {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slide-up {
+    from {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+    to {
+      transform: scaleY(0);
+      opacity: 0;
+    }
+  }
+  
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fade-out-up {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes bounce-vertical {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-8px);
+    }
+    60% {
+      transform: translateY(-4px);
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  
+  .animate-slide-down {
+    animation: slide-down 0.3s ease-out;
+    transform-origin: top;
+    overflow: hidden;
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-in-out 0.15s forwards;
+    transform-origin: top;
+    overflow: hidden;
+  }
+  
+  .animate-fade-in-up {
+    animation: fade-in-up 0.25s ease-out both;
+  }
+  
+  .animate-fade-out-up {
+    animation: fade-out-up 0.25s ease-in forwards;
+  }
+
+  .animate-bounce-vertical {
+    animation: bounce-vertical 2s ease-in-out infinite;
+  }
+
+  .animate-fade-out {
+    animation: fade-out 0.5s ease-out forwards;
+  }
+
+  .scroll-indicator {
+    transition: opacity 0.3s ease-out;
+  }
+  
+  /* Fix sticky hover states on mobile */
+  @media (hover: none) {
+    a:hover, button:hover {
+      text-decoration: none !important;
+    }
+  }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .motion-reduce\:animate-none {
+      animation: none !important;
+    }
+    
+    .motion-reduce\:transition-none {
+      transition: none !important;
+    }
+  }
+  
+  /* Hide scrollbars utility */
+  .scrollbar-hide {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  /* Hero text positioning fix for different screen sizes */
+  .hero-text {
+    transform: translateY(-155px);
+  }
+
+  /* Medium height screens */
+  @media (min-height: 700px) and (max-height: 900px) {
+    .hero-text {
+      transform: translateY(-180px);
+    }
+  }
+
+  /* Large height screens */
+  @media (min-height: 900px) {
+    .hero-text {
+      transform: translateY(-220px);
+    }
+  }
+
+  /* Small height screens */
+  @media (max-height: 600px) {
+    .hero-text {
+      transform: translateY(0px) !important;
+      z-index: 30 !important;
+    }
+  }
+
+  @media (max-height: 500px) {
+    .hero-text {
+      transform: translateY(-20px) !important;
+      z-index: 30 !important;
+    }
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--deep-black);
+  font-family: var(--font-open-sans), system-ui, sans-serif;
+}
+
+/* Social Wall Styles */
+/* Hide scrollbars for all browsers */
+.social-wall-column {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.social-wall-column::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Smooth scroll behavior */
+.social-wall-column {
+  scroll-behavior: smooth;
+}
+
+/* Pause scrolling on hover */
+.social-wall-column:hover {
+  animation-play-state: paused;
+}
+
+/* Optional: Add custom scrollbar on hover for better UX */
+.social-wall-column:hover {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.social-wall-column:hover::-webkit-scrollbar {
+  display: block;
+  width: 4px;
+}
+
+.social-wall-column:hover::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.social-wall-column:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
