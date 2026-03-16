@@ -4,15 +4,12 @@ import LazySocialWall from '@/components/LazySocialWall';
 import LazyMembershipSection from '@/components/LazyMembershipSection';
 import ScrollIndicator from '@/components/ScrollIndicator';
 import TypewriterHero from '@/components/TypewriterHero';
-import ScrollingBanner from '@/components/ScrollingBanner';
 import EGMSection from '@/components/EGMSection';
 // import EGMSection from '@/components/EGMSection';
-import { getBannerMessages } from '@/lib/bannerService';
 
 export const revalidate = 1200; // Revalidate every 20 minutes
 
 export default async function Home() {
-  const bannerMessages = await getBannerMessages();
   return (
     <div className="bg-whellow min-h-screen">
       {/* Skip Navigation Link */}
@@ -56,11 +53,6 @@ export default async function Home() {
         unoptimized={true}
         sizes="100vw"
       />
-      
-      {/* Scrolling Banner - positioned at bottom of hero */}
-      <div className="absolute bottom-0 left-0 right-0 z-30">
-        <ScrollingBanner messages={bannerMessages} />
-      </div>
       
       {/* Scroll indicator */}
       <ScrollIndicator />

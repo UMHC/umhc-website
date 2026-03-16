@@ -3,7 +3,6 @@
  * Maps subdomains to their respective archived websites
  */
 export const subdomainRedirects: Record<string, string> = {
-    "finance.umhc.org.uk": "https://lucasholik.github.io/umhc-treasurer/",
     "2024.umhc.org.uk": "https://umhcdev.wixsite.com/umhc",
     "2023.umhc.org.uk": "https://umhc.org.uk/404"
   // Add more year mappings as needed

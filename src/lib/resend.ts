@@ -37,6 +37,10 @@ export interface ResendError {
   error: string;
 }
 
+export interface ResendSuccess {
+  messageId: string;
+}
+
 /**
  * Send email using Resend with the mail.umhc.org.uk domain
  */
@@ -60,10 +64,16 @@ export async function sendResendEmail(emailData: ResendEmailData): Promise<boole
       ...(emailData.replyTo && { replyTo: emailData.replyTo })
     };
 
-    const { error } = await resend.emails.send(messageData);
+    const { data, error } = await resend.emails.send(messageData);
 
     if (error) {
       console.error('Resend email sending failed:', error);
+      return false;
+    }
+
+    const messageId = (data as { id?: string } | null | undefined)?.id;
+    if (!messageId) {
+      console.error('Resend returned no error but no message ID either:', data);
       return false;
     }
 
@@ -77,7 +87,7 @@ export async function sendResendEmail(emailData: ResendEmailData): Promise<boole
 /**
  * Send email using Resend with detailed error information
  */
-export async function sendResendEmailWithError(emailData: ResendEmailData): Promise<{ success: boolean; error?: ResendError }> {
+export async function sendResendEmailWithError(emailData: ResendEmailData): Promise<{ success: boolean; data?: ResendSuccess; error?: ResendError }> {
   try {
     const { resend } = getResendClient();
 
@@ -103,7 +113,7 @@ export async function sendResendEmailWithError(emailData: ResendEmailData): Prom
       ...(emailData.replyTo && { replyTo: emailData.replyTo })
     };
 
-    const { error } = await resend.emails.send(messageData);
+    const { data, error } = await resend.emails.send(messageData);
 
     if (error) {
       console.error('Resend email sending failed:', error);
@@ -125,7 +135,18 @@ export async function sendResendEmailWithError(emailData: ResendEmailData): Prom
       };
     }
 
-    return { success: true };
+    const messageId = (data as { id?: string } | null | undefined)?.id;
+    if (!messageId) {
+      return {
+        success: false,
+        error: {
+          isRateLimit: false,
+          error: 'Email service returned an invalid response (missing message ID)'
+        }
+      };
+    }
+
+    return { success: true, data: { messageId } };
   } catch (error: unknown) {
     console.error('Resend email sending error:', error);
 

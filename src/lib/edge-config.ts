@@ -3,12 +3,14 @@ import { get } from '@vercel/edge-config';
 
 export interface EdgeConfigData {
   whatsapp_link: string;
+  whatsapp_womxn_link: string;
   qr_redirect_enabled: boolean;
 }
 
 // Default fallback values if Edge Config is not available
 const DEFAULT_CONFIG: EdgeConfigData = {
   whatsapp_link: process.env.WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/fallback',
+  whatsapp_womxn_link: process.env.WHATSAPP_WOMXN_GROUP_LINK || 'https://chat.whatsapp.com/fallback',
   qr_redirect_enabled: true
 };
 
@@ -33,6 +35,22 @@ export async function getWhatsAppLink(): Promise<string> {
 }
 
 /**
+ * Get the current Womxn WhatsApp group link from Edge Config
+ */
+export async function getWomxnWhatsAppLink(): Promise<string> {
+  try {
+    const link = await get('whatsapp_womxn_link');
+    if (typeof link === 'string' && link.startsWith('https://chat.whatsapp.com/')) {
+      return link;
+    }
+    return DEFAULT_CONFIG.whatsapp_womxn_link;
+  } catch (error) {
+    console.warn('Failed to get Womxn WhatsApp link from Edge Config:', error);
+    return DEFAULT_CONFIG.whatsapp_womxn_link;
+  }
+}
+
+/**
  * Check if QR redirect is enabled
  */
 export async function isQRRedirectEnabled(): Promise<boolean> {
@@ -50,13 +68,15 @@ export async function isQRRedirectEnabled(): Promise<boolean> {
  */
 export async function getEdgeConfig(): Promise<EdgeConfigData> {
   try {
-    const [whatsappLink, qrEnabled] = await Promise.all([
+    const [whatsappLink, womxnLink, qrEnabled] = await Promise.all([
       getWhatsAppLink(),
+      getWomxnWhatsAppLink(),
       isQRRedirectEnabled()
     ]);
 
     return {
       whatsapp_link: whatsappLink,
+      whatsapp_womxn_link: womxnLink,
       qr_redirect_enabled: qrEnabled
     };
   } catch (error) {

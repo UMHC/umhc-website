@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireCommitteeAccess } from '@/middleware/auth';
+import { requireCommitteeAccess, hasPermission } from '@/middleware/auth';
 import { getAccessLogs, cleanupExpiredTokens } from '@/lib/access-tokens';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { getQRTokens, invalidateAllQRTokens, reactivateAllQRTokens } from '@/lib/qr-tokens';
 
 interface WhatsAppConfigRequest {
   whatsapp_link?: string;
-  qr_redirect_enabled?: boolean;
 }
 
 // Add no-cache headers for security
@@ -27,6 +25,14 @@ export async function GET(request: NextRequest) {
     const authResult = await requireCommitteeAccess(request);
     if (!authResult.success) {
       return authResult.response;
+    }
+
+    // Require the specific whatsapp-general-manager permission
+    if (!hasPermission(authResult.data.permissions, 'whatsapp-general-manager')) {
+      return NextResponse.json(
+        { error: 'You do not have permission to manage the general WhatsApp group' },
+        { status: 403, headers }
+      );
     }
 
     // Get current config from Edge Config
@@ -72,9 +78,6 @@ export async function GET(request: NextRequest) {
       }))
     ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-    // Get QR tokens
-    const qrTokens = await getQRTokens();
-
     // Clean up expired tokens
     const cleanedTokens = await cleanupExpiredTokens();
 
@@ -82,7 +85,6 @@ export async function GET(request: NextRequest) {
       success: true,
       config,
       accessLogs: combinedLogs,
-      qrTokens,
       cleanupResult: {
         expiredTokensCleaned: cleanedTokens
       }
@@ -113,6 +115,14 @@ export async function POST(request: NextRequest) {
       return authResult.response;
     }
 
+    // Require the specific whatsapp-general-manager permission
+    if (!hasPermission(authResult.data.permissions, 'whatsapp-general-manager')) {
+      return NextResponse.json(
+        { error: 'You do not have permission to manage the general WhatsApp group' },
+        { status: 403, headers }
+      );
+    }
+
     const body: WhatsAppConfigRequest = await request.json();
 
     // Validate WhatsApp link if provided
@@ -129,25 +139,10 @@ export async function POST(request: NextRequest) {
     const { updateEdgeConfig } = await import('@/lib/edge-config');
 
     // Prepare update object with only provided values
-    const updateData: { whatsapp_link?: string; qr_redirect_enabled?: boolean } = {};
+    const updateData: { whatsapp_link?: string; } = {};
     if (body.whatsapp_link) updateData.whatsapp_link = body.whatsapp_link;
-    if (body.qr_redirect_enabled !== undefined) updateData.qr_redirect_enabled = body.qr_redirect_enabled;
 
     const success = await updateEdgeConfig(updateData);
-
-    // Handle QR token invalidation/reactivation based on global setting
-    let qrTokensAffected = 0;
-    if (body.qr_redirect_enabled !== undefined) {
-      if (body.qr_redirect_enabled === false) {
-        // Invalidate all QR tokens when QR is globally disabled
-        qrTokensAffected = await invalidateAllQRTokens();
-        console.log(`Invalidated ${qrTokensAffected} QR tokens due to global QR disable`);
-      } else if (body.qr_redirect_enabled === true) {
-        // Reactivate all QR tokens when QR is globally re-enabled
-        qrTokensAffected = await reactivateAllQRTokens();
-        console.log(`Reactivated ${qrTokensAffected} QR tokens due to global QR enable`);
-      }
-    }
 
     if (!success) {
       // Check if required environment variables are missing
@@ -170,7 +165,6 @@ export async function POST(request: NextRequest) {
 
             Or update manually in Vercel dashboard:
             - whatsapp_link: ${body.whatsapp_link || 'current value'}
-            - qr_redirect_enabled: ${body.qr_redirect_enabled !== undefined ? body.qr_redirect_enabled : 'current value'}
           `
         }, { status: 500, headers });
       }
@@ -182,15 +176,10 @@ export async function POST(request: NextRequest) {
 
     console.log(`WhatsApp config updated by ${authResult.data.user.email}:`, updateData);
 
-    const responseMessage = qrTokensAffected > 0
-      ? `Configuration updated successfully. ${qrTokensAffected} QR tokens were ${body.qr_redirect_enabled ? 'reactivated' : 'invalidated'}.`
-      : 'Configuration updated successfully';
-
     return NextResponse.json({
       success: true,
-      message: responseMessage,
-      updated: updateData,
-      qrTokensAffected
+      message: 'Configuration updated successfully',
+      updated: updateData
     }, { headers });
 
   } catch (error) {

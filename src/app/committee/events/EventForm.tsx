@@ -4,6 +4,41 @@ import { useState, useEffect } from 'react';
 import { ScheduleEvent, EventType } from '@/types/schedule';
 import { CreateEventData, UpdateEventData } from '@/lib/eventService';
 
+const EVENT_IMAGE_OPTIONS = [
+  '',
+  'backpack',
+  'banquet',
+  'beer',
+  'board-game',
+  'boots',
+  'bowling-ball',
+  'bowling',
+  'bunk-bed',
+  'bus',
+  'cinema',
+  'dance',
+  'darts',
+  'football-goal',
+  'gavel',
+  'karaoke',
+  'lake-with-trees',
+  'laser-tag',
+  'map',
+  'mountain-trees-lake',
+  'mountain-trees-river',
+  'mountain-trees',
+  'oak-tree',
+  'pine-tree',
+  'playing-cards',
+  'pool',
+  'quiz',
+  'rock-mountain',
+  'sign',
+  'trees-path',
+  'trees-waterfall',
+  'other',
+] as const;
+
 interface EventFormProps {
   event?: ScheduleEvent | null;
   onSubmit: (eventData: CreateEventData | UpdateEventData) => void;
@@ -55,6 +90,19 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
       });
     }
   }, [event]);
+
+  useEffect(() => {
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    };
+  }, []);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -124,16 +172,16 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-[2px] flex items-center justify-center p-4 z-50">
+      <div className="bg-cream-white rounded-xl border border-gray-200 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-2xl font-semibold text-deep-black">
               {event ? 'Edit Event' : 'Create New Event'}
             </h2>
             <button
               onClick={onCancel}
-              className="text-gray-400 hover:text-gray-600"
+              className="px-3 py-2 text-sm text-slate-grey bg-whellow rounded-lg border border-gray-200 hover:text-deep-black hover:border-gray-300 transition-colors"
               disabled={submitting}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Close">
@@ -145,9 +193,9 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-whellow rounded-lg border border-gray-200 p-5">
               <div className="md:col-span-2">
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="title" className="block text-sm font-medium text-deep-black mb-1">
                   Event Title *
                 </label>
                 <input
@@ -155,7 +203,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                   id="title"
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-umhc-green ${
+                  className={`w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green ${
                     errors.title ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="Enter event title"
@@ -165,14 +213,14 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
               </div>
 
               <div>
-                <label htmlFor="event_type" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="event_type" className="block text-sm font-medium text-deep-black mb-1">
                   Event Type *
                 </label>
                 <select
                   id="event_type"
                   value={formData.event_type}
                   onChange={(e) => handleInputChange('event_type', e.target.value as EventType)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-umhc-green ${
+                  className={`w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green ${
                     errors.event_type ? 'border-red-500' : 'border-gray-300'
                   }`}
                   disabled={submitting}
@@ -186,7 +234,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
               </div>
 
               <div>
-                <label htmlFor="event_date" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="event_date" className="block text-sm font-medium text-deep-black mb-1">
                   Event Date *
                 </label>
                 <input
@@ -194,7 +242,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                   id="event_date"
                   value={formData.event_date}
                   onChange={(e) => handleInputChange('event_date', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-umhc-green ${
+                  className={`w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green ${
                     errors.event_date ? 'border-red-500' : 'border-gray-300'
                   }`}
                   disabled={submitting}
@@ -203,7 +251,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
               </div>
 
               <div>
-                <label htmlFor="event_time" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="event_time" className="block text-sm font-medium text-deep-black mb-1">
                   Event Time
                 </label>
                 <input
@@ -211,13 +259,32 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                   id="event_time"
                   value={formData.event_time}
                   onChange={(e) => handleInputChange('event_time', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-umhc-green"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green"
                   disabled={submitting}
                 />
               </div>
 
               <div>
-                <label htmlFor="su_website_url" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="event_image" className="block text-sm font-medium text-deep-black mb-1">
+                  Event Image Icon
+                </label>
+                <select
+                  id="event_image"
+                  value={formData.event_image || ''}
+                  onChange={(e) => handleInputChange('event_image', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green"
+                  disabled={submitting}
+                >
+                  {EVENT_IMAGE_OPTIONS.map((option) => (
+                    <option key={option || 'NULL'} value={option}>
+                      {option === '' ? 'NULL' : option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="su_website_url" className="block text-sm font-medium text-deep-black mb-1">
                   SU Website URL
                 </label>
                 <input
@@ -225,7 +292,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                   id="su_website_url"
                   value={formData.su_website_url}
                   onChange={(e) => handleInputChange('su_website_url', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-umhc-green ${
+                  className={`w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green ${
                     errors.su_website_url ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="https://manchesterstudentsunion.com/..."
@@ -236,8 +303,8 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
             </div>
 
             {/* Description */}
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="bg-whellow rounded-lg border border-gray-200 p-5">
+              <label htmlFor="description" className="block text-sm font-medium text-deep-black mb-1">
                 Description
               </label>
               <textarea
@@ -245,16 +312,16 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-umhc-green"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green"
                 placeholder="Describe the event..."
                 disabled={submitting}
               />
             </div>
 
             {/* Location */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-whellow rounded-lg border border-gray-200 p-5">
               <div>
-                <label htmlFor="full_address" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="full_address" className="block text-sm font-medium text-deep-black mb-1">
                   Full Address
                 </label>
                 <input
@@ -262,14 +329,14 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                   id="full_address"
                   value={formData.full_address}
                   onChange={(e) => handleInputChange('full_address', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-umhc-green"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green"
                   placeholder="Enter full address"
                   disabled={submitting}
                 />
               </div>
 
               <div>
-                <label htmlFor="what3words" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="what3words" className="block text-sm font-medium text-deep-black mb-1">
                   What3Words
                 </label>
                 <input
@@ -277,7 +344,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                   id="what3words"
                   value={formData.what3words}
                   onChange={(e) => handleInputChange('what3words', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-umhc-green"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green"
                   placeholder="///word.word.word"
                   disabled={submitting}
                 />
@@ -285,8 +352,8 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
             </div>
 
             {/* Accessibility */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Accessibility Features</h3>
+            <div className="bg-whellow rounded-lg border border-gray-200 p-5">
+              <h3 className="text-lg font-medium text-deep-black mb-4">Accessibility Features</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <label className="flex items-center">
                   <input
@@ -296,7 +363,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                     className="h-4 w-4 text-umhc-green focus:ring-umhc-green border-gray-300 rounded"
                     disabled={submitting}
                   />
-                  <span className="ml-2 text-sm text-gray-700">DDA compliant ramp access</span>
+                  <span className="ml-2 text-sm text-deep-black">DDA compliant ramp access</span>
                 </label>
 
                 <label className="flex items-center">
@@ -307,7 +374,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                     className="h-4 w-4 text-umhc-green focus:ring-umhc-green border-gray-300 rounded"
                     disabled={submitting}
                   />
-                  <span className="ml-2 text-sm text-gray-700">Lift access within building</span>
+                  <span className="ml-2 text-sm text-deep-black">Lift access within building</span>
                 </label>
 
                 <label className="flex items-center">
@@ -318,7 +385,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                     className="h-4 w-4 text-umhc-green focus:ring-umhc-green border-gray-300 rounded"
                     disabled={submitting}
                   />
-                  <span className="ml-2 text-sm text-gray-700">Accessible toilets</span>
+                  <span className="ml-2 text-sm text-deep-black">Accessible toilets</span>
                 </label>
 
                 <label className="flex items-center">
@@ -329,7 +396,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                     className="h-4 w-4 text-umhc-green focus:ring-umhc-green border-gray-300 rounded"
                     disabled={submitting}
                   />
-                  <span className="ml-2 text-sm text-gray-700">Gender neutral toilets</span>
+                  <span className="ml-2 text-sm text-deep-black">Gender neutral toilets</span>
                 </label>
 
                 <label className="flex items-center">
@@ -340,7 +407,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                     className="h-4 w-4 text-umhc-green focus:ring-umhc-green border-gray-300 rounded"
                     disabled={submitting}
                   />
-                  <span className="ml-2 text-sm text-gray-700">Seating available</span>
+                  <span className="ml-2 text-sm text-deep-black">Seating available</span>
                 </label>
 
                 <label className="flex items-center">
@@ -351,12 +418,12 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                     className="h-4 w-4 text-umhc-green focus:ring-umhc-green border-gray-300 rounded"
                     disabled={submitting}
                   />
-                  <span className="ml-2 text-sm text-gray-700">Alcohol served</span>
+                  <span className="ml-2 text-sm text-deep-black">Alcohol served</span>
                 </label>
               </div>
 
               <div className="mt-4">
-                <label htmlFor="accessibility_notes" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="accessibility_notes" className="block text-sm font-medium text-deep-black mb-1">
                   Accessibility Notes
                 </label>
                 <textarea
@@ -364,7 +431,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                   value={formData.accessibility_notes}
                   onChange={(e) => handleInputChange('accessibility_notes', e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-umhc-green"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green"
                   placeholder="Additional accessibility information..."
                   disabled={submitting}
                 />
@@ -376,14 +443,14 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
               <button
                 type="button"
                 onClick={onCancel}
-                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-slate-grey bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 disabled={submitting}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm text-white bg-umhc-green rounded-lg hover:bg-stealth-green transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm font-semibold text-white bg-umhc-green rounded-lg hover:bg-stealth-green transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={submitting}
               >
                 {submitting ? 'Saving...' : (event ? 'Update Event' : 'Create Event')}

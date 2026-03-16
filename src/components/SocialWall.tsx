@@ -353,6 +353,26 @@ const SocialWall = () => {
     );
   }
 
+  // Debug: If posts are empty but loading is false, show a message
+  if (posts.length === 0) {
+    return (
+      <div className="w-full py-16 bg-whellow">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="font-bold text-deep-black text-3xl md:text-4xl mb-8">
+            Check out our socials!
+          </h2>
+          <p>No social posts currently available.</p>
+          <button 
+            onClick={() => { setLoading(true); fetchSocialData(); }}
+            className="mt-4 px-4 py-2 bg-umhc-green text-white rounded hover:opacity-90"
+          >
+            Retry Loading
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const columns = distributePostsToColumns(posts, 5);
 
   return (
