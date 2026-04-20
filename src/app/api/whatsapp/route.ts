@@ -54,7 +54,7 @@ function generateAccessToken(): string {
 
 // Generate short, Outlook-safe verification code (6 digit numeric)
 function generateVerificationCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return crypto.randomInt(100000, 1000000).toString();
 }
 
 // generateShortCode function removed - using URL parameters instead

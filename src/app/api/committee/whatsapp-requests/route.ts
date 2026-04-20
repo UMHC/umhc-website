@@ -6,6 +6,15 @@ import { sendResendEmail } from '@/lib/resend';
 import { requireCommitteeAccess } from '@/middleware/auth';
 import { validateRequestBody, whatsAppRequestReviewSchema } from '@/lib/validation';
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // Send approval email with fragment-based verification link
 async function sendApprovalEmail(email: string, firstName: string): Promise<boolean> {
   try {
@@ -33,6 +42,7 @@ async function sendApprovalEmail(email: string, firstName: string): Promise<bool
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const fragmentUrl = `${baseUrl}/join#${token}`;
+    const safeFirstName = escapeHtml(firstName);
 
     // DEPRECATED: Resend email sending kept for rollback
     /*
@@ -50,7 +60,7 @@ async function sendApprovalEmail(email: string, firstName: string): Promise<bool
           </div>
 
           <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-            Hi ${firstName},
+            Hi ${safeFirstName},
           </p>
 
           <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
@@ -105,7 +115,7 @@ async function sendApprovalEmail(email: string, firstName: string): Promise<bool
           </div>
 
           <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-            Hi ${firstName},
+            Hi ${safeFirstName},
           </p>
 
           <p style="color: #494949; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">

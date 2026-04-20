@@ -5,6 +5,29 @@ interface VerifyCodeRequest {
   verificationCode: string;
 }
 
+// Rate limiting: max 10 attempts per IP per 15-minute window
+const verifyRateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+function checkVerifyRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const windowMs = 15 * 60 * 1000;
+  const maxAttempts = 10;
+
+  const record = verifyRateLimitMap.get(ip);
+
+  if (!record || now > record.resetTime) {
+    verifyRateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+
+  if (record.count >= maxAttempts) {
+    return false;
+  }
+
+  record.count++;
+  return true;
+}
+
 // Global verification code store (declared in whatsapp/route.ts)
 declare global {
   var verificationCodeStore: Map<string, { email: string; token: string; expiresAt: number }> | undefined;
@@ -12,6 +35,15 @@ declare global {
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+
+    if (!checkVerifyRateLimit(ip)) {
+      return NextResponse.json(
+        { error: 'Too many attempts. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
     const body: VerifyCodeRequest = await request.json();
     const { verificationCode } = body;
 

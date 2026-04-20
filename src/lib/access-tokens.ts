@@ -41,7 +41,10 @@ export function generateFragmentToken(): string {
  * Hash IP address for privacy-compliant duplicate detection
  */
 export function hashIP(ipAddress: string): string {
-  const salt = process.env.IP_HASH_SALT || 'umhc_default_salt';
+  const salt = process.env.IP_HASH_SALT;
+  if (!salt) {
+    throw new Error('IP_HASH_SALT environment variable is required');
+  }
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
   return crypto.createHash('sha256').update(ipAddress + salt + today).digest('hex');
 }
