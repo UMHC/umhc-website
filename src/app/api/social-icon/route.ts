@@ -6,27 +6,25 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const filename = searchParams.get('file');
-    
+
     if (!filename) {
       return NextResponse.json({ error: 'Filename parameter required' }, { status: 400 });
     }
 
-    // Sanitize filename to prevent directory traversal
     const sanitizedFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '');
-    
+
     if (!sanitizedFilename.match(/\.(png|jpg|jpeg|svg|gif|webp)$/i)) {
       return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
     }
 
-    const logoPath = join(process.cwd(), 'public', 'logos', sanitizedFilename);
-    
+    const iconPath = join(process.cwd(), 'public', 'images', 'social-icons', sanitizedFilename);
+
     try {
-      const fileBuffer = readFileSync(logoPath);
-      
-      // Determine content type based on file extension
+      const fileBuffer = readFileSync(iconPath);
+
       const extension = sanitizedFilename.split('.').pop()?.toLowerCase();
-      let contentType = 'image/png'; // default
-      
+      let contentType = 'image/png';
+
       switch (extension) {
         case 'jpg':
         case 'jpeg':
@@ -52,22 +50,20 @@ export async function GET(request: NextRequest) {
           'Content-Type': contentType,
           'Cache-Control': 'public, max-age=31536000, immutable, s-maxage=31536000',
           'CDN-Cache-Control': 'public, max-age=31536000, immutable',
-          'Access-Control-Allow-Origin': '*', // Allow cross-origin requests for emails
+          'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET',
           'Access-Control-Allow-Headers': 'Content-Type',
-          // Prevent email clients from requesting transformed versions
           'X-Content-Type-Options': 'nosniff',
           'X-Robots-Tag': 'noindex, nofollow',
-          // Discourage image optimization by email clients
           'Content-Disposition': 'inline; filename="' + sanitizedFilename + '"',
           'Vary': 'Accept-Encoding',
         },
       });
     } catch {
-      return NextResponse.json({ error: 'Logo file not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Icon file not found' }, { status: 404 });
     }
   } catch (error) {
-    console.error('Logo API error:', error);
+    console.error('Social icon API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
