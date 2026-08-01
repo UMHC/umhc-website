@@ -46,36 +46,6 @@ export async function POST(request: NextRequest) {
 }
 ```
 
-### `requireFinanceAccess(request?: NextRequest)`
-Requires finance permissions (committee OR treasurer access).
-
-```typescript
-export async function POST(request: NextRequest) {
-  const authResult = await requireFinanceAccess(request);
-  if (!authResult.success) {
-    return authResult.response;
-  }
-
-  // User has finance access
-  const { user, hasCommitteeAccess, hasTreasurerAccess } = authResult.data;
-}
-```
-
-### `requireTreasurerAccess(request?: NextRequest)`
-Requires specific treasurer permissions.
-
-```typescript
-export async function POST(request: NextRequest) {
-  const authResult = await requireTreasurerAccess(request);
-  if (!authResult.success) {
-    return authResult.response;
-  }
-
-  // User has treasurer access
-  const { user } = authResult.data;
-}
-```
-
 ### `requireAdminAccess(request?: NextRequest)`
 Requires administrative access (currently same as committee, expandable).
 
@@ -113,7 +83,6 @@ The system uses a hierarchical permission model:
 ```typescript
 enum PermissionLevel {
   MEMBER = 0,      // Basic authenticated user
-  TREASURER = 1,   // Finance access
   COMMITTEE = 2,   // Committee member access
   ADMIN = 3        // Administrative access (future expansion)
 }
@@ -131,8 +100,6 @@ interface AuthSuccessResult {
     roles: KindeRoles | null;
     permissions: KindePermissions | null;
     hasCommitteeAccess: boolean;
-    hasFinanceAccess: boolean;
-    hasTreasurerAccess: boolean;
   };
 }
 
@@ -183,7 +150,7 @@ logSecurityEvent('custom_action_attempted', {
 ```typescript
 export async function POST(request: NextRequest) {
   try {
-    const { getUser, isAuthenticated, getRoles, getPermissions } = getKindeServerSession();
+    const { getUser, isAuthenticated, getRoles } = getKindeServerSession();
 
     if (!isAuthenticated()) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
@@ -194,13 +161,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
-    const [roles, permissions] = await Promise.all([getRoles(), getPermissions()]);
+    const roles = await getRoles();
     const hasCommitteeRole = roles?.some(role => role.key === 'is-committee');
-    const hasTreasurerPermission = permissions?.permissions?.includes('is-treasurer') ?? false;
 
-    if (!hasCommitteeRole && !hasTreasurerPermission) {
+    if (!hasCommitteeRole) {
       return NextResponse.json({
-        error: 'Insufficient permissions. Committee or treasurer access required.'
+        error: 'Insufficient permissions. Committee access required.'
       }, { status: 403 });
     }
 
@@ -215,7 +181,7 @@ export async function POST(request: NextRequest) {
 ```typescript
 export async function POST(request: NextRequest) {
   try {
-    const authResult = await requireFinanceAccess(request);
+    const authResult = await requireCommitteeAccess(request);
     if (!authResult.success) {
       return authResult.response;
     }
@@ -233,7 +199,7 @@ export async function POST(request: NextRequest) {
 The middleware is designed to work alongside existing `/src/lib/permissions.ts` functions:
 
 ```typescript
-import { hasCommitteePermission, hasFinancePermission } from '@/lib/permissions';
+import { hasCommitteePermission } from '@/lib/permissions';
 import { requireAuthentication } from '@/middleware/auth';
 
 export async function POST(request: NextRequest) {
@@ -266,8 +232,7 @@ Test your API routes with different user permission levels:
 ```bash
 # Test with different user roles
 curl -H "Authorization: Bearer <committee-token>" /api/committee/events
-curl -H "Authorization: Bearer <treasurer-token>" /api/finance/transactions
-curl -H "Authorization: Bearer <member-token>" /api/finance/transactions # Should fail
+curl -H "Authorization: Bearer <member-token>" /api/committee/events # Should fail
 ```
 
 ## Future Enhancements

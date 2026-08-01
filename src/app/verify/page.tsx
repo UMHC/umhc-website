@@ -134,7 +134,7 @@ export default function VerifyPage() {
                 Request WhatsApp access: <a href="https://umhc.org.uk/whatsapp-request" className="text-umhc-green hover:text-stealth-green underline font-medium">umhc.org.uk/whatsapp-request</a>
               </p>
               <p>
-                Contact us: <a href="mailto:contact@umhc.org.uk" className="text-umhc-green hover:text-stealth-green underline font-medium">contact@umhc.org.uk</a>
+                Contact us: <a href="mailto:hiking@manchesterstudentsunion.com" className="text-umhc-green hover:text-stealth-green underline font-medium">hiking@manchesterstudentsunion.com</a>
               </p>
             </div>
           </section>

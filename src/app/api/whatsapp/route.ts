@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { sendResendEmail } from '@/lib/resend';
-// import { sendMailgunEmail } from '@/lib/mailgun'; // DEPRECATED: Keeping commented for rollback
 import crypto from 'crypto';
 import { createToken, deleteToken, cleanupExpiredTokens } from '@/lib/tokenStore';
 import { supabaseAdmin } from '@/lib/supabase-admin';

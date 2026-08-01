@@ -1,23 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { 
-  CalendarDaysIcon,
+import {
   ArrowLeftIcon,
-  ArrowRightOnRectangleIcon,
+  ArrowPathIcon,
+  CalendarIcon,
+  CalendarDaysIcon,
+  ClockIcon,
+  DocumentDuplicateIcon,
+  ExclamationTriangleIcon,
+  MapPinIcon,
   PencilIcon,
   PlusIcon,
-  EyeIcon,
-  MapPinIcon,
-  ClockIcon,
-  UsersIcon
+  Squares2X2Icon,
+  TrashIcon,
+  UsersIcon,
 } from '@heroicons/react/24/outline';
-import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
-import { ScheduleEvent, EventType } from '@/types/schedule';
-import { CreateEventData, UpdateEventData } from '@/lib/eventService';
+import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/components';
+
 import EventForm from './EventForm';
+import { CreateEventData, UpdateEventData } from '@/lib/eventService';
+import { EventType, ScheduleEvent } from '@/types/schedule';
 
 interface CommitteeEventsClientProps {
   user: {
@@ -41,7 +45,6 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
   const [events, setEvents] = useState<ScheduleEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEvent | null>(null);
   const [showEventDetails, setShowEventDetails] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -53,14 +56,16 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
     try {
       setLoading(true);
       setError(null);
+
       const response = await fetch('/api/committee/events');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setEvents(data.events);
-        } else {
-          setError('Failed to fetch events');
-        }
+      if (!response.ok) {
+        setError('Failed to fetch events');
+        return;
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setEvents(data.events);
       } else {
         setError('Failed to fetch events');
       }
@@ -73,28 +78,24 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
   };
 
   useEffect(() => {
-    // Update time every minute
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000);
-
     fetchEvents();
-
-    return () => clearInterval(interval);
   }, []);
 
-  const getUpcomingEventsByType = (type: EventType | 'other') => {
+  const upcomingEvents = useMemo(() => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
-    const upcomingEvents = events.filter(event => {
-      const eventDate = new Date(event.event_date);
-      const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-      
-      return eventDateOnly >= today && event.event_type === type;
-    });
-    
-    return upcomingEvents.length;
+
+    return events
+      .filter((event) => {
+        const eventDate = new Date(event.event_date);
+        const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+        return eventDateOnly >= today;
+      })
+      .sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime());
+  }, [events]);
+
+  const getUpcomingEventsByType = (type: EventType | 'other') => {
+    return upcomingEvents.filter((event) => event.event_type === type).length;
   };
 
   const eventTypeStats: EventTypeStat[] = [
@@ -103,73 +104,73 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
       value: getUpcomingEventsByType('hike').toString(),
       type: 'hike',
       icon: CalendarDaysIcon,
-      color: 'text-green-600'
+      color: 'text-umhc-green',
     },
     {
       label: 'Upcoming Socials',
       value: getUpcomingEventsByType('social').toString(),
       type: 'social',
       icon: UsersIcon,
-      color: 'text-blue-600'
+      color: 'text-sky-700',
     },
     {
       label: 'Upcoming Overnight Trips',
       value: getUpcomingEventsByType('residential').toString(),
       type: 'residential',
       icon: MapPinIcon,
-      color: 'text-purple-600'
+      color: 'text-violet-700',
     },
     {
       label: 'Other Events',
       value: getUpcomingEventsByType('other').toString(),
       type: 'other',
-      icon: ClockIcon,
-      color: 'text-orange-600'
-    }
+      icon: Squares2X2Icon,
+      color: 'text-slate-grey',
+    },
   ];
-
-  const getUpcomingEvents = () => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    
-    return events
-      .filter(event => {
-        const eventDate = new Date(event.event_date);
-        const eventDateOnly = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-        return eventDateOnly >= today;
-      })
-      .sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime());
-  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-UK', {
+    return date.toLocaleDateString('en-GB', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
   const formatTime = (timeString: string | null) => {
     if (!timeString) return 'Time TBA';
     const time = new Date(`1970-01-01T${timeString}`);
-    return time.toLocaleTimeString('en-UK', {
+    return time.toLocaleTimeString('en-GB', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   const getEventTypeColor = (type: EventType) => {
     switch (type) {
       case 'hike':
-        return 'bg-green-100 text-green-800';
+        return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
       case 'social':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-sky-100 text-sky-800 border border-sky-200';
       case 'residential':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-violet-100 text-violet-800 border border-violet-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 border border-gray-200';
+    }
+  };
+
+  const getEventTypeLabel = (type: EventType) => {
+    switch (type) {
+      case 'hike':
+        return 'Day Hike';
+      case 'social':
+        return 'Social';
+      case 'residential':
+        return 'Overnight Trip';
+      default:
+        return 'Other';
     }
   };
 
@@ -204,10 +205,9 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
   const handleSubmitEvent = async (eventData: CreateEventData | UpdateEventData, isEdit = false) => {
     try {
       setSubmitting(true);
-      const url = '/api/committee/events';
       const method = isEdit ? 'PATCH' : 'POST';
-      
-      const response = await fetch(url, {
+
+      const response = await fetch('/api/committee/events', {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -216,20 +216,14 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
       });
 
       const result = await response.json();
-      
+
       if (response.ok && result.success) {
-        // Refresh events list
         await fetchEvents();
-        
-        // Close forms
         if (isEdit) {
           handleCloseEditForm();
         } else {
           handleCloseCreateForm();
         }
-        
-        // Show success message (you could add a toast here)
-        console.log(result.message);
       } else {
         setError(result.error || 'Failed to save event');
       }
@@ -253,18 +247,11 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
       });
 
       const result = await response.json();
-      
       if (response.ok && result.success) {
-        // Refresh events list
         await fetchEvents();
-        
-        // Close details modal if it's open for the deleted event
         if (selectedEvent?.id === eventId) {
           handleCloseEventDetails();
         }
-        
-        // Show success message
-        console.log(result.message);
       } else {
         setError(result.error || 'Failed to delete event');
       }
@@ -288,13 +275,8 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
       });
 
       const result = await response.json();
-      
       if (response.ok && result.success) {
-        // Refresh events list
         await fetchEvents();
-        
-        // Show success message
-        console.log(result.message);
       } else {
         setError(result.error || 'Failed to duplicate event');
       }
@@ -306,471 +288,286 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-whellow">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center space-x-4">
-                {/* Logo */}
-                <Link 
-                  href="/"
-                  className="h-[32px] w-[56px] relative shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-umhc-green focus-visible:ring-offset-2 rounded"
-                  aria-label="UMHC Homepage"
-                >
-                  <div className="relative w-full h-full">
-                    <Image
-                      src="/images/umhc-logo.webp"
-                      alt="UMHC - University of Manchester Hiking Club"
-                      fill
-                      sizes="56px"
-                      className="object-contain"
-                      priority
-                    />
-                  </div>
-                </Link>
-                
-                {/* Title */}
-                <div>
-                  <h1 className="text-xl font-semibold text-gray-900">Event Management</h1>
-                  <p className="text-sm text-gray-500">Schedule and manage club events</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <Link
-                  href="/committee"
-                  className="flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  <ArrowLeftIcon className="w-4 h-4 mr-1" />
-                  Back to Console
-                </Link>
-                
-                <div className="h-4 w-px bg-gray-300"></div>
-                
-                <span className="text-sm text-gray-500">
-                  Welcome, {user?.given_name || user?.email || 'Committee Member'}
-                </span>
-                <LogoutLink
-                  className="flex items-center text-sm text-gray-500 hover:text-gray-700"
-                  postLogoutRedirectURL="/"
-                >
-                  <ArrowRightOnRectangleIcon className="w-4 h-4 mr-1" />
-                  Sign out
-                </LogoutLink>
-                
-                <div className="h-4 w-px bg-gray-300"></div>
-                
-                <span className="text-sm text-gray-500">
-                  {currentTime.toLocaleTimeString('en-UK', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                  })}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-8">
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <section aria-labelledby="event-management" className="bg-cream-white rounded-lg p-8 border border-gray-200">
+          <div className="text-center py-8" role="status" aria-live="polite">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-umhc-green mx-auto mb-4"></div>
             <p className="text-slate-grey">Loading events...</p>
           </div>
-        </div>
-      </div>
-    );
-  }
+        </section>
+      );
+    }
 
-  if (error) {
+    if (error) {
+      return (
+        <section aria-labelledby="event-management" className="bg-cream-white rounded-lg p-8 border border-red-200">
+          <div className="text-center py-6">
+            <ExclamationTriangleIcon className="w-12 h-12 text-red-600 mx-auto mb-4" aria-hidden="true" />
+            <p className="text-red-700 font-medium mb-5">Error loading events: {error}</p>
+            <button
+              onClick={fetchEvents}
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap bg-umhc-green text-cream-white font-semibold text-sm px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-stealth-green focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-umhc-green"
+            >
+              <ArrowPathIcon className="w-4 h-4" />
+              Retry
+            </button>
+          </div>
+        </section>
+      );
+    }
+
     return (
-      <div className="min-h-screen bg-whellow">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center space-x-4">
-                {/* Logo */}
-                <Link 
-                  href="/"
-                  className="h-[32px] w-[56px] relative shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-umhc-green focus-visible:ring-offset-2 rounded"
-                  aria-label="UMHC Homepage"
-                >
-                  <div className="relative w-full h-full">
-                    <Image
-                      src="/images/umhc-logo.webp"
-                      alt="UMHC - University of Manchester Hiking Club"
-                      fill
-                      sizes="56px"
-                      className="object-contain"
-                      priority
-                    />
-                  </div>
-                </Link>
-                
-                {/* Title */}
+      <section aria-labelledby="event-management" className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {eventTypeStats.map((stat) => (
+            <article key={stat.type} className="bg-cream-white rounded-lg p-5 border border-gray-200">
+              <div className="flex items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-xl font-semibold text-gray-900">Event Management</h1>
-                  <p className="text-sm text-gray-500">Schedule and manage club events</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-grey">{stat.label}</p>
+                  <p className={`text-3xl font-bold mt-2 ${stat.color}`}>{stat.value}</p>
+                </div>
+                <div className="p-3 rounded-full bg-whellow border border-gray-200">
+                  <stat.icon className={`w-6 h-6 ${stat.color}`} aria-hidden="true" />
                 </div>
               </div>
-              
-              <Link
-                href="/committee"
-                className="flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
-              >
-                <ArrowLeftIcon className="w-4 h-4 mr-1" />
-                Back to Console
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center py-8">
-            <div className="text-red-600 mb-4">
-              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Error">
-                <title>Error</title>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <p className="text-slate-grey">Error loading events: {error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-whellow">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              {/* Logo */}
-              <Link 
-                href="/"
-                className="h-[32px] w-[56px] relative shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-umhc-green focus-visible:ring-offset-2 rounded"
-                aria-label="UMHC Homepage"
-              >
-                <div className="relative w-full h-full">
-                  <Image
-                    src="/images/umhc-logo.webp"
-                    alt="UMHC - University of Manchester Hiking Club"
-                    fill
-                    sizes="56px"
-                    className="object-contain"
-                    priority
-                  />
-                </div>
-              </Link>
-              
-              {/* Title */}
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">Event Management</h1>
-                <p className="text-sm text-gray-500">Schedule and manage club events</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/committee"
-                className="flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
-              >
-                <ArrowLeftIcon className="w-4 h-4 mr-1" />
-                Back to Console
-              </Link>
-              
-              <div className="h-4 w-px bg-gray-300"></div>
-              
-              <span className="text-sm text-gray-500">
-                Welcome, {user?.given_name || user?.email || 'Committee Member'}
-              </span>
-              <LogoutLink
-                className="flex items-center text-sm text-gray-500 hover:text-gray-700"
-                postLogoutRedirectURL="/"
-              >
-                <ArrowRightOnRectangleIcon className="w-4 h-4 mr-1" />
-                Sign out
-              </LogoutLink>
-              
-              <div className="h-4 w-px bg-gray-300"></div>
-              
-              <span className="text-sm text-gray-500">
-                {currentTime.toLocaleTimeString('en-UK', { 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
-                })}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Event Type Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {eventTypeStats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                  <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                </div>
-                <div className="p-3 rounded-full bg-gray-50">
-                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                </div>
-              </div>
-            </div>
+            </article>
           ))}
         </div>
 
-        {/* Main Content */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">All Events</h2>
-            <button 
+        <div className="bg-cream-white rounded-lg border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 id="event-management" className="text-xl font-semibold text-deep-black">All Upcoming Events</h2>
+              <p className="text-sm text-slate-grey mt-1">{upcomingEvents.length} scheduled</p>
+            </div>
+            <button
               onClick={handleCreateEvent}
-              className="flex items-center px-4 py-2 bg-umhc-green text-white rounded-lg hover:bg-stealth-green transition-colors"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap bg-umhc-green text-cream-white font-semibold text-sm px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-stealth-green focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-umhc-green"
             >
-              <PlusIcon className="w-4 h-4 mr-2" />
+              <PlusIcon className="w-4 h-4" />
               Add Event
             </button>
           </div>
-          
+
           <div className="p-6">
-            {getUpcomingEvents().length === 0 ? (
-              <div className="text-center py-8">
-                <CalendarDaysIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No upcoming events found</p>
+            {upcomingEvents.length === 0 ? (
+              <div className="text-center py-10 bg-whellow rounded-lg border border-dashed border-gray-300">
+                <CalendarDaysIcon className="w-12 h-12 text-slate-grey mx-auto mb-4" aria-hidden="true" />
+                <p className="text-slate-grey font-medium">No upcoming events found</p>
               </div>
             ) : (
               <div className="space-y-4">
-                {getUpcomingEvents().map((event) => (
-                  <div 
+                {upcomingEvents.map((event) => (
+                  <article
                     key={event.id}
-                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                    className="group border border-gray-200 rounded-lg p-4 bg-whellow hover:border-umhc-green transition-colors cursor-pointer"
                     onClick={() => handleEventClick(event)}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getEventTypeColor(event.event_type)}`}>
-                            {event.event_type}
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <h3 className="text-lg font-semibold text-deep-black group-hover:text-umhc-green transition-colors">{event.title}</h3>
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${getEventTypeColor(event.event_type)}`}>
+                            {getEventTypeLabel(event.event_type)}
                           </span>
                         </div>
-                        
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <div className="flex items-center">
-                            <CalendarDaysIcon className="w-4 h-4 mr-1" />
+
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-grey">
+                          <span className="inline-flex items-center gap-1.5">
+                            <CalendarIcon className="w-4 h-4" aria-hidden="true" />
                             {formatDate(event.event_date)}
-                          </div>
-                          <div className="flex items-center">
-                            <ClockIcon className="w-4 h-4 mr-1" />
+                          </span>
+                          <span className="inline-flex items-center gap-1.5">
+                            <ClockIcon className="w-4 h-4" aria-hidden="true" />
                             {formatTime(event.event_time)}
-                          </div>
+                          </span>
                           {event.full_address && (
-                            <div className="flex items-center">
-                              <MapPinIcon className="w-4 h-4 mr-1" />
+                            <span className="inline-flex items-center gap-1.5">
+                              <MapPinIcon className="w-4 h-4" aria-hidden="true" />
                               {event.full_address}
-                            </div>
+                            </span>
                           )}
                         </div>
-                        
-                        {event.description && (
-                          <p className="text-sm text-gray-600 mt-2 line-clamp-2">{event.description}</p>
-                        )}
+
+                        {event.description && <p className="text-sm text-slate-grey mt-3 line-clamp-2">{event.description}</p>}
                       </div>
-                      
-                      <div className="flex items-center space-x-2 ml-4">
+
+                      <div className="shrink-0 flex gap-2">
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
+                          onClick={(eventClick) => {
+                            eventClick.stopPropagation();
                             handleEventClick(event);
                           }}
-                          className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+                          className="px-3 py-2 text-xs font-semibold text-slate-grey bg-white rounded-lg border border-gray-200 hover:border-gray-300 hover:text-deep-black transition-colors"
                           title="View details"
                         >
-                          <EyeIcon className="w-4 h-4" />
+                          View
                         </button>
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
+                          onClick={(eventClick) => {
+                            eventClick.stopPropagation();
                             handleEditEvent(event);
                           }}
-                          className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+                          className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-umhc-green bg-white rounded-lg border border-umhc-green/30 hover:bg-umhc-green/5 transition-colors"
                           title="Edit event"
                         >
-                          <PencilIcon className="w-4 h-4" />
+                          <PencilIcon className="w-3.5 h-3.5" />
+                          Edit
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </article>
                 ))}
               </div>
             )}
           </div>
         </div>
+      </section>
+    );
+  };
+
+  return (
+    <main className="min-h-screen bg-[#f6f6f4] pt-24 px-4 sm:px-6 lg:px-8 pb-14">
+      <div className="max-w-5xl mx-auto py-6 sm:py-10 space-y-6">
+        <header className="px-2 sm:px-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-umhc-green/80 mb-2">Tools</p>
+              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-deep-black mb-3">Event Management</h1>
+              <p className="max-w-2xl text-[17px] text-slate-grey leading-relaxed font-medium">
+                Welcome back, {user?.given_name || 'Committee Member'}. Schedule and manage club events.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold text-sm px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+              >
+                <ArrowLeftIcon className="w-4 h-4" />
+                Back to Dashboard
+              </Link>
+              <LogoutLink className="inline-flex items-center justify-center gap-2 whitespace-nowrap bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-sm px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 border border-red-200">
+                Sign out
+              </LogoutLink>
+            </div>
+          </div>
+        </header>
+
+        {renderContent()}
       </div>
 
-      {/* Event Details Modal */}
       {showEventDetails && selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center p-4 z-50">
+          <div className="bg-cream-white rounded-xl border border-gray-200 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">{selectedEvent.title}</h2>
+              <div className="flex items-start justify-between gap-3 mb-6">
+                <div>
+                  <h2 className="text-2xl font-semibold text-deep-black">{selectedEvent.title}</h2>
+                  <p className="text-sm text-slate-grey mt-1">Event details and accessibility profile</p>
+                </div>
                 <button
                   onClick={handleCloseEventDetails}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="px-3 py-2 text-sm text-slate-grey bg-whellow rounded-lg border border-gray-200 hover:text-deep-black hover:border-gray-300 transition-colors"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" role="img" aria-label="Close">
-                    <title>Close</title>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  Close
                 </button>
               </div>
-              
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getEventTypeColor(selectedEvent.event_type)}`}>
-                    {selectedEvent.event_type}
+
+              <div className="space-y-6">
+                <div>
+                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${getEventTypeColor(selectedEvent.event_type)}`}>
+                    {getEventTypeLabel(selectedEvent.event_type)}
                   </span>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-1">Date</h3>
-                    <p className="text-sm text-gray-900">{formatDate(selectedEvent.event_date)}</p>
+                  <div className="bg-whellow rounded-lg border border-gray-200 p-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-grey mb-2">Date</h3>
+                    <p className="text-sm text-deep-black">{formatDate(selectedEvent.event_date)}</p>
                   </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-1">Time</h3>
-                    <p className="text-sm text-gray-900">{formatTime(selectedEvent.event_time)}</p>
+                  <div className="bg-whellow rounded-lg border border-gray-200 p-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-grey mb-2">Time</h3>
+                    <p className="text-sm text-deep-black">{formatTime(selectedEvent.event_time)}</p>
                   </div>
                 </div>
-                
+
                 {selectedEvent.full_address && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-1">Location</h3>
-                    <p className="text-sm text-gray-900">{selectedEvent.full_address}</p>
+                  <div className="bg-whellow rounded-lg border border-gray-200 p-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-grey mb-2">Location</h3>
+                    <p className="text-sm text-deep-black">{selectedEvent.full_address}</p>
                   </div>
                 )}
-                
+
                 {selectedEvent.what3words && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-1">What3Words</h3>
-                    <p className="text-sm text-gray-900">{selectedEvent.what3words}</p>
+                  <div className="bg-whellow rounded-lg border border-gray-200 p-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-grey mb-2">What3Words</h3>
+                    <p className="text-sm text-deep-black">{selectedEvent.what3words}</p>
                   </div>
                 )}
-                
+
                 {selectedEvent.description && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-1">Description</h3>
-                    <p className="text-sm text-gray-900">{selectedEvent.description}</p>
+                  <div className="bg-whellow rounded-lg border border-gray-200 p-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-grey mb-2">Description</h3>
+                    <p className="text-sm text-deep-black whitespace-pre-line">{selectedEvent.description}</p>
                   </div>
                 )}
-                
+
                 {selectedEvent.su_website_url && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700 mb-1">SU Website</h3>
-                    <a 
+                  <div className="bg-whellow rounded-lg border border-gray-200 p-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-grey mb-2">SU Website</h3>
+                    <a
                       href={selectedEvent.su_website_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-umhc-green hover:text-stealth-green"
+                      className="text-sm text-umhc-green hover:text-stealth-green underline"
                     >
                       View on SU Website
                     </a>
                   </div>
                 )}
-                
-                {/* Accessibility Information */}
-                <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Accessibility</h3>
-                  <div className="space-y-1">
-                    {selectedEvent.dda_compliant_ramp_access && (
-                      <div className="flex items-center text-sm text-green-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
-                          <title>Available</title>
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        DDA compliant ramp access
-                      </div>
-                    )}
-                    {selectedEvent.lift_access_within_building && (
-                      <div className="flex items-center text-sm text-green-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
-                          <title>Available</title>
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        Lift access within building
-                      </div>
-                    )}
-                    {selectedEvent.accessible_toilets && (
-                      <div className="flex items-center text-sm text-green-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
-                          <title>Available</title>
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        Accessible toilets
-                      </div>
-                    )}
-                    {selectedEvent.gender_neutral_toilets && (
-                      <div className="flex items-center text-sm text-green-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
-                          <title>Available</title>
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        Gender neutral toilets
-                      </div>
-                    )}
-                    {selectedEvent.seating_available && (
-                      <div className="flex items-center text-sm text-green-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
-                          <title>Available</title>
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        Seating available
-                      </div>
-                    )}
-                    {selectedEvent.alcohol_served && (
-                      <div className="flex items-center text-sm text-blue-600">
-                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" role="img" aria-hidden="true">
-                          <title>Available</title>
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        Alcohol served
-                      </div>
-                    )}
+
+                <div className="bg-whellow rounded-lg border border-gray-200 p-4">
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-grey mb-3">Accessibility</h3>
+                  <div className="space-y-2 text-sm text-deep-black">
+                    {selectedEvent.dda_compliant_ramp_access && <p>DDA compliant ramp access</p>}
+                    {selectedEvent.lift_access_within_building && <p>Lift access within building</p>}
+                    {selectedEvent.accessible_toilets && <p>Accessible toilets</p>}
+                    {selectedEvent.gender_neutral_toilets && <p>Gender neutral toilets</p>}
+                    {selectedEvent.seating_available && <p>Seating available</p>}
+                    {selectedEvent.alcohol_served && <p>Alcohol served</p>}
+                    {!selectedEvent.dda_compliant_ramp_access &&
+                      !selectedEvent.lift_access_within_building &&
+                      !selectedEvent.accessible_toilets &&
+                      !selectedEvent.gender_neutral_toilets &&
+                      !selectedEvent.seating_available &&
+                      !selectedEvent.alcohol_served && <p className="text-slate-grey">No accessibility flags set</p>}
                   </div>
-                  
+
                   {selectedEvent.accessibility_notes && (
-                    <div className="mt-3">
-                      <h4 className="text-sm font-medium text-gray-700 mb-1">Accessibility Notes</h4>
-                      <p className="text-sm text-gray-600">{selectedEvent.accessibility_notes}</p>
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <h4 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-grey mb-2">Accessibility Notes</h4>
+                      <p className="text-sm text-deep-black whitespace-pre-line">{selectedEvent.accessibility_notes}</p>
                     </div>
                   )}
                 </div>
               </div>
-              
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 mt-6 pt-6 border-t border-gray-200">
+
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mt-6 pt-6 border-t border-gray-200">
                 <button
-                  onClick={() => {
-                    handleDeleteEvent(selectedEvent.id);
-                  }}
-                  className="px-4 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+                  onClick={() => handleDeleteEvent(selectedEvent.id)}
+                  disabled={submitting}
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap bg-red-600 text-white font-semibold text-sm px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
+                  <TrashIcon className="w-4 h-4" />
                   Delete Event
                 </button>
-                
-                <div className="flex space-x-3">
+
+                <div className="flex flex-wrap gap-2">
                   <button
                     onClick={handleCloseEventDetails}
-                    className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 text-sm text-slate-grey bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                   >
                     Close
                   </button>
@@ -779,8 +576,10 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
                       handleDuplicateEvent(selectedEvent.id);
                       handleCloseEventDetails();
                     }}
-                    className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                    disabled={submitting}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm text-slate-grey bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   >
+                    <DocumentDuplicateIcon className="w-4 h-4" />
                     Duplicate
                   </button>
                   <button
@@ -788,8 +587,9 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
                       handleEditEvent(selectedEvent);
                       handleCloseEventDetails();
                     }}
-                    className="px-4 py-2 text-sm text-white bg-umhc-green rounded-lg hover:bg-stealth-green transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm text-cream-white bg-umhc-green rounded-lg hover:bg-stealth-green transition-colors"
                   >
+                    <PencilIcon className="w-4 h-4" />
                     Edit Event
                   </button>
                 </div>
@@ -799,7 +599,6 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
         </div>
       )}
 
-      {/* Create Event Form */}
       {showCreateForm && (
         <EventForm
           onSubmit={(eventData) => handleSubmitEvent(eventData, false)}
@@ -808,7 +607,6 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
         />
       )}
 
-      {/* Edit Event Form */}
       {showEditForm && editingEvent && (
         <EventForm
           event={editingEvent}
@@ -817,6 +615,6 @@ export default function CommitteeEventsClient({ user }: CommitteeEventsClientPro
           submitting={submitting}
         />
       )}
-    </div>
+    </main>
   );
 }

@@ -54,7 +54,7 @@ export default function RootLayout({
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "general",
-      "email": "contact@umhc.org.uk",
+      "email": "hiking@manchesterstudentsunion.com",
       "availableLanguage": "English"
     },
     "memberOf": {

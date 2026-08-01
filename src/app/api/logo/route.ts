@@ -50,7 +50,8 @@ export async function GET(request: NextRequest) {
         status: 200,
         headers: {
           'Content-Type': contentType,
-          'Cache-Control': 'public, max-age=31536000, immutable', // Cache for 1 year
+          'Cache-Control': 'public, max-age=31536000, immutable, s-maxage=31536000',
+          'CDN-Cache-Control': 'public, max-age=31536000, immutable',
           'Access-Control-Allow-Origin': '*', // Allow cross-origin requests for emails
           'Access-Control-Allow-Methods': 'GET',
           'Access-Control-Allow-Headers': 'Content-Type',

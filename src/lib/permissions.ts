@@ -1,48 +1,12 @@
 import { KindeRoles, KindePermissions } from '@kinde-oss/kinde-auth-nextjs/types';
 
 /**
- * Check if user has permission to manage finances (committee or treasurer)
- */
-export function hasFinancePermission(roles: KindeRoles | null): boolean {
-  if (!roles) return false;
-
-  const hasCommitteeRole = roles.some(role => role.key === 'is-committee');
-  const hasTreasurerRole = roles.some(role => role.key === 'is-treasurer');
-
-  return hasCommitteeRole || hasTreasurerRole;
-}
-
-/**
  * Check if user has committee permissions
  */
 export function hasCommitteePermission(roles: KindeRoles | null): boolean {
   if (!roles) return false;
 
   return roles.some(role => role.key === 'is-committee');
-}
-
-/**
- * Check if user has treasurer permissions
- */
-export function hasTreasurerPermission(roles: KindeRoles | null): boolean {
-  if (!roles) return false;
-
-  return roles.some(role => role.key === 'is-treasurer');
-}
-
-/**
- * Enhanced finance permission check including Kinde permissions
- */
-export function hasEnhancedFinancePermission(
-  roles: KindeRoles | null,
-  permissions: KindePermissions | null
-): boolean {
-  if (!roles && !permissions) return false;
-
-  const hasFinanceRole = hasFinancePermission(roles);
-  const hasTreasurerPermission = permissions?.permissions?.includes('is-treasurer') || false;
-
-  return hasFinanceRole || hasTreasurerPermission;
 }
 
 /**
@@ -68,11 +32,8 @@ export function getUserRoleDisplay(roles: KindeRoles | null): string {
   if (!roles) return 'Member';
 
   const hasCommittee = hasCommitteePermission(roles);
-  const hasTreasurer = hasTreasurerPermission(roles);
 
-  if (hasCommittee && hasTreasurer) return 'Committee & Treasurer';
   if (hasCommittee) return 'Committee';
-  if (hasTreasurer) return 'Treasurer';
 
   return 'Member';
 }
@@ -86,7 +47,6 @@ export function getAllRolesDisplay(roles: KindeRoles | null): string {
   const roleNames = roles.map(role => {
     switch (role.key) {
       case 'is-committee': return 'Committee';
-      case 'is-treasurer': return 'Treasurer';
       default: return role.name || role.key;
     }
   });
@@ -101,7 +61,5 @@ export function hasElevatedPermissions(
   roles: KindeRoles | null,
   permissions: KindePermissions | null
 ): boolean {
-  return hasCommitteePermission(roles) ||
-         hasTreasurerPermission(roles) ||
-         hasSpecificPermission(permissions, 'is-treasurer');
+  return hasCommitteePermission(roles);
 }

@@ -4,13 +4,12 @@
  * User sees the subdomain URL but gets content from the target
  */
 export const subdomainRewrites: Record<string, string> = {
-  "finance.umhc.org.uk": "https://lucasholik.github.io/umhc-treasurer",
   // Add more proxy subdomains as needed
 };
 
 /**
  * Get rewrite URL for a given hostname
- * @param hostname - The request hostname (e.g., "finance.umhc.org.uk")
+ * @param hostname - The request hostname (e.g., "subdomain.umhc.org.uk")
  * @returns The rewrite URL if found, undefined otherwise
  */
 export function getRewriteUrl(hostname: string): string | undefined {

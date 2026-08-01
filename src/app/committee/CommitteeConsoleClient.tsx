@@ -6,9 +6,7 @@ import Image from 'next/image';
 import {
   CalendarDaysIcon,
   ArrowRightOnRectangleIcon,
-  ChatBubbleLeftRightIcon,
-  Cog6ToothIcon,
-  MegaphoneIcon
+  Cog6ToothIcon
 } from '@heroicons/react/24/outline';
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
@@ -20,10 +18,13 @@ interface CommitteeConsoleClientProps {
     family_name: string | null;
     picture: string | null;
   };
+  canManageSchedule: boolean;
+  canManageGeneralWhatsapp: boolean;
+  canManageWomxnWhatsapp: boolean;
 }
 
 
-interface QuickAction {
+interface ToolAction {
   label: string;
   description: string;
   icon: React.ElementType;
@@ -31,7 +32,12 @@ interface QuickAction {
   color: string;
 }
 
-export default function CommitteeConsoleClient({ user }: CommitteeConsoleClientProps) {
+export default function CommitteeConsoleClient({
+  user,
+  canManageSchedule,
+  canManageGeneralWhatsapp,
+  canManageWomxnWhatsapp,
+}: CommitteeConsoleClientProps) {
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -51,35 +57,40 @@ export default function CommitteeConsoleClient({ user }: CommitteeConsoleClientP
 
 
 
-  const quickActions: QuickAction[] = [
-    {
-      label: 'Event Management',
-      description: 'Schedule hikes, socials, and manage event details',
-      icon: CalendarDaysIcon,
-      href: '/committee/events',
-      color: 'bg-blue-500 hover:bg-blue-600'
-    },
-    {
-      label: 'WhatsApp Requests',
-      description: 'Review and approve manual WhatsApp access requests',
-      icon: ChatBubbleLeftRightIcon,
-      href: '/committee/whatsapp-requests',
-      color: 'bg-purple-500 hover:bg-purple-600'
-    },
-    {
-      label: 'WhatsApp Console',
-      description: 'Manage WhatsApp links, monitor access, and generate QR codes',
-      icon: Cog6ToothIcon,
-      href: '/committee/whatsapp-console',
-      color: 'bg-green-500 hover:bg-green-600'
-    },
-    {
-      label: 'Banner Management',
-      description: 'Edit scrolling banner messages on the homepage',
-      icon: MegaphoneIcon,
-      href: '/committee/banner',
-      color: 'bg-orange-500 hover:bg-orange-600'
-    }
+  const toolActions: ToolAction[] = [
+    ...(canManageSchedule
+      ? [
+          {
+            label: 'Manage Schedule',
+            description: 'Schedule hikes, socials, and manage event details',
+            icon: CalendarDaysIcon,
+            href: '/committee/events',
+            color: 'bg-blue-500 hover:bg-blue-600'
+          },
+        ]
+      : []),
+    ...(canManageGeneralWhatsapp
+      ? [
+          {
+            label: 'Manage General WhatsApp',
+            description: 'Manage WhatsApp links, monitor access, and generate QR codes',
+            icon: Cog6ToothIcon,
+            href: '/committee/whatsapp-console',
+            color: 'bg-green-500 hover:bg-green-600'
+          },
+        ]
+      : []),
+    ...(canManageWomxnWhatsapp
+      ? [
+          {
+            label: 'Manage Womxn WhatsApp',
+            description: 'Manage Womxn WhatsApp group links and monitor access',
+            icon: Cog6ToothIcon,
+            href: '/committee/womxn-whatsapp-console',
+            color: 'bg-purple-500 hover:bg-purple-600'
+          },
+        ]
+      : []),
   ];
 
 
@@ -156,33 +167,39 @@ export default function CommitteeConsoleClient({ user }: CommitteeConsoleClientP
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Quick Actions */}
+        {/* Your Tools */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Your Tools</h2>
           </div>
           <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {quickActions.map((action, index) => (
-                <Link
-                  key={index}
-                  href={action.href}
-                  className="group relative rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-center">
-                    <div className={`shrink-0 p-3 rounded-lg ${action.color}`}>
-                      <action.icon className="w-6 h-6 text-white" />
+            {toolActions.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {toolActions.map((toolAction) => (
+                  <Link
+                    key={toolAction.href}
+                    href={toolAction.href}
+                    className="group relative rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-center">
+                      <div className={`shrink-0 p-3 rounded-lg ${toolAction.color}`}>
+                        <toolAction.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="ml-4">
+                        <h3 className="text-sm font-medium text-gray-900 group-hover:text-umhc-green">
+                          {toolAction.label}
+                        </h3>
+                        <p className="text-sm text-gray-500">{toolAction.description}</p>
+                      </div>
                     </div>
-                    <div className="ml-4">
-                      <h3 className="text-sm font-medium text-gray-900 group-hover:text-umhc-green">
-                        {action.label}
-                      </h3>
-                      <p className="text-sm text-gray-500">{action.description}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-600">
+                You do not currently have any tools assigned. Contact an admin if you need access.
+              </p>
+            )}
           </div>
         </div>
       </div>

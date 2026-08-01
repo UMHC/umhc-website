@@ -10,15 +10,16 @@ export default function ConditionalLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  
+
   // Check if we're on a committee page
-  const isCommitteePage = pathname.startsWith('/committee');
-  
-  if (isCommitteePage) {
-    // For committee pages, don't show navbar and footer
+  const shouldHideNavAndFooter = pathname.startsWith('/committee');
+
+  if (shouldHideNavAndFooter) {
+    // For committee and dashboard pages, don't show global navbar and footer
+    // (Dashboard has its own layout)
     return <>{children}</>;
   }
-  
+
   // For all other pages, show navbar and footer
   return (
     <>

@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Bars2Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/components';
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import TextButton from './TextButton';
 
 interface NavbarProps {
@@ -16,18 +18,19 @@ const STAGGER_DELAY = 80;
 const DEBOUNCE_DELAY = 150;
 
 export default function Navbar({ className = '' }: NavbarProps) {
+  const { isAuthenticated } = useKindeBrowserClient();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [lastToggleTime, setLastToggleTime] = useState(0);
   const [navbarHeight, setNavbarHeight] = useState(64);
-  
+
   // Refs for focus management
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const firstMenuItemRef = useRef<HTMLAnchorElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const navbarRef = useRef<HTMLElement>(null);
-  
+
   const navigationItems = [
     { text: 'Schedule', href: '/schedule' },
     /*{ text: 'Guides', href: '/guides' },*/
@@ -41,7 +44,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
     const now = Date.now();
     if (now - lastToggleTime < DEBOUNCE_DELAY) return;
     setLastToggleTime(now);
-    
+
     if (isMenuOpen) {
       setIsClosing(true);
       timeoutRef.current = setTimeout(() => {
@@ -64,25 +67,25 @@ export default function Navbar({ className = '' }: NavbarProps) {
       menuButtonRef.current?.focus();
     }, ANIMATION_DURATION);
   }, []);
-  
+
   // Handle keyboard navigation for accessibility
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (!isMenuOpen || isClosing) return;
-    
+
     if (e.key === 'Escape') {
       e.preventDefault();
       handleMenuToggle();
       return;
     }
-    
+
     // Focus trapping within mobile menu
     if (e.key === 'Tab') {
       const menuItems = mobileMenuRef.current?.querySelectorAll('a[href], button:not([disabled])');
       if (!menuItems || menuItems.length === 0) return;
-      
+
       const firstItem = menuItems[0] as HTMLElement;
       const lastItem = menuItems[menuItems.length - 1] as HTMLElement;
-      
+
       if (e.shiftKey && document.activeElement === firstItem) {
         e.preventDefault();
         lastItem.focus();
@@ -92,7 +95,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
       }
     }
   }, [isMenuOpen, isClosing, handleMenuToggle]);
-  
+
   // Calculate navbar height for mobile menu positioning
   useEffect(() => {
     const updateNavbarHeight = () => {
@@ -100,10 +103,10 @@ export default function Navbar({ className = '' }: NavbarProps) {
         setNavbarHeight(navbarRef.current.offsetHeight);
       }
     };
-    
+
     updateNavbarHeight();
     window.addEventListener('resize', updateNavbarHeight);
-    
+
     return () => {
       window.removeEventListener('resize', updateNavbarHeight);
     };
@@ -118,12 +121,12 @@ export default function Navbar({ className = '' }: NavbarProps) {
     } else {
       document.removeEventListener('keydown', handleKeyDown);
     }
-    
+
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isMenuOpen, isClosing, handleKeyDown]);
-  
+
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -132,21 +135,21 @@ export default function Navbar({ className = '' }: NavbarProps) {
       }
     };
   }, []);
-  
+
   // Get current menu state for display
   const menuState = isMenuOpen ? (isClosing ? 'closing' : 'open') : 'closed';
 
   return (
-    <nav 
-        ref={navbarRef}
-        className={`bg-cream-white shadow-sm fixed top-0 w-full z-[99999] ${className}`}
-        role="navigation"
-        aria-label="Main navigation"
-      >
+    <nav
+      ref={navbarRef}
+      className={`bg-cream-white shadow-sm fixed top-0 w-full z-[99999] ${className}`}
+      role="navigation"
+      aria-label="Main navigation"
+    >
       <div className="flex flex-row items-center h-full">
         <div className="flex flex-row items-center justify-between px-4 sm:px-9 py-2.5 w-full">
           {/* Logo section - clickable link to homepage */}
-          <Link 
+          <Link
             href="/"
             className="h-[32px] w-[56px] relative shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-umhc-green focus-visible:ring-offset-2 rounded"
             aria-label="UMHC Homepage"
@@ -164,12 +167,12 @@ export default function Navbar({ className = '' }: NavbarProps) {
           </Link>
 
           {/* Desktop Navigation buttons - hidden on mobile */}
-          <div 
+          <div
             className="hidden md:flex flex-row gap-[30px] items-center justify-end"
             role="list"
           >
             {navigationItems.map((item) => (
-              <div 
+              <div
                 key={item.text}
                 role="listitem"
                 className="flex flex-row gap-2.5 items-center justify-center"
@@ -192,17 +195,15 @@ export default function Navbar({ className = '' }: NavbarProps) {
             aria-haspopup="true"
           >
             <div className="relative w-5 h-5">
-              <Bars2Icon 
-                className={`absolute inset-0 w-5 h-5 text-slate-grey transition-all duration-150 ease-in-out motion-reduce:transition-none ${
-                  menuState !== 'closed' ? 'opacity-0 rotate-45 scale-75' : 'opacity-100 rotate-0 scale-100'
-                }`} 
-                strokeWidth={2.5} 
+              <Bars2Icon
+                className={`absolute inset-0 w-5 h-5 text-slate-grey transition-all duration-150 ease-in-out motion-reduce:transition-none ${menuState !== 'closed' ? 'opacity-0 rotate-45 scale-75' : 'opacity-100 rotate-0 scale-100'
+                  }`}
+                strokeWidth={2.5}
               />
-              <XMarkIcon 
-                className={`absolute inset-0 w-5 h-5 text-slate-grey transition-all duration-150 ease-in-out motion-reduce:transition-none ${
-                  menuState !== 'closed' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-45 scale-75'
-                }`} 
-                strokeWidth={2.5} 
+              <XMarkIcon
+                className={`absolute inset-0 w-5 h-5 text-slate-grey transition-all duration-150 ease-in-out motion-reduce:transition-none ${menuState !== 'closed' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-45 scale-75'
+                  }`}
+                strokeWidth={2.5}
               />
             </div>
           </button>
@@ -211,13 +212,12 @@ export default function Navbar({ className = '' }: NavbarProps) {
 
       {/* Mobile menu overlay - shown when menu is open */}
       {menuState !== 'closed' && (
-        <div 
+        <div
           ref={mobileMenuRef}
           id="mobile-menu"
-          className={`md:hidden fixed left-0 w-full z-[99999] motion-reduce:animate-none ${
-            menuState === 'closing' ? 'animate-slide-up' : 'animate-slide-down'
-          }`}
-          style={{ 
+          className={`md:hidden fixed left-0 w-full z-[99999] motion-reduce:animate-none ${menuState === 'closing' ? 'animate-slide-up' : 'animate-slide-down'
+            }`}
+          style={{
             top: `${navbarHeight}px`,
             backgroundColor: '#FFFEFB',
             boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
@@ -228,22 +228,21 @@ export default function Navbar({ className = '' }: NavbarProps) {
           <div className="flex flex-col gap-[12px] px-9 py-6">
             {/* Mobile navigation links */}
             {navigationItems.map((item, index) => (
-              <div 
-                key={`${item.text}-${menuState === 'closing' ? 'closing' : 'opening'}`} 
-                className={`flex justify-start motion-reduce:animate-none ${
-                  menuState === 'closing'
-                    ? 'animate-fade-out-up' 
-                    : 'animate-fade-in-up'
-                }`}
+              <div
+                key={`${item.text}-${menuState === 'closing' ? 'closing' : 'opening'}`}
+                className={`flex justify-start motion-reduce:animate-none ${menuState === 'closing'
+                  ? 'animate-fade-out-up'
+                  : 'animate-fade-in-up'
+                  }`}
                 data-menu-state={menuState}
-                style={{ 
+                style={{
                   animationDelay: menuState === 'closing'
                     ? `${(navigationItems.length - index - 1) * (STAGGER_DELAY / 1000)}s`
-                    : `${(index + 1) * (STAGGER_DELAY / 1000)}s` 
+                    : `${(index + 1) * (STAGGER_DELAY / 1000)}s`
                 }}
                 role="none"
               >
-                <TextButton 
+                <TextButton
                   ref={index === 0 ? firstMenuItemRef : undefined}
                   href={item.href}
                   variant="large"
@@ -256,6 +255,23 @@ export default function Navbar({ className = '' }: NavbarProps) {
                 </TextButton>
               </div>
             ))}
+            {isAuthenticated && (
+              <div
+                key={`signout-${menuState === 'closing' ? 'closing' : 'opening'}`}
+                className={`flex justify-start motion-reduce:animate-none ${menuState === 'closing'
+                  ? 'animate-fade-out-up'
+                  : 'animate-fade-in-up'
+                  }`}
+                data-menu-state={menuState}
+                style={{
+                  animationDelay: menuState === 'closing'
+                    ? `${(navigationItems.length) * (STAGGER_DELAY / 1000)}s`
+                    : `${(navigationItems.length + 1) * (STAGGER_DELAY / 1000)}s`
+                }}
+                role="none"
+              >
+              </div>
+            )}
           </div>
         </div>
       )}
