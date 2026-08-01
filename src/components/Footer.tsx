@@ -83,7 +83,7 @@ export default function Footer() {
                   <TextButton href="/about#faqs" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
                     FAQ&apos;s
                   </TextButton>
-                  <TextButton href="mailto:contact@umhc.org.uk" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
+                  <TextButton href="mailto:hiking@manchesterstudentsunion.com" className="text-cream-white text-xl sm:text-sm md:text-[14px] font-normal">
                     Contact Us
                   </TextButton>
                 </nav>

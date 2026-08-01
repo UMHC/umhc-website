@@ -245,7 +245,7 @@ No system can guarantee absolute security. UMHC shall not be held liable for una
           <TermsSection
             sectionNumber={14}
             sectionTitle="Contact Information"
-            sectionText={`For general enquiries: contact@umhc.org.uk
+            sectionText={`For general enquiries: hiking@manchesterstudentsunion.com
 For GDPR or data protection requests: data@umhc.org.uk`}
           />
         </main>
