@@ -56,10 +56,6 @@ Below are all of the environment variables used throughout this codebase
 | `NEXT_PUBLIC_STUDENT_MEMBERSHIP_URL` | The webpage that users are redirected to when signing up for a UoM membership (use the SU page)|
 | `NEXT_PUBLIC_ASSOCIATE_MEMBERSHIP_URL` | The webpage that users are redirected to when signing up for a Non-UoM membership (use the SU page)|
 | `RAPID_API_KEY` | Get this from [RapidAPI](rapidapi.com)|
-| `STRAVA_CLIENT_ID` | Get this from [Strava Developer](developers.strava.com)|
-| `STRAVA_CLIENT_SECRET` | Get this from [Strava Developer](developers.strava.com)|
-| `STRAVA_REFRESH_TOKEN` | Get this from [Strava Developer](developers.strava.com)|
-| `STRAVA_CLUB_ID` | The UMHC Strava Club ID (`umhc`)|
 | `KINDE_CLIENT_ID` | Get this from your [Kinde](kinde.com) application|
 | `KINDE_CLIENT_SECRET` | Get this from your [Kinde](kinde.com) application|
 | `KINDE_ISSUER_URL` | Your Kinde auth domain, either `auth.umhc.org.uk` (our custom auth domain) or `umhc.kinde.com` (the default auth domain provided by Kinde)|
