@@ -14,6 +14,13 @@
   }
 }
 
+/* Hide the UserWay accessibility widget on the embedded Sanity Studio, which
+   has its own accessible UI and shouldn't have a third-party overlay button. */
+body.hide-a11y-widget [id*="userway" i],
+body.hide-a11y-widget [class*="userway" i] {
+  display: none !important;
+}
+
 :root {
   --background: #FFFCF7; /* whellow */
   --foreground: #494949; /* slate-grey */

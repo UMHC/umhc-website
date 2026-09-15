@@ -6,7 +6,8 @@ import Image from 'next/image';
 import {
   CalendarDaysIcon,
   ArrowRightOnRectangleIcon,
-  Cog6ToothIcon
+  Cog6ToothIcon,
+  DocumentTextIcon
 } from '@heroicons/react/24/outline';
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
@@ -58,6 +59,13 @@ export default function CommitteeConsoleClient({
 
 
   const toolActions: ToolAction[] = [
+    {
+      label: 'Manage Guides',
+      description: 'Write and publish member guides in the Sanity Studio',
+      icon: DocumentTextIcon,
+      href: '/studio',
+      color: 'bg-earth-orange hover:bg-earth-orange/90'
+    },
     ...(canManageSchedule
       ? [
           {

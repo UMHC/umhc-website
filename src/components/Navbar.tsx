@@ -34,7 +34,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
   const navigationItems = [
     { text: 'Schedule', href: '/schedule' },
     /*{ text: 'Guides', href: '/guides' },*/
-    { text: 'Equipment', href: '/equipment' },
+    { text: 'Guides', href: '/guides' },
     { text: 'Constitution', href: '/constitution' },
     { text: 'About Us', href: '/about' },
   ];

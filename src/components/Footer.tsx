@@ -13,11 +13,11 @@ export default function Footer() {
             <div className="grid grid-cols-2 gap-x-12 gap-y-8 justify-items-start sm:flex sm:flex-wrap sm:justify-center sm:gap-12 md:gap-16 lg:gap-[60px]">
               <div className="flex flex-col gap-2 items-start">
                 <TextButton
-                  href="/equipment"
+                  href="/guides"
                   priority
                   className="text-cream-white text-2xl sm:text-base md:text-[16px] font-semibold"
                 >
-                  Equipment
+                  Guides
                 </TextButton>
 
                 <TextButton

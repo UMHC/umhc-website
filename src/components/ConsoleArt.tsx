@@ -14,7 +14,8 @@ export default function ConsoleArt() {
       ' /  \\/    \\/    \\  /  \\    /  \\',
       '/           \\     \\/    \\  /    \\',
       '----------------------------------',
-      '   Built by Will Hayes - 2025',
+      '   Maintained by Will Hayes - 2026/27',
+      '   Built by Will Hayes - 2025/26',
       '----------------------------------',
       '',
     ].join('\n');

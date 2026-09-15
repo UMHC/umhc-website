@@ -13,6 +13,7 @@ const openSans = Open_Sans({
   subsets: ["latin"],
   display: "swap",
   preload: true,
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {

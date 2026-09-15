@@ -81,8 +81,8 @@ export default async function Home() {
     {/* Social Wall Section */}
     <LazySocialWall />
     
-    {/* Membership Section - CURRENTLY NOT VISIBLE */}
-    {/* <LazyMembershipSection /> */}
+    {/* Membership Section */}
+    <LazyMembershipSection />
     </div>
   );
 }
