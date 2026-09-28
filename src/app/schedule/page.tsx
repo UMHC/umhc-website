@@ -10,6 +10,7 @@ import EarthOrangeButton from '@/components/EarthOrangeButton'
 import Image from 'next/image'
 import { useClientSideIcons } from '@/hooks/useClientSideIcons'
 import OptimizedIcon from '@/components/OptimizedIcon'
+import ScheduleCalendarSubscription from '@/components/ScheduleCalendarSubscription'
 
 // Available activity icons for background decoration - moved outside component to prevent re-creation
 const ACTIVITY_ICONS = [
@@ -375,6 +376,10 @@ function ScheduleContent() {
           </div>
         </header>
 
+        <div className="flex justify-center px-4 mt-4">
+          <ScheduleCalendarSubscription />
+        </div>
+
         {/* Event Type Filter */}
         <div className="flex flex-col gap-1 items-start justify-start p-0 relative max-w-5xl mx-auto mb-4 mt-12 px-4">
           <div className="flex flex-row font-semibold gap-2 sm:gap-4 md:gap-6 lg:gap-8 xl:gap-12 items-center justify-center md:justify-between not-italic p-0 relative w-full text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-left">
@@ -411,7 +416,6 @@ function ScheduleContent() {
               </button>
             </div>
             
-            {/* Filter Button */}
             <button 
               onClick={() => setShowFilterModal(true)}
               className="relative rounded-full border-slate-grey border border-solid hover:bg-slate-grey hover:bg-opacity-10 transition-colors ml-2 shrink-0 mr-4"
