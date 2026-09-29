@@ -30,6 +30,7 @@ export default async function DashboardPage() {
   const scheduleManagerPermission = await getPermission('schedule-manager');
   const whatsappGeneralManagerPermission = await getPermission('whatsapp-general-manager');
   const womxnWhatsappPermission = await getPermission('manage-womxn-whatsapp');
+  const postgradWhatsappPermission = await getPermission('manage-postgrad-whatsapp');
 
   const toolActions = [
     ...(scheduleManagerPermission?.isGranted
@@ -62,6 +63,17 @@ export default async function DashboardPage() {
             href: '/committee/womxn-whatsapp-console',
             icon: Cog6ToothIcon,
             color: 'bg-purple-500 hover:bg-purple-600',
+          },
+        ]
+      : []),
+    ...(postgradWhatsappPermission?.isGranted
+      ? [
+          {
+            label: 'Manage Postgraduate WhatsApp',
+            description: 'Manage postgraduate WhatsApp group links and monitor access',
+            href: '/committee/postgrad-whatsapp-console',
+            icon: Cog6ToothIcon,
+            color: 'bg-teal-600 hover:bg-teal-700',
           },
         ]
       : []),

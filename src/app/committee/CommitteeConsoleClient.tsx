@@ -22,6 +22,7 @@ interface CommitteeConsoleClientProps {
   canManageSchedule: boolean;
   canManageGeneralWhatsapp: boolean;
   canManageWomxnWhatsapp: boolean;
+  canManagePostgradWhatsapp: boolean;
 }
 
 
@@ -38,6 +39,7 @@ export default function CommitteeConsoleClient({
   canManageSchedule,
   canManageGeneralWhatsapp,
   canManageWomxnWhatsapp,
+  canManagePostgradWhatsapp,
 }: CommitteeConsoleClientProps) {
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -96,6 +98,17 @@ export default function CommitteeConsoleClient({
             icon: Cog6ToothIcon,
             href: '/committee/womxn-whatsapp-console',
             color: 'bg-purple-500 hover:bg-purple-600'
+          },
+        ]
+      : []),
+    ...(canManagePostgradWhatsapp
+      ? [
+          {
+            label: 'Manage Postgraduate WhatsApp',
+            description: 'Manage postgraduate WhatsApp group links and monitor access',
+            icon: Cog6ToothIcon,
+            href: '/committee/postgrad-whatsapp-console',
+            color: 'bg-teal-600 hover:bg-teal-700'
           },
         ]
       : []),

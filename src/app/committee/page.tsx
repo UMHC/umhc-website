@@ -22,6 +22,7 @@ export default async function CommitteeConsolePage() {
   const scheduleManagerPermission = await getPermission('schedule-manager');
   const whatsappGeneralManagerPermission = await getPermission('whatsapp-general-manager');
   const womxnWhatsappPermission = await getPermission('manage-womxn-whatsapp');
+  const postgradWhatsappPermission = await getPermission('manage-postgrad-whatsapp');
   
   if (!hasCommitteeRole) {
     redirect('/committee/access-denied');
@@ -33,6 +34,7 @@ export default async function CommitteeConsolePage() {
       canManageSchedule={scheduleManagerPermission?.isGranted ?? false}
       canManageGeneralWhatsapp={whatsappGeneralManagerPermission?.isGranted ?? false}
       canManageWomxnWhatsapp={womxnWhatsappPermission?.isGranted ?? false}
+      canManagePostgradWhatsapp={postgradWhatsappPermission?.isGranted ?? false}
     />
   );
 }

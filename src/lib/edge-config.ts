@@ -4,6 +4,7 @@ import { get } from '@vercel/edge-config';
 export interface EdgeConfigData {
   whatsapp_link: string;
   whatsapp_womxn_link: string;
+  whatsapp_postgrad_link: string;
   qr_redirect_enabled: boolean;
 }
 
@@ -11,6 +12,7 @@ export interface EdgeConfigData {
 const DEFAULT_CONFIG: EdgeConfigData = {
   whatsapp_link: process.env.WHATSAPP_GROUP_LINK || 'https://chat.whatsapp.com/fallback',
   whatsapp_womxn_link: process.env.WHATSAPP_WOMXN_GROUP_LINK || 'https://chat.whatsapp.com/fallback',
+  whatsapp_postgrad_link: process.env.WHATSAPP_POSTGRAD_GROUP_LINK || 'https://chat.whatsapp.com/fallback',
   qr_redirect_enabled: true
 };
 
@@ -50,6 +52,17 @@ export async function getWomxnWhatsAppLink(): Promise<string> {
   }
 }
 
+export async function getPostgradWhatsAppLink(): Promise<string> {
+  try {
+    const link = await get('whatsapp_postgrad_link');
+    if (typeof link === 'string' && link.startsWith('https://chat.whatsapp.com/')) return link;
+    return DEFAULT_CONFIG.whatsapp_postgrad_link;
+  } catch (error) {
+    console.warn('Failed to get Postgrad WhatsApp link from Edge Config:', error);
+    return DEFAULT_CONFIG.whatsapp_postgrad_link;
+  }
+}
+
 /**
  * Check if QR redirect is enabled
  */
@@ -68,15 +81,17 @@ export async function isQRRedirectEnabled(): Promise<boolean> {
  */
 export async function getEdgeConfig(): Promise<EdgeConfigData> {
   try {
-    const [whatsappLink, womxnLink, qrEnabled] = await Promise.all([
+    const [whatsappLink, womxnLink, postgradLink, qrEnabled] = await Promise.all([
       getWhatsAppLink(),
       getWomxnWhatsAppLink(),
+      getPostgradWhatsAppLink(),
       isQRRedirectEnabled()
     ]);
 
     return {
       whatsapp_link: whatsappLink,
       whatsapp_womxn_link: womxnLink,
+      whatsapp_postgrad_link: postgradLink,
       qr_redirect_enabled: qrEnabled
     };
   } catch (error) {
@@ -107,7 +122,7 @@ export async function updateEdgeConfig(config: Partial<EdgeConfigData>): Promise
 
     // Prepare the update payload
     const items = Object.entries(config).map(([key, value]) => ({
-      operation: 'update',
+      operation: 'upsert',
       key,
       value
     }));

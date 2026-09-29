@@ -43,6 +43,7 @@ Below are all of the environment variables used throughout this codebase
 | Name      | Value/Source                |
 | :-------- | :------------------------- |
 | `WHATSAPP_GROUP_LINK` | Just set this as the link to the Whatsapp Group |
+| `WHATSAPP_POSTGRAD_GROUP_LINK` | Fallback postgraduate WhatsApp invite link; the managed value is stored in Vercel Edge Config as `whatsapp_postgrad_link` |
 | `TURNSTILE_SECRET_KEY` | Get this from the [Cloudflare Dashboard](dash.cloudlfare.com) Turnstile area|
 | `MAILGUN_API_KEY` | Get this from [Mailgun](mailgun.com) - use your private API key from the verify.umhc.org.uk domain|
 | `MAILGUN_FROM_EMAIL` | _(Optional)_ The email address you want to send from, defaults to `UMHC <noreply@verify.umhc.org.uk>`|
@@ -62,6 +63,10 @@ Below are all of the environment variables used throughout this codebase
 | `KINDE_SITE_URL` | The URL to our site, `umhc.org.uk` in production or `localhost:3000` in local development|
 | `KINDE_POST_LOGOUT_REDIRECT_URL` | The URL to our site, `umhc.org.uk` in production or `localhost:3000` in local development|
 | `KINDE_POST_LOGIN_REDIRECT_URL` | Where to direct logged in users to, `umhc.org.uk/committee` in production or `localhost:3000/committee` in local development|
+
+## Postgraduate WhatsApp group
+
+Run `supabase/migrations/20260928_postgrad_whatsapp.sql` against Supabase before enabling the flow. In Kinde, grant committee members the `manage-postgrad-whatsapp` permission. The public access pages are `/postgrad-whatsapp` and `/postgrad-whatsapp-request`; committee members manage the link and approve requests at `/committee/postgrad-whatsapp-console`.
 
 
 
