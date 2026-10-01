@@ -52,6 +52,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
     description: '',
     event_type: 'hike',
     event_date: '',
+    event_end_date: '',
     event_time: '',
     full_address: '',
     what3words: '',
@@ -75,6 +76,7 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
         description: event.description || '',
         event_type: event.event_type,
         event_date: event.event_date || '',
+        event_end_date: event.event_end_date || '',
         event_time: event.event_time || '',
         full_address: event.full_address || '',
         what3words: event.what3words || '',
@@ -127,6 +129,10 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
       if (eventDate < today) {
         newErrors.event_date = 'Event date cannot be in the past';
       }
+    }
+
+    if (formData.event_end_date && formData.event_end_date < formData.event_date) {
+      newErrors.event_end_date = 'End date must be on or after the event date';
     }
 
     // Validate URL format if provided
@@ -262,6 +268,25 @@ export default function EventForm({ event, onSubmit, onCancel, submitting }: Eve
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green"
                   disabled={submitting}
                 />
+              </div>
+
+              <div>
+                <label htmlFor="event_end_date" className="block text-sm font-medium text-deep-black mb-1">
+                  Event End Date
+                </label>
+                <input
+                  type="date"
+                  id="event_end_date"
+                  value={formData.event_end_date}
+                  min={formData.event_date || undefined}
+                  onChange={(e) => handleInputChange('event_end_date', e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-umhc-green ${
+                    errors.event_end_date ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  disabled={submitting}
+                />
+                {errors.event_end_date && <p className="text-red-500 text-sm mt-1">{errors.event_end_date}</p>}
+                <p className="text-xs text-slate-grey mt-1">Leave blank for a one-day event.</p>
               </div>
 
               <div>

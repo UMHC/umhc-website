@@ -7,6 +7,7 @@ export interface CreateEventData {
   description?: string;
   event_type: 'hike' | 'social' | 'residential' | 'other';
   event_date: string;
+  event_end_date?: string;
   event_time?: string;
   full_address?: string;
   what3words?: string;
@@ -31,6 +32,7 @@ export class EventService {
     const cleanedData = {
       ...eventData,
       event_time: eventData.event_time?.trim() === '' ? null : eventData.event_time,
+      event_end_date: eventData.event_end_date?.trim() === '' ? null : eventData.event_end_date,
       description: eventData.description?.trim() === '' ? null : eventData.description,
       full_address: eventData.full_address?.trim() === '' ? null : eventData.full_address,
       what3words: eventData.what3words?.trim() === '' ? null : eventData.what3words,
@@ -73,6 +75,7 @@ export class EventService {
     const cleanedData = {
       ...updateData,
       event_time: updateData.event_time?.trim() === '' ? null : updateData.event_time,
+      event_end_date: updateData.event_end_date?.trim() === '' ? null : updateData.event_end_date,
       description: updateData.description?.trim() === '' ? null : updateData.description,
       full_address: updateData.full_address?.trim() === '' ? null : updateData.full_address,
       what3words: updateData.what3words?.trim() === '' ? null : updateData.what3words,
@@ -148,6 +151,7 @@ export class EventService {
       ...eventData,
       title: `${eventData.title} (Copy)`,
       description: eventData.description || undefined,
+      event_end_date: eventData.event_end_date || undefined,
       event_time: eventData.event_time || undefined,
       full_address: eventData.full_address || undefined,
       what3words: eventData.what3words || undefined,

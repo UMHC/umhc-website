@@ -146,7 +146,7 @@ export const what3wordsValidator = optionalSanitizedStringValidator(50);
 /**
  * Event creation schema
  */
-export const createEventSchema = z.object({
+const eventSchemaFields = z.object({
   title: sanitizedStringValidator(1, 200, 'Event title'),
   description: optionalSanitizedStringValidator(2000),
   event_type: eventTypeSchema,
@@ -156,6 +156,14 @@ export const createEventSchema = z.object({
       const parsedDate = new Date(date);
       return !isNaN(parsedDate.getTime()) && parsedDate > new Date('1900-01-01');
     }, 'Invalid event date format'),
+  event_end_date: z.string()
+    .refine((date) => {
+      if (!date) return true;
+      const parsedDate = new Date(date);
+      return !isNaN(parsedDate.getTime()) && parsedDate > new Date('1900-01-01');
+    }, 'Invalid event end date format')
+    .optional()
+    .or(z.literal('')),
   event_time: optionalSanitizedStringValidator(10),
   full_address: optionalSanitizedStringValidator(500),
   what3words: what3wordsValidator,
@@ -170,10 +178,15 @@ export const createEventSchema = z.object({
   event_image: optionalSanitizedStringValidator(500)
 });
 
+export const createEventSchema = eventSchemaFields.refine(
+  (data) => !data.event_end_date || data.event_end_date >= data.event_date,
+  { message: 'Event end date must be on or after the event date', path: ['event_end_date'] }
+);
+
 /**
  * Event update schema (includes ID and allows partial updates)
  */
-export const updateEventSchema = createEventSchema.partial().extend({
+export const updateEventSchema = eventSchemaFields.partial().extend({
   id: z.number().int().positive('Invalid event ID')
 });
 
