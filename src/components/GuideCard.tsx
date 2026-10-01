@@ -1,102 +1,84 @@
-'use client';
-
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import { useRef, useEffect, useState } from 'react';
+import { urlForImage } from '@/sanity/lib/image';
+import type { GuideImage } from '@/sanity/lib/types';
 
 interface GuideCardProps {
   title: string;
   description: string;
-  image: string;
+  image: GuideImage | null;
   slug: string;
+  publishedAt?: string;
 }
 
-export default function GuideCard({ title, description, image, slug }: GuideCardProps) {
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const descRef = useRef<HTMLParagraphElement>(null);
-  const [titleScale, setTitleScale] = useState(1);
-  const [descScale, setDescScale] = useState(1);
-
-  // Check if text overflows and scale down if needed
-  useEffect(() => {
-    const checkOverflow = () => {
-      if (titleRef.current) {
-        const el = titleRef.current;
-        const maxHeight = 140; // Max height for title in px (lg screens)
-        if (el.scrollHeight > maxHeight && titleScale > 0.7) {
-          setTitleScale(prev => Math.max(0.7, prev - 0.05));
-        }
-      }
-      if (descRef.current) {
-        const el = descRef.current;
-        const maxHeight = 180; // Max height for description in px (lg screens)
-        if (el.scrollHeight > maxHeight && descScale > 0.75) {
-          setDescScale(prev => Math.max(0.75, prev - 0.05));
-        }
-      }
-    };
-
-    checkOverflow();
-    window.addEventListener('resize', checkOverflow);
-    return () => window.removeEventListener('resize', checkOverflow);
-  }, [title, description, titleScale, descScale]);
+export default function GuideCard({
+  title,
+  description,
+  image,
+  slug,
+  publishedAt,
+}: GuideCardProps) {
+  const formattedDate = publishedAt
+    ? new Date(publishedAt).toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : null;
 
   return (
-    <Link 
+    <Link
       href={`/guides/${slug}`}
-      className="group block w-full"
+      className="group block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-umhc-green focus-visible:ring-offset-2"
       aria-label={`Read guide: ${title}`}
     >
-      <article className="relative h-[642px] sm:h-[320px] md:h-[360px] lg:h-[438px] w-full rounded-[40px] sm:rounded-[30px] md:rounded-[40px] overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-        {/* Split layout container - vertical on mobile, horizontal on desktop */}
-        <div className="relative h-full w-full flex flex-col-reverse sm:flex-row">
-          {/* Green background with text - bottom on mobile, left on desktop */}
-          <div className="relative bg-stealth-green w-full sm:w-[46%] h-[285px] sm:h-full flex flex-col justify-start px-7 sm:px-6 md:px-8 lg:px-9 pt-5 sm:pt-4 md:pt-5 lg:pt-6 pb-4 sm:pb-6">
-            {/* Text content wrapper - flex-1 to take available space above button */}
-            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
-              {/* Title with max constraints */}
-              <h2 
-                ref={titleRef}
-                className="text-cream-white font-bold leading-tight capitalize mb-2 sm:mb-3 md:mb-4 text-left max-w-[450px] flex-shrink-0"
-                style={{
-                  fontSize: `clamp(1.5rem, ${2.5 * titleScale}vw, ${40 * titleScale}px)`,
-                  maxHeight: '140px',
-                  lineHeight: '1.2',
-                }}
-              >
-                {title}
-              </h2>
-              
-              {/* Description with max constraints - will be clipped with ellipsis if too long */}
-              <p 
-                ref={descRef}
-                className="text-whellow font-medium leading-relaxed text-left max-w-[450px] overflow-hidden line-clamp-4 sm:line-clamp-3 md:line-clamp-4 lg:line-clamp-5"
-                style={{
-                  fontSize: `clamp(1rem, ${1.25 * descScale}vw, ${20 * descScale}px)`,
-                  lineHeight: '1.5',
-                }}
-              >
-                {description}
-              </p>
-            </div>
-            
-            {/* Read full guide button - always at bottom right */}
-            <div className="flex items-center justify-end gap-2.5 text-white font-semibold text-base group-hover:gap-4 transition-all duration-200 mt-3 sm:mt-3 md:mt-4 flex-shrink-0">
-              <span>Read full guide</span>
-              <ArrowRightIcon className="w-4 h-4 stroke-[2.5] group-hover:translate-x-1 transition-transform duration-200" aria-hidden="true" />
-            </div>
-          </div>
-          
-          {/* Image - top on mobile, right on desktop */}
-          <div className="relative w-full sm:w-[54%] h-[357px] sm:h-full">
+      <article className="flex flex-col sm:flex-row bg-whellow border border-slate-grey/10 rounded-2xl overflow-hidden shadow-sm transition-all duration-300 group-hover:shadow-lg group-hover:border-umhc-green/25">
+        {/* Image */}
+        <div className="relative w-full aspect-[16/10] sm:aspect-auto sm:w-[38%] sm:min-h-[260px] shrink-0 overflow-hidden bg-cream-white">
+          {image && (
             <Image
-              src={image}
-              alt={`Guide image for ${title}`}
+              src={urlForImage(image).width(800).height(700).fit('crop').url()}
+              alt={image.alt || `Cover image for the guide: ${title}`}
               fill
-              className="object-cover"
-              sizes="(max-width: 640px) 100vw, 54vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 640px) 100vw, 38vw"
             />
+          )}
+          {/* Accent bar tying the card to the UMHC palette */}
+          <div className="absolute inset-x-0 bottom-0 h-1 bg-earth-orange sm:inset-y-0 sm:left-auto sm:right-0 sm:h-auto sm:w-1" />
+        </div>
+
+        {/* Content */}
+        <div className="flex flex-1 flex-col p-5 sm:p-6 lg:p-8">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-deep-black font-sans leading-tight transition-colors duration-200 group-hover:text-umhc-green">
+            {title}
+          </h2>
+
+          <p className="mt-3 text-sm sm:text-base text-slate-grey font-medium font-sans leading-relaxed line-clamp-3 lg:line-clamp-4">
+            {description}
+          </p>
+
+          {/* Footer row pinned to the bottom on wider screens */}
+          <div className="mt-5 sm:mt-auto sm:pt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            {formattedDate ? (
+              <time
+                dateTime={publishedAt}
+                className="text-xs sm:text-sm text-slate-grey/80 font-sans"
+              >
+                {formattedDate}
+              </time>
+            ) : (
+              <span aria-hidden="true" />
+            )}
+
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-umhc-green font-sans transition-colors duration-200 group-hover:text-stealth-green">
+              Read full guide
+              <ArrowRightIcon
+                className="w-4 h-4 stroke-[2.5] transition-transform duration-200 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </span>
           </div>
         </div>
       </article>

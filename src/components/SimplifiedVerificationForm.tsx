@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Button from './Button';
 import Image from 'next/image';
 import { isValidPhoneNumber } from 'libphonenumber-js';
+import { getSuggestedStudentEmail } from '@/lib/studentEmailSuggestion';
 
 interface TurnstileOptions {
   sitekey: string;
@@ -33,6 +34,7 @@ export default function SimplifiedVerificationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [turnstileLoaded, setTurnstileLoaded] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const suggestedStudentEmail = getSuggestedStudentEmail(email);
 
   // Email validation for .ac.uk domains
   const validateEmail = (emailAddress: string) => {
@@ -310,8 +312,27 @@ export default function SimplifiedVerificationForm() {
             aria-describedby="email-help"
           />
           <p id="email-help" className="text-xs sm:text-sm text-slate-grey mt-1 font-sans">
-            Enter your university email address ending in .ac.uk
+            Most UoM student email addresses end in @student.manchester.ac.uk
           </p>
+          {suggestedStudentEmail && (
+            <div
+              className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs sm:text-sm text-slate-grey font-sans"
+              aria-live="polite"
+            >
+              <span>Did you mean </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail(suggestedStudentEmail);
+                  setError('');
+                }}
+                className="font-semibold text-umhc-green underline underline-offset-2 hover:text-stealth-green focus:outline-none focus:ring-2 focus:ring-umhc-green focus:ring-offset-2 rounded-sm"
+              >
+                {suggestedStudentEmail}
+              </button>
+              <span>?</span>
+            </div>
+          )}
         </div>
 
         {/* Phone Number Input */}

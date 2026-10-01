@@ -13,6 +13,7 @@ const openSans = Open_Sans({
   subsets: ["latin"],
   display: "swap",
   preload: true,
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -54,7 +55,7 @@ export default function RootLayout({
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "general",
-      "email": "contact@umhc.org.uk",
+      "email": "hiking@manchesterstudentsunion.com",
       "availableLanguage": "English"
     },
     "memberOf": {

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowLeftIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/components';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { redirect } from 'next/navigation';
 import WhatsAppConsole from '@/components/WhatsAppConsole';
 
 export const metadata: Metadata = {
@@ -17,70 +17,62 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function WhatsAppConsolePage() {
-  const { getUser } = getKindeServerSession();
+  const { getUser, getPermission } = getKindeServerSession();
   const user = await getUser();
 
-  return (
-    <div className="min-h-screen bg-whellow">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              {/* Logo */}
-              <Link
-                href="/"
-                className="h-[32px] w-[56px] relative shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-umhc-green focus-visible:ring-offset-2 rounded"
-                aria-label="UMHC Homepage"
-              >
-                <div className="relative w-full h-full">
-                  <Image
-                    src="/images/umhc-logo.webp"
-                    alt="UMHC - University of Manchester Hiking Club"
-                    fill
-                    sizes="56px"
-                    className="object-contain"
-                    priority
-                  />
-                </div>
-              </Link>
+  if (!user) {
+    redirect('/api/auth/login?post_login_redirect_url=/committee/whatsapp-console');
+  }
 
-              {/* Title */}
+  const whatsappGeneralManagerPermission = await getPermission('whatsapp-general-manager');
+
+  if (!whatsappGeneralManagerPermission?.isGranted) {
+    redirect('/committee/access-denied');
+  }
+
+  return (
+    <main className="min-h-screen bg-[#f6f6f4] pt-24 px-4 sm:px-6 lg:px-8 pb-14">
+      <div className="max-w-5xl mx-auto">
+        <div className="py-6 sm:py-10 space-y-6">
+          {/* Header section matching Dashboard */}
+          <header className="px-2 sm:px-4">
+            <div className="flex justify-between items-start">
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">WhatsApp Console</h1>
-                <p className="text-sm text-gray-500">Manage WhatsApp group access and monitor usage</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-umhc-green/80 mb-2">
+                  Tools
+                </p>
+                <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-deep-black mb-3">
+                  WhatsApp Console
+                </h1>
+                <p className="max-w-2xl text-[17px] text-slate-grey leading-relaxed font-medium">
+                  Manage WhatsApp group access and monitor usage
+                </p>
+              </div>
+              <div className="pt-2 flex items-center gap-2">
+                <Link
+                  href="/dashboard"
+                  className="flex items-center justify-center gap-2 whitespace-nowrap bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold text-sm px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+                >
+                  <ArrowLeftIcon className="w-4 h-4" />
+                  Back to Dashboard
+                </Link>
+                <LogoutLink className="flex items-center justify-center gap-2 whitespace-nowrap bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-sm px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 border border-red-200">
+                  Sign out
+                </LogoutLink>
               </div>
             </div>
+          </header>
 
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/committee"
-                className="flex items-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
-              >
-                <ArrowLeftIcon className="w-4 h-4 mr-1" />
-                Back to Console
-              </Link>
-
-              <div className="h-4 w-px bg-gray-300"></div>
-
-              <span className="text-sm text-gray-500">
-                Welcome, {user?.given_name || user?.email || 'Committee Member'}
-              </span>
-              <LogoutLink
-                className="flex items-center text-sm text-gray-500 hover:text-gray-700"
-                postLogoutRedirectURL="/"
-              >
-                <ArrowRightOnRectangleIcon className="w-4 h-4 mr-1" />
-                Sign out
-              </LogoutLink>
-            </div>
-          </div>
+          <section aria-labelledby="whatsapp-console">
+            <WhatsAppConsole user={{
+              id: user.id || '',
+              email: user.email || null,
+              given_name: user.given_name || null,
+              family_name: user.family_name || null
+            }} />
+          </section>
         </div>
       </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <WhatsAppConsole />
-      </div>
-    </div>
+    </main>
   );
 }

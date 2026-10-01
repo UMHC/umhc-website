@@ -1,80 +1,93 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import type { Metadata } from 'next';
+import { client, hasSanityConfig } from '@/sanity/lib/client';
+import { GUIDES_LIST_QUERY } from '@/sanity/lib/queries';
+import type { GuideListItem } from '@/sanity/lib/types';
 import GuideCard from '@/components/GuideCard';
 
-interface Guide {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  slug: string;
-}
+export const metadata: Metadata = {
+  title: 'UMHC | Guides - Preparing For Hikes And Trips',
+  description:
+    'Guides to help you prepare for UMHC hikes and trips - from packing for a day hike to what to expect on our winter trip to Scotland.',
+  keywords: ['hiking guides', 'day hike packing', 'winter hiking', 'manchester', 'hiking preparation', 'what to bring hiking'],
+  openGraph: {
+    title: 'UMHC Guides - Preparing For Hikes And Trips',
+    description:
+      'Everything you need to know before heading out with us, from packing lists to what to expect on our trips.',
+    type: 'website',
+  },
+};
 
-export default function Guides() {
-  const [guides, setGuides] = useState<Guide[]>([]);
-  const [loading, setLoading] = useState(true);
+export const revalidate = 60;
 
-  useEffect(() => {
-    async function fetchGuides() {
-      try {
-        const response = await fetch('/guides.json');
-        const data = await response.json();
-        setGuides(data.guides);
-      } catch (error) {
-        console.error('Error fetching guides:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchGuides();
-  }, []);
-
-  return (
-    <div className="bg-cream-white min-h-screen">
-      {/* Guides Introduction section */}
-      <section className="pt-16 pb-4" aria-labelledby="guides-heading">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <header className="text-center space-y-2 mb-4 sm:mb-6">
-            <h1 id="guides-heading" className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-deep-black leading-tight font-sans px-2">
-              Guides
-            </h1>
-            <div className="max-w-5xl mx-auto px-2">
-              <p className="text-xs sm:text-sm md:text-base text-deep-black font-medium font-sans leading-relaxed">
-                Knowing what to expect and what to bring on one of our hikes can make all the difference to your experience. The conditions in the hills can vary dramatically depending on the season, location, and type of trip, so being properly prepared helps keep everyone safe and ensures you can fully enjoy your time outdoors. This page contains guides to help you understand what different trips involve and how to pack appropriately for them. Whether it&apos;s your first day trip with the club or you&apos;re packing for our incredible 5-day winter trip to Scotland, these resources will help you feel ready for whatever the hills throw at you. If you have any questions about a specific trip, feel free to reach out to us.
-              </p>
+export default async function Guides() {
+  if (!hasSanityConfig || !client) {
+    return (
+      <div className="bg-cream-white min-h-screen">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-12 sm:pb-16">
+          <header className="text-center mb-8 sm:mb-12">
+            <div className="max-w-5xl mx-auto space-y-3 sm:space-y-4">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-deep-black leading-tight font-sans px-2">
+                Guides
+              </h1>
+              <div className="max-w-5xl mx-auto px-2">
+                <p className="text-sm sm:text-base text-deep-black font-medium font-sans leading-relaxed">
+                  Guides will appear here once the club content is connected to Sanity.
+                </p>
+              </div>
             </div>
           </header>
         </div>
-      </section>
+      </div>
+    );
+  }
 
-      {/* Guides List section */}
-      <section className="pb-12 sm:pb-16" aria-label="Available guides">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {loading ? (
-            <div className="text-center py-8">
-              <p className="text-deep-black">Loading guides...</p>
+  const guides = await client.fetch<GuideListItem[]>(GUIDES_LIST_QUERY);
+
+  return (
+    <div className="bg-cream-white min-h-screen">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-12 sm:pb-16">
+        {/* Header/Intro Section */}
+        <header className="text-center mb-8 sm:mb-12">
+          <div className="max-w-5xl mx-auto space-y-3 sm:space-y-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-deep-black leading-tight font-sans px-2">
+              Guides
+            </h1>
+            <div className="max-w-5xl mx-auto px-2">
+              <p className="text-sm sm:text-base text-deep-black font-medium font-sans leading-relaxed">
+                Knowing what to expect and what to bring on one of our hikes can make all the difference to your experience. The conditions in the hills can vary dramatically depending on the season, location, and type of trip, so being properly prepared helps keep everyone safe and ensures you can fully enjoy your time outdoors. These guides will help you understand what different trips involve and how to pack appropriately for them. Whether it&apos;s your first day trip with the club or you&apos;re packing for our incredible 5-day winter trip to Scotland, they&apos;ll help you feel ready for whatever the hills throw at you. If you have any questions about a specific trip, feel free to reach out to us.
+              </p>
             </div>
-          ) : guides.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-deep-black">No guides available at the moment.</p>
+          </div>
+        </header>
+
+        {/* Guides List */}
+        <main role="main" aria-label="Available guides">
+          {guides.length === 0 ? (
+            <div className="bg-whellow rounded-2xl px-6 py-12 sm:py-16 text-center max-w-2xl mx-auto">
+              <h2 className="text-lg sm:text-xl font-semibold text-umhc-green font-sans mb-2">
+                No guides just yet
+              </h2>
+              <p className="text-sm sm:text-base text-slate-grey font-medium font-sans leading-relaxed">
+                We&apos;re busy writing these up. Check back soon, or get in touch if
+                there&apos;s something specific you&apos;d like to know before your next trip.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:gap-8">
               {guides.map((guide) => (
                 <GuideCard
-                  key={guide.id}
-                  title={guide.title}
-                  description={guide.description}
-                  image={guide.image}
-                  slug={guide.slug}
+                  key={guide._id}
+                  title={guide.title ?? ''}
+                  description={guide.description ?? ''}
+                  image={guide.mainImage}
+                  slug={guide.slug?.current ?? ''}
+                  publishedAt={guide.publishedAt}
                 />
               ))}
             </div>
           )}
-        </div>
-      </section>
+        </main>
+      </div>
     </div>
   );
 }

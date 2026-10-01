@@ -102,7 +102,7 @@ export default function MembershipSection() {
   const studentFeatures: MembershipFeature[] = [
     { text: "Access to all hikes" },
     { text: "Access to all social events" },
-    { text: "Discounted hike tickets (£14.75)" },
+    { text: "Discounted hike tickets" },
     { text: "£15 million combined liability insurance (via BMC)" },
     { text: "£10000 personal accident insurance cover (via BMC)" },
     { text: "15% discount in Cotswold Outdoor, Snow+Rock, Runners Need and more (via BMC)" },
@@ -115,7 +115,7 @@ export default function MembershipSection() {
   const associateFeatures: MembershipFeature[] = [
     { text: "Access to hikes" },
     { text: "Access to ticketed social events" },
-    { text: "Discounted hike tickets (£14.75)" },
+    { text: "Discounted hike tickets" },
     { text: "£15 million combined liability insurance (via BMC)" },
     { text: "£10000 personal accident insurance cover (via BMC)" },
     { text: "15% discount in Cotswold Outdoor, Snow+Rock, Runners Need and more (via BMC)" },
@@ -154,7 +154,7 @@ export default function MembershipSection() {
           
           <MembershipCard
             title="Student Membership"
-            price="£30"
+            price="£20.85"
             period="per year"
             buttonText="Purchase on the SU Website"
             buttonLink={studentMembershipUrl}
@@ -164,7 +164,7 @@ export default function MembershipSection() {
           
           <MembershipCard
             title="Associate Membership (Non-UoM)"
-            price="£35"
+            price="£34.50"
             period="per year"
             buttonText="Purchase on the SU Website"
             buttonLink={associateMembershipUrl}

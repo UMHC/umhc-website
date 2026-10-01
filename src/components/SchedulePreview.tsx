@@ -116,7 +116,7 @@ export default function SchedulePreview() {
   }
 
   return (
-    <section className="bg-whellow relative overflow-hidden pt-0 pb-16 sm:pb-20 md:pb-24 lg:pb-32">
+    <section className="bg-whellow relative overflow-hidden pt-0 pb-16 sm:pb-20 md:pb-24 lg:pb-32 lg:min-h-[520px]">
       {/* Activity icons with responsive positioning */}
       <div className="absolute inset-0 pointer-events-none z-0">
         {/* Top row - mobile has 2 icons flanking title, desktop has full border */}
@@ -135,13 +135,13 @@ export default function SchedulePreview() {
         <Image src="/images/activity-images/bowling.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '25%' }} />
         <Image src="/images/activity-images/pool.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '45%' }} />
         <Image src="/images/activity-images/trees-path.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '65%' }} />
-        <Image src="/images/activity-images/cinema.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', top: '85%' }} />
+        <Image src="/images/activity-images/cinema.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ left: '2%', bottom: '15px' }} />
         
         {/* Right border - desktop only */}
         <Image src="/images/activity-images/karaoke.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '25%' }} />
         <Image src="/images/activity-images/darts.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '45%' }} />
         <Image src="/images/activity-images/trees-waterfall.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '65%' }} />
-        <Image src="/images/activity-images/dance.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', top: '85%' }} />
+        <Image src="/images/activity-images/dance.webp" alt="" width={48} height={48} className="absolute w-12 h-12 opacity-7 hidden lg:block z-50" style={{ right: '2%', bottom: '15px' }} />
         
         {/* Bottom row - mobile has 4 icons, desktop has full border */}
         <Image src="/images/activity-images/boots.webp" alt="" width={48} height={48} className="absolute w-10 h-10 sm:w-12 sm:h-12 lg:hidden opacity-7" style={{ left: '15%', bottom: '25px' }} />
@@ -169,9 +169,17 @@ export default function SchedulePreview() {
           
           {/* Events List */}
           <div className="w-11/12 space-y-0">
-            {events.map((event) => (
-              <EventCard key={event.id} event={event} onClick={handleEventClick} />
-            ))}
+            {events.length === 0 ? (
+              <div className="flex items-center justify-center min-h-[160px] sm:min-h-[200px] lg:min-h-[300px]">
+                <p className="text-slate-grey text-base sm:text-lg text-center">
+                  We currently have no events scheduled, follow our instagram to stay up to date
+                </p>
+              </div>
+            ) : (
+              events.map((event) => (
+                <EventCard key={event.id} event={event} onClick={handleEventClick} />
+              ))
+            )}
           </div>
         </div>
       </div>

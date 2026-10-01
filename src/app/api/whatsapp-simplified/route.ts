@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { sendResendEmailWithError } from '@/lib/resend';
-// import { sendMailgunEmailWithError } from '@/lib/mailgun'; // DEPRECATED: Keeping commented for rollback
 import { createAccessToken, cleanupExpiredTokens, checkForDuplicates, formatDuplicateError, deleteAccessToken } from '@/lib/access-tokens';
 
 interface VerificationRequest {

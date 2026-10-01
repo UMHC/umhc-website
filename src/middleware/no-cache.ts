@@ -9,12 +9,18 @@ export function addNoCacheHeaders(request: NextRequest, response: NextResponse) 
     '/whatsapp',
     '/whatsapp-request',
     '/whatsapp-verify',
+    '/womxn-whatsapp',
+    '/womxn-join',
+    '/womxn-whatsapp-request',
     '/qr',
     '/committee',
     '/api/join',
     '/api/whatsapp',
     '/api/whatsapp-simplified',
     '/api/whatsapp-request',
+    '/api/womxn-whatsapp-simplified',
+    '/api/womxn-join',
+    '/api/womxn-whatsapp-request',
     '/api/committee'
   ];
 

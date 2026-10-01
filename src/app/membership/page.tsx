@@ -69,7 +69,7 @@ function MembershipCard({ title, price, period, buttonText, features }: Membersh
 
 export default function MembershipPage() {
   const studentFeatures: MembershipFeature[] = [
-    { text: "Reduced price day hike tickets (£14.75)" },
+    { text: "Reduced price day hike tickets" },
     { text: "Priority on waiting lists" },
     { text: "Reduced price weekend trip tickets" },
     { text: "More tickets available for members " },
@@ -78,7 +78,7 @@ export default function MembershipPage() {
   ];
 
   const associateFeatures: MembershipFeature[] = [
-    { text: "Reduced price day hike tickets (£14.75)" },
+    { text: "Reduced price day hike tickets" },
     { text: "Priority on waiting lists" },
     { text: "Reduced price weekend trip tickets" },
     { text: "More tickets available for members " },
@@ -102,16 +102,16 @@ export default function MembershipPage() {
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-center justify-center">
             <MembershipCard
               title="Student Membership"
-              price="£10"
-              period="for sem 2"
+              price="£29.50"
+              period="per year"
               buttonText="Purchase on the SU Website"
               features={studentFeatures}
             />
             
             <MembershipCard
               title="Associate Membership (Non-UoM)"
-              price="£15"
-              period="for sem 2"
+              price="£34.50"
+              period="per year"
               buttonText="Purchase on the SU Website"
               features={associateFeatures}
             />
