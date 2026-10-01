@@ -207,7 +207,10 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 text-center text-xs sm:text-sm md:text-[14px] font-normal text-white/70 leading-normal">
-          <p>University of Manchester Hiking Club © 2026 | <Link href="/dashboard" className="text-white/70 hover:text-white">Dashboard</Link></p>
+          <p>University of Manchester Hiking Club © 2026</p>
+          <p className="mt-2">
+            <Link href="/dashboard/redirect" className="text-white/70 hover:text-white">Dashboard</Link>
+          </p>
         </div>
       </div>
     </footer>

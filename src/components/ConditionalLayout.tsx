@@ -12,6 +12,7 @@ export default function ConditionalLayout({
 }) {
   const pathname = usePathname();
   const isStudio = pathname.startsWith('/studio');
+  const isDashboard = pathname.startsWith('/dashboard');
 
   useEffect(() => {
     // The UserWay accessibility widget script lives in the root layout and injects its
@@ -21,7 +22,7 @@ export default function ConditionalLayout({
   }, [isStudio]);
 
   // Check if we're on a committee page or the embedded Sanity Studio
-  const shouldHideNavAndFooter = pathname.startsWith('/committee') || isStudio;
+  const shouldHideNavAndFooter = pathname.startsWith('/committee') || isStudio || isDashboard;
 
   if (shouldHideNavAndFooter) {
     // For committee, dashboard, and studio pages, don't show global navbar and footer
