@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'UMHC Email Verification System',
     description: 'Secure email verification system for UMHC WhatsApp community access.',
+    images: ['/images/umhc-share.png'],
   },
   robots: {
     index: false,

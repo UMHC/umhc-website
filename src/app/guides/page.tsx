@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     description:
       'Everything you need to know before heading out with us, from packing lists to what to expect on our trips.',
     type: 'website',
+    images: ['/images/umhc-share.png'],
   },
 };
 

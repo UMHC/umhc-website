@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'UMHC Constitution',
     description: 'Our constitution outlines the principles and guidelines that help us maintain a safe, respectful, and welcoming environment.',
+    images: ['/images/umhc-share.png'],
   },
 };
 
