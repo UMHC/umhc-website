@@ -4,5 +4,6 @@ export const structure: StructureResolver = (S) =>
   S.list()
     .title('Content')
     .items([
+      S.documentTypeListItem('article').title('Articles'),
       S.documentTypeListItem('guide').title('Guides'),
     ]);

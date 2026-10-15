@@ -35,6 +35,60 @@ body.hide-a11y-widget [class*="userway" i] {
   --cream-white: #FFFEFB;
 }
 
+.portable-text-letter-list {
+  list-style: none;
+  counter-reset: portable-letter;
+}
+
+.portable-text-number-list {
+  list-style: none;
+  counter-reset: portable-number;
+}
+
+.portable-text-roman-list {
+  list-style: none;
+  counter-reset: portable-roman;
+}
+
+.portable-text-letter-list > li,
+.portable-text-number-list > li,
+.portable-text-roman-list > li {
+  position: relative;
+}
+
+.portable-text-letter-list > li {
+  counter-increment: portable-letter;
+}
+
+.portable-text-number-list > li {
+  counter-increment: portable-number;
+}
+
+.portable-text-roman-list > li {
+  counter-increment: portable-roman;
+}
+
+.portable-text-letter-list > li::before,
+.portable-text-number-list > li::before,
+.portable-text-roman-list > li::before {
+  position: absolute;
+  right: 100%;
+  margin-right: 0.5rem;
+  font-weight: 600;
+}
+
+.portable-text-letter-list > li::before {
+  content: counter(portable-letter, lower-alpha) ')';
+}
+
+.portable-text-number-list > li::before {
+  content: counter(portable-number) ')';
+}
+
+.portable-text-roman-list > li::before {
+  content: counter(portable-roman, lower-roman) ')';
+}
+
 @layer utilities {
   @keyframes slide-down {
     from {

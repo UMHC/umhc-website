@@ -17,3 +17,12 @@ export interface GuideListItem {
 export interface GuideDetail extends GuideListItem {
   body: PortableTextBlock[];
 }
+
+export interface Article {
+  _id: string;
+  title: string;
+  description: string;
+  slug: { current: string };
+  body: PortableTextBlock[];
+  publishedAt: string;
+}

@@ -38,6 +38,31 @@ const components: PortableTextComponents = {
         {children}
       </p>
     ),
+    alignLeft: ({ children }) => (
+      <p className="text-left text-base text-deep-black font-medium font-sans leading-relaxed mb-5">
+        {children}
+      </p>
+    ),
+    alignCenter: ({ children }) => (
+      <p className="text-center text-base text-deep-black font-medium font-sans leading-relaxed mb-5">
+        {children}
+      </p>
+    ),
+    alignRight: ({ children }) => (
+      <p className="text-right text-base text-deep-black font-medium font-sans leading-relaxed mb-5">
+        {children}
+      </p>
+    ),
+    alignJustify: ({ children }) => (
+      <p className="text-justify text-base text-deep-black font-medium font-sans leading-relaxed mb-5">
+        {children}
+      </p>
+    ),
+    h1: ({ children }) => (
+      <h1 className="clear-both text-2xl sm:text-3xl md:text-4xl font-bold text-black font-sans leading-tight pt-4 mt-10 mb-4">
+        {children}
+      </h1>
+    ),
     // clear-both so a new section always starts below a floated image rather
     // than squeezing into the column beside it.
     h2: ({ children }) => (
@@ -55,6 +80,16 @@ const components: PortableTextComponents = {
         {children}
       </h4>
     ),
+    h5: ({ children }) => (
+      <h5 className="text-base font-semibold text-black font-sans leading-tight mt-5 mb-2">
+        {children}
+      </h5>
+    ),
+    h6: ({ children }) => (
+      <h6 className="text-sm font-semibold text-black font-sans leading-tight mt-4 mb-2">
+        {children}
+      </h6>
+    ),
     blockquote: ({ children }) => (
       <blockquote className="border-l-4 border-earth-orange bg-whellow rounded-r-2xl pl-5 pr-4 py-4 my-6 text-base text-slate-grey font-medium font-sans leading-relaxed italic">
         {children}
@@ -68,7 +103,17 @@ const components: PortableTextComponents = {
       </ul>
     ),
     number: ({ children }) => (
-      <ol className="text-base text-deep-black font-medium font-sans leading-relaxed list-decimal pl-6 space-y-2 mb-5">
+      <ol className="portable-text-number-list text-base text-deep-black font-medium font-sans leading-relaxed pl-8 space-y-2 mb-5">
+        {children}
+      </ol>
+    ),
+    letter: ({ children }) => (
+      <ol className="portable-text-letter-list text-base text-deep-black font-medium font-sans leading-relaxed pl-8 space-y-2 mb-5">
+        {children}
+      </ol>
+    ),
+    roman: ({ children }) => (
+      <ol className="portable-text-roman-list text-base text-deep-black font-medium font-sans leading-relaxed pl-8 space-y-2 mb-5">
         {children}
       </ol>
     ),

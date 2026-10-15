@@ -57,6 +57,26 @@ export const guideType = defineType({
       of: [
         defineArrayMember({
           type: 'block',
+          styles: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'Heading 1', value: 'h1' },
+            { title: 'Heading 2', value: 'h2' },
+            { title: 'Heading 3', value: 'h3' },
+            { title: 'Heading 4', value: 'h4' },
+            { title: 'Heading 5', value: 'h5' },
+            { title: 'Heading 6', value: 'h6' },
+            { title: 'Quote', value: 'blockquote' },
+            { title: 'Align left', value: 'alignLeft' },
+            { title: 'Align center', value: 'alignCenter' },
+            { title: 'Align right', value: 'alignRight' },
+            { title: 'Justify', value: 'alignJustify' },
+          ],
+          lists: [
+            { title: 'Bulleted', value: 'bullet' },
+            { title: 'Numbered (1, 2, 3)', value: 'number' },
+            { title: 'Lettered (a, b, c)', value: 'letter' },
+            { title: 'Roman (i, ii, iii)', value: 'roman' },
+          ],
         }),
         defineArrayMember({
           type: 'image',
@@ -90,6 +110,18 @@ export const guideType = defineType({
         defineArrayMember({ type: 'imageGallery' }),
         defineArrayMember({ type: 'youtube' }),
       ],
+      components: {
+        portableText: {
+          plugins: (props) =>
+            props.renderDefault({
+              ...props,
+              plugins: {
+                ...props.plugins,
+                markdown: { enabled: false },
+              },
+            }),
+        },
+      },
       validation: (rule) => rule.required(),
     }),
     defineField({

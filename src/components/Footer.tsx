@@ -28,6 +28,14 @@ export default function Footer() {
                   Constitution
                 </TextButton>
 
+                <TextButton
+                  href="/code-of-conduct"
+                  priority
+                  className="text-cream-white text-2xl sm:text-base md:text-[16px] font-semibold"
+                >
+                  Code of Conduct
+                </TextButton>
+
                 {/* TextButton 
               href="/guides" 
               priority
