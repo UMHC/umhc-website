@@ -13,6 +13,7 @@ const openSans = Open_Sans({
   subsets: ["latin"],
   display: "swap",
   preload: true,
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -20,6 +21,27 @@ export const metadata: Metadata = {
   title: "UMHC | Hiking Club",
   description: "The University of Manchester's best society! Lake District & Snowdonia trips from £15. Social's every week. 20+ years experience, all skill levels welcome. Trips sell out fast - book now!",
   keywords: ['manchester', 'hiking', 'club', 'umhc', 'society', 'university', 'university of manchester', 'outdoors', 'nature', 'lake district', 'snowdonia'],
+  openGraph: {
+    type: 'website',
+    url: 'https://umhc.org.uk',
+    siteName: 'University of Manchester Hiking Club',
+    title: 'UMHC | Hiking Club',
+    description: "The University of Manchester's hiking club. Weekly socials, day hikes, and trips for all skill levels.",
+    images: [
+      {
+        url: '/images/umhc-share.png',
+        width: 1200,
+        height: 630,
+        alt: 'University of Manchester Hiking Club',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'UMHC | Hiking Club',
+    description: "The University of Manchester's hiking club. Weekly socials, day hikes, and trips for all skill levels.",
+    images: ['/images/umhc-share.png'],
+  },
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
@@ -54,7 +76,7 @@ export default function RootLayout({
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "general",
-      "email": "contact@umhc.org.uk",
+      "email": "hiking@manchesterstudentsunion.com",
       "availableLanguage": "English"
     },
     "memberOf": {

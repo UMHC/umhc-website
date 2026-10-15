@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireFinanceAccess } from '@/middleware/auth';
+import { requireCommitteeAccess } from '@/middleware/auth';
 
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and authorization using centralized middleware
-    const authResult = await requireFinanceAccess(request);
+    const authResult = await requireCommitteeAccess(request);
     if (!authResult.success) {
       return authResult.response;
     }

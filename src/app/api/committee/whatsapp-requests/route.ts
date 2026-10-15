@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { sendResendEmail } from '@/lib/resend';
-// import { sendMailgunEmail } from '@/lib/mailgun'; // DEPRECATED: Keeping commented for rollback
 // import { createToken, cleanupExpiredTokens } from '@/lib/tokenStore';
-import { requireCommitteeAccess } from '@/middleware/auth';
+import { requireCommitteeAccess, hasPermission } from '@/middleware/auth';
 import { validateRequestBody, whatsAppRequestReviewSchema } from '@/lib/validation';
 
 // Send approval email with fragment-based verification link
@@ -167,6 +166,14 @@ export async function GET(request: NextRequest) {
       return authResult.response;
     }
 
+    // Require the specific whatsapp-general-manager permission
+    if (!hasPermission(authResult.data.permissions, 'whatsapp-general-manager')) {
+      return NextResponse.json(
+        { error: 'You do not have permission to manage the general WhatsApp group' },
+        { status: 403 }
+      );
+    }
+
     // Fetch requests from secure Supabase schema, ordered by creation date (newest first)
     const { data: requests, error: dbError } = await supabaseAdmin
       .schema('whatsapp_security')
@@ -204,6 +211,14 @@ export async function PATCH(request: NextRequest) {
     const authResult = await requireCommitteeAccess(request);
     if (!authResult.success) {
       return authResult.response;
+    }
+
+    // Require the specific whatsapp-general-manager permission
+    if (!hasPermission(authResult.data.permissions, 'whatsapp-general-manager')) {
+      return NextResponse.json(
+        { error: 'You do not have permission to manage the general WhatsApp group' },
+        { status: 403 }
+      );
     }
 
     // Validate request body using Zod schema

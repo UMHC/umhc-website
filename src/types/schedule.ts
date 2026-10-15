@@ -6,6 +6,7 @@ export interface ScheduleEvent {
   description: string | null
   event_type: EventType
   event_date: string
+  event_end_date: string | null
   event_time: string | null
   full_address: string | null
   what3words: string | null

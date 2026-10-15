@@ -203,7 +203,12 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
       setError('Surname is required');
       return;
     }
-    
+
+    if (!trips.trim()) {
+      setError('Please describe your past hiking experience');
+      return;
+    }
+
     // Validate phone number
     const phoneValidation = validatePhoneNumber(phone);
     if (!phoneValidation.valid) {
@@ -471,19 +476,20 @@ export default function ManualRequestForm({ onSuccess }: ManualRequestFormProps)
         {/* Previous Trips Input */}
         <div className="flex flex-col gap-1 w-full">
           <label htmlFor="trips" className="font-sans font-medium text-sm text-deep-black">
-            Please list any trips you have been on with us (optional)
+            What past hiking experience do you have?
           </label>
           <textarea
             id="trips"
             value={trips}
             onChange={(e) => setTrips(e.target.value)}
-            placeholder="e.g., Peak District day hike in October 2024, Lake District weekend in September 2024..."
+            placeholder="e.g. Hiked with some friends in the Peak District last summer, went on the Snowdon trip with UMHC in September..."
             rows={3}
+            required
             className="w-full px-3 sm:px-4 py-3 sm:py-4 bg-cream-white border-2 border-gray-200 rounded-lg focus:border-umhc-green focus:outline-none transition-colors font-sans text-sm sm:text-base resize-vertical min-h-[80px]"
             aria-describedby="trips-help"
           />
           <p id="trips-help" className="text-xs sm:text-sm text-slate-grey mt-1 font-sans">
-            This helps us understand your experience with UMHC (leave blank if this is your first time)
+            This could be with UMHC or not, it just helps us understand your involvement
           </p>
         </div>
 

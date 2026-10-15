@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { KindeRoles, KindePermissions, KindeUser } from '@kinde-oss/kinde-auth-nextjs/types';
-import { hasCommitteePermission, hasFinancePermission, hasTreasurerPermission } from '@/lib/permissions';
+import { hasCommitteePermission } from '@/lib/permissions';
 
 /**
  * Standard error response format for all authentication/authorization failures
@@ -24,8 +24,6 @@ interface AuthSuccessResult {
     roles: KindeRoles | null;
     permissions: KindePermissions | null;
     hasCommitteeAccess: boolean;
-    hasFinanceAccess: boolean;
-    hasTreasurerAccess: boolean;
   };
 }
 
@@ -47,7 +45,6 @@ type AuthResult = AuthSuccessResult | AuthFailureResult;
  */
 enum PermissionLevel {
   MEMBER = 0,
-  TREASURER = 1,
   COMMITTEE = 2,
   ADMIN = 3
 }
@@ -59,11 +56,6 @@ function getUserPermissionLevel(roles: KindeRoles | null, permissions: KindePerm
   // Committee members have the highest general access
   if (hasCommitteePermission(roles)) {
     return PermissionLevel.COMMITTEE;
-  }
-
-  // Treasurers have financial access
-  if (hasTreasurerPermission(roles) || permissions?.permissions?.includes('is-treasurer')) {
-    return PermissionLevel.TREASURER;
   }
 
   // Default to member level
@@ -142,18 +134,14 @@ async function performAuthenticationCheck(request?: NextRequest): Promise<AuthRe
 
     // Calculate permission flags
     const hasCommitteeAccess = hasCommitteePermission(roles);
-    const hasFinanceAccess = hasFinancePermission(roles) || permissions?.permissions?.includes('is-treasurer') || false;
-    const hasTreasurerAccess = hasTreasurerPermission(roles) || permissions?.permissions?.includes('is-treasurer') || false;
-
+    
     return {
       success: true,
       data: {
         user,
         roles,
         permissions,
-        hasCommitteeAccess,
-        hasFinanceAccess,
-        hasTreasurerAccess
+        hasCommitteeAccess
       }
     };
 
@@ -199,62 +187,6 @@ export async function requireCommitteeAccess(request?: NextRequest): Promise<Aut
         403,
         'INSUFFICIENT_PERMISSIONS',
         'This resource requires committee member access',
-        request
-      )
-    };
-  }
-
-  return authResult;
-}
-
-/**
- * Finance access middleware - requires finance permissions (committee OR treasurer)
- */
-export async function requireFinanceAccess(request?: NextRequest): Promise<AuthResult> {
-  const authResult = await performAuthenticationCheck(request);
-
-  if (!authResult.success) {
-    return authResult;
-  }
-
-  const { data } = authResult;
-
-  if (!data.hasFinanceAccess) {
-    return {
-      success: false,
-      response: createErrorResponse(
-        'Finance access required',
-        403,
-        'INSUFFICIENT_PERMISSIONS',
-        'This resource requires finance management permissions (committee or treasurer access)',
-        request
-      )
-    };
-  }
-
-  return authResult;
-}
-
-/**
- * Treasurer access middleware - requires specific treasurer permissions
- */
-export async function requireTreasurerAccess(request?: NextRequest): Promise<AuthResult> {
-  const authResult = await performAuthenticationCheck(request);
-
-  if (!authResult.success) {
-    return authResult;
-  }
-
-  const { data } = authResult;
-
-  if (!data.hasTreasurerAccess) {
-    return {
-      success: false,
-      response: createErrorResponse(
-        'Treasurer access required',
-        403,
-        'INSUFFICIENT_PERMISSIONS',
-        'This resource requires treasurer-level permissions',
         request
       )
     };
@@ -312,7 +244,6 @@ export async function requireMinimumPermission(
   if (userLevel < minimumLevel) {
     const levelNames = {
       [PermissionLevel.MEMBER]: 'member',
-      [PermissionLevel.TREASURER]: 'treasurer',
       [PermissionLevel.COMMITTEE]: 'committee',
       [PermissionLevel.ADMIN]: 'administrator'
     };

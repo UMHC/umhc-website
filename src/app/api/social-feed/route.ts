@@ -14,17 +14,11 @@ const CONFIG = {
     username: '_umhc_',
     rapidApiKey: process.env.RAPID_API_KEY!,
   },
-  strava: {
-    clubId: process.env.STRAVA_CLUB_ID!,
-    clientId: process.env.STRAVA_CLIENT_ID!,
-    clientSecret: process.env.STRAVA_CLIENT_SECRET!,
-    refreshToken: process.env.STRAVA_REFRESH_TOKEN!,
-  }
 };
 
 interface SocialPost {
   id: string;
-  type: 'instagram' | 'tiktok' | 'strava';
+  type: 'instagram' | 'tiktok';
   content: {
     imageUrl?: string;
     videoUrl?: string;
@@ -34,11 +28,6 @@ interface SocialPost {
     views?: number;
     timestamp: string;
     link: string;
-    activityType?: string;
-    distance?: number;
-    elevation?: number;
-    duration?: number;
-    athleteName?: string;
   };
 }
 
@@ -263,90 +252,18 @@ async function getTikTokVideos(): Promise<SocialPost[]> {
   }
 }
 
-async function getStravaAccessToken(): Promise<string> {
-  const response = await fetch('https://www.strava.com/oauth/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      client_id: CONFIG.strava.clientId,
-      client_secret: CONFIG.strava.clientSecret,
-      refresh_token: CONFIG.strava.refreshToken,
-      grant_type: 'refresh_token',
-    }),
-  });
-
-  if (!response.ok) throw new Error('Strava token refresh failed');
-  
-  const data = await response.json();
-  return data.access_token;
-}
-
-async function getStravaActivities(): Promise<SocialPost[]> {
-  try {
-    const accessToken = await getStravaAccessToken();
-    
-    const response = await fetch(
-      `https://www.strava.com/api/v3/clubs/${CONFIG.strava.clubId}/activities?per_page=10`,
-      {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-        },
-        next: { revalidate: 172800 } // Cache for 2 days
-      }
-    );
-
-    if (!response.ok) throw new Error('Strava API failed');
-
-    const activities = await response.json();
-
-    return activities.map((activity: { 
-      type: string; 
-      distance: number; 
-      total_elevation_gain: number; 
-      moving_time: number; 
-      start_date: string; 
-      name: string; 
-      id: string;
-      athlete: { firstname: string; lastname: string }
-    }) => ({
-      id: `strava_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-      type: 'strava' as const,
-      content: {
-        activityType: activity.type,
-        distance: activity.distance,
-        elevation: activity.total_elevation_gain,
-        duration: activity.moving_time,
-        athleteName: `${activity.athlete.firstname} ${activity.athlete.lastname}`,
-        caption: activity.name,
-        timestamp: new Date().toISOString(), // Club activities don't have timestamps
-        link: `https://www.strava.com/clubs/${CONFIG.strava.clubId}`
-      }
-    }));
-  } catch (error) {
-    // Only log errors in production, development failures are expected without API keys
-    if (process.env.NODE_ENV !== 'development') {
-      console.error('Strava fetch error:', error);
-    }
-    return [];
-  }
-}
-
 export async function GET() {
   try {
     // Fetch all social media data in parallel
-    const [instagramPosts, tiktokVideos, stravaActivities] = await Promise.allSettled([
+    const [instagramPosts, tiktokVideos] = await Promise.allSettled([
       getInstagramPosts(),
       getTikTokVideos(),
-      getStravaActivities()
     ]);
 
     // Combine all posts, filtering out failed requests
     const allPosts = [
       ...(instagramPosts.status === 'fulfilled' ? instagramPosts.value : []),
       ...(tiktokVideos.status === 'fulfilled' ? tiktokVideos.value : []),
-      ...(stravaActivities.status === 'fulfilled' ? stravaActivities.value : [])
     ];
 
     // Sort by timestamp (most recent first)

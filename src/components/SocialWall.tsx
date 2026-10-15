@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import { Instagram, Play, Activity } from 'lucide-react';
+import { Instagram, Play } from 'lucide-react';
 
 interface SocialPost {
   id: string;
-  type: 'instagram' | 'tiktok' | 'strava';
+  type: 'instagram' | 'tiktok';
   content: {
     imageUrl?: string;
     videoUrl?: string;
@@ -16,12 +16,6 @@ interface SocialPost {
     views?: number;
     timestamp: string;
     link: string;
-    // Strava specific
-    activityType?: string;
-    distance?: number;
-    elevation?: number;
-    duration?: number;
-    athleteName?: string;
   };
 }
 
@@ -215,17 +209,6 @@ const SocialWall = () => {
     return columns.map(column => [...column, ...column]);
   };
 
-  const formatDistance = (meters: number) => {
-    const km = meters / 1000;
-    return km.toFixed(1) + ' km';
-  };
-
-  const formatDuration = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-  };
-
   const PostCard = ({ post }: { post: SocialPost }) => {
     const handleClick = () => {
       window.open(post.content.link, '_blank', 'noopener,noreferrer');
@@ -295,47 +278,6 @@ const SocialWall = () => {
             </div>
           </>
         )}
-
-        {post.type === 'strava' && (
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-2">
-                <Activity className="w-5 h-5 text-orange-600" />
-                <span className="font-semibold text-sm" style={{ fontFamily: 'Open Sans, sans-serif' }}>
-                  {post.content.activityType}
-                </span>
-              </div>
-              <div className="bg-orange-100 rounded-full px-2 py-1">
-                <span className="text-xs text-orange-600 font-medium">Strava</span>
-              </div>
-            </div>
-            
-            <p className="text-sm text-gray-700 mb-3" style={{ fontFamily: 'Open Sans, sans-serif' }}>
-              {post.content.athleteName}
-            </p>
-            
-            <div className="grid grid-cols-3 gap-2 text-center">
-              {post.content.distance && (
-                <div>
-                  <p className="text-xs text-gray-500">Distance</p>
-                  <p className="font-semibold text-sm">{formatDistance(post.content.distance)}</p>
-                </div>
-              )}
-              {post.content.duration && (
-                <div>
-                  <p className="text-xs text-gray-500">Time</p>
-                  <p className="font-semibold text-sm">{formatDuration(post.content.duration)}</p>
-                </div>
-              )}
-              {post.content.elevation && (
-                <div>
-                  <p className="text-xs text-gray-500">Elevation</p>
-                  <p className="font-semibold text-sm">{Math.round(post.content.elevation)}m</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     );
   };
@@ -348,6 +290,26 @@ const SocialWall = () => {
         </h2>
         <div className="flex justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Debug: If posts are empty but loading is false, show a message
+  if (posts.length === 0) {
+    return (
+      <div className="w-full py-16 bg-whellow">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="font-bold text-deep-black text-3xl md:text-4xl mb-8">
+            Check out our socials!
+          </h2>
+          <p>No social posts currently available.</p>
+          <button 
+            onClick={() => { setLoading(true); fetchSocialData(); }}
+            className="mt-4 px-4 py-2 bg-umhc-green text-white rounded hover:opacity-90"
+          >
+            Retry Loading
+          </button>
         </div>
       </div>
     );

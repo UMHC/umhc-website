@@ -8,7 +8,7 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Protected routes - require authentication
-  if (pathname.startsWith('/committee') || pathname.startsWith('/api/finance')) {
+  if (pathname.startsWith('/committee')) {
     return withAuth(request, {
       isReturnToCurrentPage: true,
     });

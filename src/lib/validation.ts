@@ -38,32 +38,6 @@ export const emailValidator = z.string()
   .max(254, 'Email address is too long');
 
 /**
- * Positive number validator for financial amounts
- */
-export const positiveAmountValidator = z.number()
-  .positive('Amount must be greater than 0')
-  .finite('Amount must be a valid number')
-  .max(1000000, 'Amount cannot exceed £1,000,000');
-
-/**
- * Non-negative number validator for budget amounts (can be 0)
- */
-export const nonNegativeAmountValidator = z.number()
-  .min(0, 'Amount cannot be negative')
-  .finite('Amount must be a valid number')
-  .max(1000000, 'Amount cannot exceed £1,000,000');
-
-/**
- * Date validator that ensures date is not in the future (for transactions)
- */
-export const pastOrPresentDateValidator = z.string()
-  .datetime('Invalid date format')
-  .refine(
-    (date) => new Date(date) <= new Date(),
-    { message: 'Date cannot be in the future' }
-  );
-
-/**
  * Future date validator (for events)
  */
 export const futureDateValidator = z.string()
@@ -133,57 +107,8 @@ export const whatsAppRequestReviewSchema = z.object({
 });
 
 // ============================================================================
-// FINANCE VALIDATION
+// PAGINATION VALIDATION
 // ============================================================================
-
-/**
- * Transaction type enum
- */
-export const transactionTypeSchema = z.enum(['income', 'expense'], {
-  message: 'Transaction type must be either income or expense'
-});
-
-/**
- * Expense category enum
- */
-export const expenseCategorySchema = z.enum([
-  'accommodation',
-  'training',
-  'equipment',
-  'transport',
-  'social_events',
-  'insurance',
-  'administration',
-  'food_catering',
-  'membership',
-  'other'
-], {
-  message: 'Please select a valid expense category'
-});
-
-/**
- * Budget period enum
- */
-export const budgetPeriodSchema = z.enum(['monthly', 'quarterly', 'annual'], {
-  message: 'Budget period must be monthly, quarterly, or annual'
-});
-
-/**
- * Transaction creation schema
- */
-export const createTransactionSchema = z.object({
-  title: sanitizedStringValidator(1, 100, 'Transaction title'),
-  description: optionalSanitizedStringValidator(500),
-  amount: positiveAmountValidator,
-  type: transactionTypeSchema,
-  category: expenseCategorySchema.optional(),
-  date: pastOrPresentDateValidator
-});
-
-/**
- * Transaction update schema (allows partial updates)
- */
-export const updateTransactionSchema = createTransactionSchema.partial();
 
 /**
  * Pagination parameters schema
@@ -191,24 +116,6 @@ export const updateTransactionSchema = createTransactionSchema.partial();
 export const paginationSchema = z.object({
   page: z.number().int().min(1, 'Page must be at least 1').max(1000, 'Page cannot exceed 1000'),
   limit: z.number().int().min(1, 'Limit must be at least 1').max(100, 'Limit cannot exceed 100')
-});
-
-/**
- * Budget creation/update schema
- */
-export const budgetSchema = z.object({
-  category: expenseCategorySchema,
-  budget_amount: nonNegativeAmountValidator,
-  fiscal_year: z.number().int().min(2020, 'Fiscal year must be at least 2020').max(2050, 'Fiscal year cannot exceed 2050').optional(),
-  budget_period: budgetPeriodSchema.default('annual')
-});
-
-/**
- * Budget query parameters schema
- */
-export const budgetQuerySchema = z.object({
-  fiscalYear: z.number().int().min(2020).max(2050).optional(),
-  type: z.enum(['budgets', 'vs-actual', 'summary']).default('budgets')
 });
 
 // ============================================================================
@@ -239,7 +146,7 @@ export const what3wordsValidator = optionalSanitizedStringValidator(50);
 /**
  * Event creation schema
  */
-export const createEventSchema = z.object({
+const eventSchemaFields = z.object({
   title: sanitizedStringValidator(1, 200, 'Event title'),
   description: optionalSanitizedStringValidator(2000),
   event_type: eventTypeSchema,
@@ -249,6 +156,14 @@ export const createEventSchema = z.object({
       const parsedDate = new Date(date);
       return !isNaN(parsedDate.getTime()) && parsedDate > new Date('1900-01-01');
     }, 'Invalid event date format'),
+  event_end_date: z.string()
+    .refine((date) => {
+      if (!date) return true;
+      const parsedDate = new Date(date);
+      return !isNaN(parsedDate.getTime()) && parsedDate > new Date('1900-01-01');
+    }, 'Invalid event end date format')
+    .optional()
+    .or(z.literal('')),
   event_time: optionalSanitizedStringValidator(10),
   full_address: optionalSanitizedStringValidator(500),
   what3words: what3wordsValidator,
@@ -263,10 +178,15 @@ export const createEventSchema = z.object({
   event_image: optionalSanitizedStringValidator(500)
 });
 
+export const createEventSchema = eventSchemaFields.refine(
+  (data) => !data.event_end_date || data.event_end_date >= data.event_date,
+  { message: 'Event end date must be on or after the event date', path: ['event_end_date'] }
+);
+
 /**
  * Event update schema (includes ID and allows partial updates)
  */
-export const updateEventSchema = createEventSchema.partial().extend({
+export const updateEventSchema = eventSchemaFields.partial().extend({
   id: z.number().int().positive('Invalid event ID')
 });
 
@@ -475,10 +395,6 @@ export const envVariablesSchema = z.object({
 // Export TypeScript types from schemas for use in components and services
 export type ManualWhatsAppRequest = z.infer<typeof manualWhatsAppRequestSchema>;
 export type WhatsAppRequestReview = z.infer<typeof whatsAppRequestReviewSchema>;
-export type CreateTransaction = z.infer<typeof createTransactionSchema>;
-export type UpdateTransaction = z.infer<typeof updateTransactionSchema>;
-export type Budget = z.infer<typeof budgetSchema>;
-export type BudgetQuery = z.infer<typeof budgetQuerySchema>;
 export type CreateEvent = z.infer<typeof createEventSchema>;
 export type UpdateEvent = z.infer<typeof updateEventSchema>;
 export type Pagination = z.infer<typeof paginationSchema>;
@@ -489,7 +405,4 @@ export type EnvVariables = z.infer<typeof envVariablesSchema>;
 
 // Export commonly used enums
 export { userTypeSchema as UserType };
-export { transactionTypeSchema as TransactionType };
-export { expenseCategorySchema as ExpenseCategory };
-export { budgetPeriodSchema as BudgetPeriod };
 export { eventTypeSchema as EventType };

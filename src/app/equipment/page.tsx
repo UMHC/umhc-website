@@ -9,6 +9,7 @@ export const metadata: Metadata = {
     title: 'UMHC Equipment Guide - Essential Hiking Gear',
     description: 'Complete hiking equipment recommendations for all skill levels. From boots to backpacks, find out what gear you need for UMHC trips.',
     type: 'website',
+    images: ['/images/umhc-share.png'],
   },
 };
 

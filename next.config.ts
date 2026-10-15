@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '*.tiktokcdn-eu.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.sanity.io',
+      },
     ],
   },
   async headers() {
@@ -64,6 +68,15 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/images/social-icons/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable', // 1 year, immutable
+          },
+        ],
+      },
+      {
         source: '/logos/(.*)',
         headers: [
           {
@@ -84,14 +97,14 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' va.vercel-scripts.com kinde.com *.kinde.com challenges.cloudflare.com *.cloudflare.com cdn.userway.org",
               // Styles: self, inline styles (required for Next.js), Google Fonts
               "style-src 'self' 'unsafe-inline' fonts.googleapis.com cdn.userway.org",
-              // Images: self, data URIs, social media CDNs, Vercel, Supabase, UserWay
-              "img-src 'self' data: blob: *.cdninstagram.com *.tiktokcdn.com *.tiktokcdn-eu.com vercel.com *.supabase.co cdn.userway.org",
+              // Images: self, data URIs, social media CDNs, Vercel, Supabase, UserWay, Sanity CDN
+              "img-src 'self' data: blob: *.cdninstagram.com *.tiktokcdn.com *.tiktokcdn-eu.com vercel.com *.supabase.co cdn.userway.org cdn.sanity.io",
               // Fonts: self, Google Fonts, UserWay
               "font-src 'self' fonts.gstatic.com cdn.userway.org",
-              // Connect: self, Vercel Analytics, Kinde Auth, Supabase, social APIs, Cloudflare Turnstile, UserWay
-              "connect-src 'self' vitals.vercel-insights.com kinde.com *.kinde.com *.supabase.co graph.instagram.com api.tiktok.com challenges.cloudflare.com *.cloudflare.com api.userway.org cdn.userway.org",
+              // Connect: self, Vercel Analytics, Kinde Auth, Supabase, social APIs, Cloudflare Turnstile, UserWay, Sanity API/CDN
+              "connect-src 'self' vitals.vercel-insights.com kinde.com *.kinde.com *.supabase.co graph.instagram.com api.tiktok.com challenges.cloudflare.com *.cloudflare.com api.userway.org cdn.userway.org *.api.sanity.io api.sanity.io *.apicdn.sanity.io wss://*.api.sanity.io sanity-cdn.com",
               // Frames: social media embeds, Kinde auth, Cloudflare Turnstile, UserWay
-              "frame-src 'self' kinde.com *.kinde.com www.instagram.com www.tiktok.com challenges.cloudflare.com *.cloudflare.com cdn.userway.org",
+              "frame-src 'self' kinde.com *.kinde.com www.instagram.com www.tiktok.com challenges.cloudflare.com *.cloudflare.com cdn.userway.org www.youtube-nocookie.com www.youtube.com",
               // Objects: none for security
               "object-src 'none'",
               // Base URI: self only

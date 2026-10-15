@@ -10,6 +10,7 @@ import EarthOrangeButton from '@/components/EarthOrangeButton'
 import Image from 'next/image'
 import { useClientSideIcons } from '@/hooks/useClientSideIcons'
 import OptimizedIcon from '@/components/OptimizedIcon'
+import ScheduleCalendarSubscription from '@/components/ScheduleCalendarSubscription'
 
 // Available activity icons for background decoration - moved outside component to prevent re-creation
 const ACTIVITY_ICONS = [
@@ -283,19 +284,6 @@ function ScheduleContent() {
             </div>
           ))}
           
-          {/* Bottom row icons - optimized rendering - only visible on larger screens */}
-          {bottomIcons.map((icon) => (
-            <div key={icon.id} className="hidden md:block">
-              <OptimizedIcon
-                src={icon.src}
-                size={icon.size}
-                top={icon.top}
-                left={icon.left}
-                opacity={icon.opacity}
-                id={icon.id}
-              />
-            </div>
-          ))}
         </div>
       )}
       
@@ -388,6 +376,10 @@ function ScheduleContent() {
           </div>
         </header>
 
+        <div className="flex justify-center px-4 mt-4">
+          <ScheduleCalendarSubscription />
+        </div>
+
         {/* Event Type Filter */}
         <div className="flex flex-col gap-1 items-start justify-start p-0 relative max-w-5xl mx-auto mb-4 mt-12 px-4">
           <div className="flex flex-row font-semibold gap-2 sm:gap-4 md:gap-6 lg:gap-8 xl:gap-12 items-center justify-center md:justify-between not-italic p-0 relative w-full text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-left">
@@ -424,7 +416,6 @@ function ScheduleContent() {
               </button>
             </div>
             
-            {/* Filter Button */}
             <button 
               onClick={() => setShowFilterModal(true)}
               className="relative rounded-full border-slate-grey border border-solid hover:bg-slate-grey hover:bg-opacity-10 transition-colors ml-2 shrink-0 mr-4"
@@ -626,9 +617,27 @@ function ScheduleContent() {
         </div>
       </main>
 
-      {/* Dedicated space for bottom icons - adjusted positioning */}
-      <div className="h-28 sm:h-32 md:h-36 lg:h-32 relative" data-icon-zone aria-hidden="true">
-        {/* This space is reserved for bottom icons */}
+      {/* Dedicated space for bottom icons below events */}
+      <div className="mt-8 sm:mt-10 md:mt-12 h-24 sm:h-28 md:h-32 lg:h-28 relative" data-icon-zone aria-hidden="true">
+        <div className="hidden md:flex h-full items-center justify-center gap-6 lg:gap-8 xl:gap-10 px-6">
+          {bottomIcons.map((icon) => (
+            <Image
+              key={icon.id}
+              src={icon.src}
+              alt=""
+              width={icon.size}
+              height={icon.size}
+              className={`${icon.opacity} shrink-0`}
+              style={{
+                width: `${icon.size}px`,
+                height: `${icon.size}px`,
+                imageRendering: 'crisp-edges'
+              }}
+              loading="lazy"
+              sizes={`${icon.size}px`}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Filter Modal */}
