@@ -19,7 +19,8 @@ function getNextDate(date: string): string {
 }
 
 function formatLocalDateTime(date: string, time: string): string {
-  return `${formatDate(date)}T${time.replace(/:/g, '')}00`
+  const [hours = '00', minutes = '00', seconds = '00'] = time.split(':')
+  return `${formatDate(date)}T${hours.padStart(2, '0')}${minutes.padStart(2, '0')}${seconds.padStart(2, '0')}`
 }
 
 function getTimedEnd(date: string, time: string, eventEndDate: string): { date: string; time: string } {
@@ -27,8 +28,15 @@ function getTimedEnd(date: string, time: string, eventEndDate: string): { date: 
     return { date: eventEndDate, time }
   }
 
-  const end = new Date(`${date}T${time}`)
-  end.setHours(end.getHours() + 2)
+  const [hours = '00', minutes = '00'] = time.split(':')
+  const end = new Date(Date.UTC(
+    Number(date.slice(0, 4)),
+    Number(date.slice(5, 7)) - 1,
+    Number(date.slice(8, 10)),
+    Number(hours),
+    Number(minutes),
+  ))
+  end.setUTCHours(end.getUTCHours() + 2)
   return {
     date: end.toISOString().slice(0, 10),
     time: end.toISOString().slice(11, 16),
